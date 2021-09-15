@@ -1,6 +1,12 @@
 import os
 from pathlib import Path
 
+""" 
+    Env variables are as follows:
+        SECRET_KEY: the key to use as the secret key
+        DEV_STAGE: The current stage of development we're on.  Dev, Production, GH_TEST
+"""
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 STAGE = os.getenv("DEV_STAGE", "Dev")
@@ -37,8 +43,7 @@ ROOT_URLCONF = 'CodeReview.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
