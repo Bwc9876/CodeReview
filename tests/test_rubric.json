@@ -1,0 +1,33 @@
+{
+  "name": "Test Rubric",
+  "rows": [
+    {
+      "name": "row 1",
+      "description": "row desc 1",
+      "cells": [
+        {
+          "description": "cell 1 row 1",
+          "score": 5
+        },
+        {
+          "description": "cell 2 row 1",
+          "score": 10
+        }
+      ]
+    },
+    {
+      "name": "row 2",
+      "description": "row desc 2",
+      "cells": [
+        {
+          "description": "cell 1 row 2",
+          "score": 2
+        },
+        {
+          "description": "cell 2 row 2",
+          "score": 1
+        }
+      ]
+    }
+  ]
+}

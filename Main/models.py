@@ -29,6 +29,9 @@ class RubricCell(BaseModel):
     score = models.FloatField()
     parent_row = models.ForeignKey(RubricRow, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['-score']
+
 
 class Review(BaseModel):
 
