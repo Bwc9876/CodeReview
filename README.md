@@ -2,13 +2,13 @@
 Code Review Workflow for IT Programming at BCTC West
 ## Abstract 
 ### Flow 
-Through this web interface, students will be able to request a code reviews and enter them into a bounty-like system. Seniors will then be notified of this post and a senior can claim a review.  After the review has concluded the senior then fills out a rubric and enters their additional notes/comments. Finally the instructor will then be able to take that data and enter the grades into another grading system accordingly.
+Through this web interface, students will be able to request a code reviews and enter them into a bounty-like system. Seniors will then be notified of this post and a senior can claim a review.  After the review has concluded the senior then fills out a rubric and enters their additional notes/comments. Finally, the instructor will then be able to take that data and enter the grades into another grading system accordingly.
 ### UI
 Basic material design layout and UI with primary, secondary, and accent colors. 
 ## Technical 
-Using active directory, users will login to post request for reviews, on posting an email will be sent to seniors and the instructor.  Once a senior accepts the review, the instructor will receive an email. Upon completion of the code review, the instructor will get a final email with the notes the senior has given.
+Using active directory, users will log in to post request for reviews, on posting an email will be sent to seniors and the instructor.  Once a senior accepts the review, the instructor will receive an email. Upon completion of the code review, the instructor will get a final email with the notes the senior has given.
 ### Environment Variables 
-- DEV_STAGE: The current stage of development options are: Dev, Prod, and Github
+- DEV_STAGE: The current stage of development options are: Dev, Prod, and GitHub
 - SECRET_KEY: Key to use in production as the django secret key
 - EMAIL_HOST: The email server host we're connecting to
 - EMAIL_USER: The username of the email we'll use to send notifications
@@ -32,7 +32,7 @@ Then, simply run the django run command:
 Development is insecure and inefficient, only use when testing
 ### Production
 Will require an SQL server to connect to, an ActiveDirectory server, an email to send notifications from, and a webserver to run the django code on.  
-Setup your webserver and then point it to ```CodeReview/wsgi.py```.  
+Set up your webserver and then point it to ```CodeReview/wsgi.py```.  
 This will require [environment variables](https://github.com/Bwc9876/CodeReview#environment-variables)
 ### Tests
 Tests are available through the normal django interface, simply run  
