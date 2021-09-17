@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User (AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid4)
-    reviewer = models.BooleanField(default=False)
+    is_reviewer = models.BooleanField(default=False)
 
     def __str__(self):
         if self.first_name is None or self.last_name is None:

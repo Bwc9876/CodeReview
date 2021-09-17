@@ -11,21 +11,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 STAGE = os.getenv("DEV_STAGE", "Dev")
 
-DEBUG = (STAGE == "Dev" or STAGE == "GH_TEST")
+DEBUG = STAGE != "Prod"
 
 SECRET_KEY = 'django-insecure-1&=3d#^^j*!8)r5y8tuh(t#rp6*(jwbx%90k-ir5c*2j4$s$o%' if DEBUG else os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
-    'Main',
-    'Users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Main',
+    'Users',
 ]
 
 MIDDLEWARE = [
