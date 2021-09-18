@@ -1,12 +1,6 @@
 import os
 from pathlib import Path
 
-""" 
-    Env variables are as follows:
-        SECRET_KEY: the key to use as the secret key
-        DEV_STAGE: The current stage of development we're on.  Dev, Production, GH_TEST
-"""
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 STAGE = os.getenv("DEV_STAGE", "Dev")
@@ -15,7 +9,10 @@ DEBUG = STAGE != "Prod"
 
 SECRET_KEY = 'django-insecure-1&=3d#^^j*!8)r5y8tuh(t#rp6*(jwbx%90k-ir5c*2j4$s$o%' if DEBUG else os.getenv("SECRET_KEY")
 
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+else:
+    ALLOWED_HOSTS = [os.getenv("TARGET_HOST")]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,7 +40,7 @@ ROOT_URLCONF = 'CodeReview.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
