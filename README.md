@@ -17,6 +17,8 @@ Using active directory, users will log in to post request for reviews, on postin
 - DB_NAME: The name for the db we'll use
 - DB_PASS: The password for the db we'll use
 - LDAP_URL: The url of the ActiveDirectory Server we want to use for auth
+- LDAP_USER: The username of the LDAP admin we want to login as
+- LDAP_PASS: The password of the LDAP admin we want to login as
 ### Services Used 
 - [Python](https://www.python.org/) 
 - [Django](https://www.djangoproject.com/) 
