@@ -15,7 +15,7 @@ DEBUG = STAGE != "Prod"
 
 SECRET_KEY = 'django-insecure-1&=3d#^^j*!8)r5y8tuh(t#rp6*(jwbx%90k-ir5c*2j4$s$o%' if DEBUG else os.getenv("SECRET_KEY")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] if DEBUG else os.getenv("PRODUCTION_HOST")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
