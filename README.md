@@ -1,4 +1,7 @@
-# CodeReview
+[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)
+# CodeReview  
 Code Review Workflow for IT Programming at BCTC West
 ## Abstract 
 ### Flow 
@@ -35,7 +38,7 @@ Development is insecure and inefficient, only use when testing
 ### Production
 Will require an SQL server to connect to, an ActiveDirectory server, an email to send notifications from, and a webserver to run the django code on.  
 Set up your webserver and then point it to ```CodeReview/wsgi.py```.  
-This will require [environment variables](https://github.com/Bwc9876/CodeReview#environment-variables)
+This will require [environment variables](#Environment-Variables)
 ### Tests
 Tests are available through the normal django interface, simply run  
 ``` python manage.py runtests ```  
