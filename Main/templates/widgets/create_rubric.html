@@ -1,0 +1,39 @@
+<input class="rubric_create_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
+       value="" {% include "widgets/attrs.html" %}/>
+<table class="rubric-edit-table">
+    <tr>
+       <th class="cell">Category</th>
+       <th class="cell" id="scoreHeader" colspan="2">Score</th>
+    </tr>
+    <tr id="row-1" class="row">
+        <th class="cell">
+            <div class="cell-wrapper">
+                <p class="row-indicator">Row 1</p>
+                <div class="cell_part">
+                    <label for="row-1-name">Name:</label>
+                    <input class="cell-input" type="text" id="row-1-name" name="row-1-name"/>
+                </div>
+                <div class="cell_part">
+                    <label for="row-1-description">Description:</label>
+                    <input class="cell-input" type="text" id="row-1-description" name="row-1-description"/>
+                </div>
+            </div>
+        </th>
+        <td id="row-1-cell-1" class="cell data-cell">
+            <div class="cell-wrapper">
+                <div class="cell_part">
+                    <label for="row-1-cell-1-score">Score:</label>
+                    <input class="cell-input" type="number" id="row-1-cell-1-score" name="row-1-cell-1-score"/>
+                </div>
+                <div class="cell_part">
+                    <label for="row-1-cell-1-description">Description:</label>
+                    <input class="cell-input" type="text" id="row-1-cell-1-description" name="row-1-cell-1-description"/>
+                </div>
+            </div>
+        </td>
+        <td class="cell">
+            <button type="button" id="row-1-add-cell-button" class="add-cell-button">Add Cell</button>
+        </td>
+    </tr>
+</table>
+<button type="button" class="add-row-button">Add Row</button>
