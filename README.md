@@ -32,7 +32,7 @@ Using active directory, users will log in to post request for reviews, on postin
 - [FontAwesome](https://fontawesome.com/)
 ## Running  
 ### Development  
-First, install all requirements in requirements.txt 
+First, install all requirements in requirements.txt  
 Then, simply run the django run command:  
 ```python manage.py runserver YOUR_HOST:8080```  
 Development is insecure and inefficient, only use when testing
