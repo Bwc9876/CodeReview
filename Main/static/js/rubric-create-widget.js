@@ -73,11 +73,12 @@ function delete_cell_callback(event) {
 
 }
 
-function add_row_callback(event) {
+function add_row_callback() {
     let new_row = $("<tr>");
     new_row.addClass("row");
     new_row.html(`<th class="cell">
                         <div class="cell-wrapper">
+                            <button type="button" class="delete-button delete-row">X</button>
                             <div class="cell_part">
                                 <label>
                                     Name: <input class="cell-input row-name" type="text"/>
@@ -92,6 +93,7 @@ function add_row_callback(event) {
                     </th>
                     <td class="cell data-cell">
                         <div class="cell-wrapper">
+                            <button type="button" class="delete-button delete-cell">X</button>
                             <div class="cell_part">
                                 <label>
                                     Score: <input class="cell-input cell-score" type="number"/>
@@ -119,6 +121,7 @@ function add_cell_callback(event) {
     new_cell.addClass("data-cell");
     new_cell.html(`
             <div class="cell-wrapper">
+                <button type="button" class="delete-button delete-cell">X</button>
                 <div class="cell_part">
                     <label>
                         Score: <input class="cell-input cell-score" type="number"/>
@@ -138,7 +141,7 @@ function add_cell_callback(event) {
 }
 
 
-function submit_callback(event) {
+function submit_callback() {
 
     $(".rubric_create_input").val(convert_to_json());
 

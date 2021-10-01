@@ -22,16 +22,16 @@ class RubricForm(Form):
     name = CharField(max_length=100)
     rubric = CreateRubricField()
 
-    def json_exit(self):
+    def json_exit(self) -> None:
         self.add_error('rubric', "Invalid JSON")
 
-    def clean(self):
-        cleaned_data = super().clean()
-        raw_json = cleaned_data.get("rubric")
+    def clean(self) -> None:
+        cleaned_data: dict = super().clean()
+        raw_json: str = cleaned_data.get("rubric")
 
         if raw_json is not None:
             try:
-                obj = dict(JSONDecoder().decode(cleaned_data.get("rubric")))
+                obj: dict = dict(JSONDecoder().decode(cleaned_data.get("rubric")))
                 if "rows" in obj.keys():
                     rows = obj.get("rows")
                     if type(rows) == list:

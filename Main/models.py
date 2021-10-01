@@ -1,4 +1,5 @@
 from json import JSONDecoder, JSONEncoder
+from typing import Optional, Union
 from uuid import uuid4, UUID
 
 from django.db import models
@@ -6,9 +7,9 @@ from django.db import models
 from Users.models import User
 
 
-def val_uuid(src):
+def val_uuid(src: Union[str, UUID]) -> Optional[UUID]:
     try:
-        return UUID(src)
+        return UUID(src) if type(src) == str else src
     except ValueError:
         return None
 
@@ -43,7 +44,7 @@ class Rubric(BaseModel):
     max_score = models.FloatField()
 
     @staticmethod
-    def create_from_json(name, json, current_id=None):
+    def create_from_json(name: str, json: str, current_id: Optional[UUID] = None):
         new_rubric = Rubric.objects.get_or_create(id=current_id, defaults={'max_score': 0, 'name': name})[0]
         new_rubric.save()
         possible_points = 0
@@ -88,7 +89,7 @@ class Rubric(BaseModel):
         new_rubric.save()
         return new_rubric
 
-    def to_json(self):
+    def to_json(self) -> str:
         new_obj = {'rows': []}
 
         for row in list(self.rubricrow_set.all()):

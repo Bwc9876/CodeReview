@@ -1,14 +1,16 @@
 from django.shortcuts import redirect, render, get_object_or_404
+from typing import Union
+from django.http import HttpResponse, HttpResponseRedirect
 
 from . import models, forms
 
 
-def home_view(request):
+def home_view(request) -> HttpResponse:
     return render(request, "home.html")
 
 
-def edit_rubric(request):
-    current_id = request.GET.get("id", "")
+def edit_rubric(request) -> Union[HttpResponse, HttpResponseRedirect]:
+    current_id: str = request.GET.get("id", "")
     if request.method == "GET":
         if current_id == "":
             form = forms.RubricForm()
@@ -19,7 +21,7 @@ def edit_rubric(request):
     elif request.method == "POST":
         form = forms.RubricForm(request.POST)
         if form.is_valid():
-            current_id = request.GET.get("id", None)
+            current_id: str = request.GET.get("id", None)
             data = form.cleaned_data
             models.Rubric.create_from_json(data.get("name"), data.get("rubric"), current_id=models.val_uuid(current_id))
             return redirect("home")
