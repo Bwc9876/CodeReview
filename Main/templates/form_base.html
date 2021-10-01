@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block resources %}
+    {% load static %}
+    {{ form.media }}
+{% endblock %}
+{% block mainContent %}
+    {% load form_tags %}
+    {% if form %}
+        {% if form.non_field_errors %}
+            <div class="alert-box">
+                <div class="alert alert-error">
+                    <div>
+                        <h4>Login Error(s):</h4>
+                        <ul id="nonfield-errors">
+                            {% for error in form.non_field_errors %}
+                                <li class="error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <form class="form" method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+                <div id="{{ field.label }}_fieldset" class="field-div{% if field|is_checkbox %} checkbox_c{% endif %}">
+                    <label id="{{ field.label }}_label" for="{{ field.id_for_label }}">{{ field.label|title }}:</label>
+                    {% if field.help_text and not field.errors %}
+                        <p class="help-text">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button class="submit-button" type="submit"><span
+                    class="submit-word">{% block submitWord %}
+                Save{% endblock %}</span>{#&nbsp;<i class="loading hidden fas fa-circle-notch"></i>#}</button>
+        </form>
+    {% else %}
+        <h1>No Form Object Passed!</h1>
+    {% endif %}
+{% endblock %}

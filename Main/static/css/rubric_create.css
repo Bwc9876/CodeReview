@@ -1,0 +1,31 @@
+.row-indicator {
+    margin: 2px;
+}
+
+.rubric-edit-table {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.delete-button {
+    width: 50px;
+    margin-left: auto;
+}
+
+.cell {
+    border: solid 1px black;
+}
+
+.cell-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.cell_part {
+    display: flex;
+    flex-direction: row;
+}
+
+.cell-input {
+    margin-left: auto;
+}

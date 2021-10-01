@@ -1,4 +1,7 @@
-# CodeReview
+[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)
+# CodeReview  
 Code Review Workflow for IT Programming at BCTC West
 ## Abstract 
 ### Flow 
@@ -8,16 +11,18 @@ Basic material design layout and UI with primary, secondary, and accent colors.
 ## Technical 
 Using active directory, users will log in to post request for reviews, on posting an email will be sent to seniors and the instructor.  Once a senior accepts the review, the instructor will receive an email. Upon completion of the code review, the instructor will get a final email with the notes the senior has given.
 ### Environment Variables 
-- DEV_STAGE: The current stage of development options are: Dev, Prod, and GH_TEST
-- TARGET_HOST: The host you'd like to use in production. This wil be the only value in ALLOWED_HOSTS in production.
+- DEV_STAGE: The current stage of development options are: Dev, Prod, and GitHub
+- PRODUCTION_HOST: The host to use in production
 - SECRET_KEY: Key to use in production as the django secret key
 - EMAIL_HOST: The email server host we're connecting to
 - EMAIL_USER: The username of the email we'll use to send notifications
 - EMAIL_PASS: The password to use for the email
-- DB_HOST: The host for the database we'll use
+- DB_HOST: The host for the database we'll use (MySQL Type)
 - DB_NAME: The name for the db we'll use
 - DB_PASS: The password for the db we'll use
 - LDAP_URL: The url of the ActiveDirectory Server we want to use for auth
+- LDAP_USER: The username of the LDAP admin we want to login as
+- LDAP_PASS: The password of the LDAP admin we want to login as
 ### Services Used 
 - [Python](https://www.python.org/) 
 - [Django](https://www.djangoproject.com/) 
@@ -26,17 +31,16 @@ Using active directory, users will log in to post request for reviews, on postin
 - [Jquery](https://jquery.com/)
 - [FontAwesome](https://fontawesome.com/)
 ## Running  
-### Development
+### Development  
+First, install all requirements in requirements.txt  
 Then, simply run the django run command:  
-```python manage.py runserver YOUR_HOST:PORT```  
+```python manage.py runserver YOUR_HOST:8080```  
 Development is insecure and inefficient, only use when testing
-#### Testing on something other than localhost
-For testing this site on something other than the local machine (like a local server), you'll need to add your IP to ALLOWED_HOSTS in settings.py
 ### Production
 Will require an SQL server to connect to, an ActiveDirectory server, an email to send notifications from, and a webserver to run the django code on.  
 Set up your webserver and then point it to ```CodeReview/wsgi.py```.  
-This will require [environment variables](https://github.com/Bwc9876/CodeReview#environment-variables)
+This will require [environment variables](#Environment-Variables)
 ### Tests
 Tests are available through the normal django interface, simply run  
 ``` python manage.py runtests ```  
-Note that tests won't work if django is unable to create a separate database to test with.
+

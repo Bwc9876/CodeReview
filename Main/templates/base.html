@@ -5,14 +5,18 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>CodeReview</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/base.css" %}"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     {% block resources %}
 
     {% endblock %}
 </head>
 <body>
     {#  Navigation goes here #}
-    <h1>Test Site</h1>
+    {# For now it'll be a list of links #}
+    <h1>Test site</h1>
     {% block mainContent %}
 
     {% endblock %}
