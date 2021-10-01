@@ -1,6 +1,7 @@
-from django.shortcuts import redirect, render, get_object_or_404
 from typing import Union
+
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render, get_object_or_404
 
 from . import models, forms
 

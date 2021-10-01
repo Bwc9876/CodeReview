@@ -116,4 +116,5 @@ if DEBUG:
         '127.0.0.1'
     ]
     import mimetypes
+
     mimetypes.add_type("text/javascript", '.js')

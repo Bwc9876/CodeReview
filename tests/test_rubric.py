@@ -1,7 +1,7 @@
-from Main.models import Rubric, RubricRow, RubricCell
-from Main.forms import RubricForm
-
 from django.test import TestCase
+
+from Main.forms import RubricForm
+from Main.models import Rubric, RubricRow, RubricCell
 
 
 class RubricValidation(TestCase):
