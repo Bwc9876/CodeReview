@@ -1,26 +1,54 @@
 let table = undefined;
 let scoreHeader = undefined;
-let current_row = 2;
-let cell_counts = [2];
-let max_cells = 2;
 
 function convert_from_json(src_json) {
 
+    if (src_json === "{}") return;
+
     let src_obj = JSON.parse(src_json);
+
+    for (let i = 0; i < src_obj.rows.length; i++) {
+
+        let row = src_obj.rows[i];
+        let row_elem = $(table.find(".row").eq(i));
+        row_elem.find(".row-name").val(row['name']);
+        row_elem.find(".row-description").val(row['description']);
+
+        for (let y = 0; y < row.cells.length; y++) {
+
+            let cell = row.cells[y];
+            let cell_elem = $(row_elem.children(".data-cell").eq(y));
+            cell_elem.find(".cell-score").val(cell['score']);
+            cell_elem.find(".cell-description").val(cell['description']);
+
+            if (y !== row.cells.length - 1) row_elem.find(".add-cell-button").click();
+
+        }
+
+        if (i !== src_obj.rows.length - 1) $(".add-row-button").click();
+
+    }
 
 }
 
 function convert_to_json() {
 
-    let new_rubric = {"name": "temp", "rows": []};
+    let new_rubric = {"rows": []};
 
-    $(".rubric-edit-table .row").each(function(index, object) {
+    table.find(".row").each(function (index, object) {
 
-        let new_row = {"name": $(`#${object.id}-name`).val(), "description": $(`#${object.id}-description`).val(), "cells": []};
+        let new_row = {
+            "name": $(object).find(".row-name").val(),
+            "description": $(object).find(".row-description").val(),
+            "cells": []
+        };
 
-        $(`#${object.id} .data-cell`).each(function(index, cell) {
+        $(object).children(".data-cell").each(function (index, cell) {
 
-            let new_cell = {"score": parseInt($(`#${cell.id}-score`).val()), "description": $(`#${cell.id}-description`).val()};
+            let new_cell = {
+                "score": $(cell).find(".cell-score").val(),
+                "description": $(cell).find(".cell-description").val()
+            };
             new_row["cells"].push(new_cell);
 
         });
@@ -33,71 +61,88 @@ function convert_to_json() {
 
 }
 
-function add_row_callback(event) {
+function delete_row_callback(event) {
 
+    $(event.target).parents("tr").remove();
+
+}
+
+function delete_cell_callback(event) {
+
+    $(event.target).parents("td").remove();
+
+}
+
+function add_row_callback(event) {
     let new_row = $("<tr>");
-    new_row.attr('id', `row-${current_row}`);
     new_row.addClass("row");
     new_row.html(`<th class="cell">
                         <div class="cell-wrapper">
-                            <p>Row ${current_row}</p>
                             <div class="cell_part">
-                                <label for="row-${current_row}-name">Name:</label>
-                                <input class="cell-input" type="text" id="row-${current_row}-name" name="row-${current_row}-name"/>
+                                <label>
+                                    Name: <input class="cell-input row-name" type="text"/>
+                                </label>
                             </div>
                             <div class="cell_part">
-                                <label for="row-${current_row}-description">Description:</label>
-                                <input class="cell-input" type="text" id="row-${current_row}-description" name="row-${current_row}-description"/>
+                                <label>
+                                    Description: <input class="cell-input row-description" type="text"/>
+                                </label>
                             </div>
                         </div>
                     </th>
-                    <td id="row-${current_row}-cell-1" class="cell data-cell">
+                    <td class="cell data-cell">
                         <div class="cell-wrapper">
                             <div class="cell_part">
-                                <label for="row-${current_row}-cell-1-score">Score:</label>
-                                <input class="cell-input" type="number" id="row-${current_row}-cell-1-score" name="row-${current_row}-cell-1-score"/>
+                                <label>
+                                    Score: <input class="cell-input cell-score" type="number"/>
+                                </label>
                             </div>
                             <div class="cell_part">
-                                <label for="row-${current_row}-cell-1-description">Description:</label>
-                                <input class="cell-input" type="text" id="row-${current_row}-cell-1-description" name="row-${current_row}-cell-1-description"/> 
+                                <label>
+                                    Description: <input class="cell-input cell-description" type="text"/>
+                                </label>
                             </div>
                         </div>
                     </td>
                     <td class="cell">
-                        <button type="button" id="row-${current_row}-add-cell-button" class="add-cell-button">Add Cell</button>
+                        <button type="button" class="add-cell-button">Add Cell</button>
                     </td>`);
     table.append(new_row);
-    cell_counts.push(2);
-    $(`#row-${current_row}-add-cell-button`).click(add_cell_callback);
-    current_row++;
-
+    new_row.find(".add-cell-button").click(add_cell_callback);
+    new_row.find(".delete-row").click(delete_row_callback);
+    new_row.find(".delete-cell").click(delete_cell_callback);
 }
 
 function add_cell_callback(event) {
     let new_cell = $("<td>");
-    let row_number = event.target.id.split("-")[1];
-    let cell_index = parseInt(row_number) - 1;
-    let current_cell = cell_counts[cell_index];
-    new_cell.attr('id', `row-${row_number}-cell-${current_cell}`);
     new_cell.addClass("cell");
     new_cell.addClass("data-cell");
     new_cell.html(`
             <div class="cell-wrapper">
                 <div class="cell_part">
-                    <label for="row-${row_number}-cell-${current_cell}-score">Score:</label>
-                    <input class="cell-input" type="number" id="row-${current_row}-cell-${current_cell}-score" name="row-${current_row}-cell-${current_cell}-score"/>
-                </div>   
+                    <label>
+                        Score: <input class="cell-input cell-score" type="number"/>
+                    </label>
+                </div>
                 <div class="cell_part">
-                    <label for="row-${current_row}-cell-${current_cell}-description">Description:</label>
-                    <input class="cell-input" type="text" id="row-${current_row}-cell-${current_cell}-description" name="row-${current_row}-cell-${current_cell}-description"/>
+                    <label>
+                        Description: <input class="cell-input cell-description" type="text"/>
+                    </label>
                 </div>
             </div>
         `);
-    $(`#row-${row_number}-cell-${current_cell - 1}`).after(new_cell);
-    cell_counts[cell_index]++;
-    if (cell_counts[cell_index] > max_cells) scoreHeader.attr('colspan', cell_counts[cell_index]);
+    $(event.target).parent().before(new_cell);
+    new_cell.find(".delete-cell").click(delete_cell_callback);
+    let new_cell_count = $(event.target).parents("tr").children().length;
+    if (new_cell_count > scoreHeader.attr('colspan')) scoreHeader.attr('colspan', new_cell_count);
 }
 
+
+function submit_callback(event) {
+
+    $(".rubric_create_input").val(convert_to_json());
+
+}
 
 
 $(document).ready(() => {
@@ -107,11 +152,11 @@ $(document).ready(() => {
 
     $(".add-row-button").click(add_row_callback);
     $(".add-cell-button").click(add_cell_callback);
+    $(".delete-row").click(delete_row_callback);
+    $(".delete-cell").click(delete_cell_callback);
 
-    $(".form").submit((event) => {
+    $(".form").submit(submit_callback);
 
-        $(".rubric_create_input").val(convert_to_json());
-
-    });
+    convert_from_json($(".rubric_create_input").val())
 
 });

@@ -1,18 +1,69 @@
 from Main.models import Rubric, RubricRow, RubricCell
+from Main.forms import RubricForm
 
 from django.test import TestCase
-from Main.views import rubric_factory
+
+
+class RubricValidation(TestCase):
+
+    def assertBad(self, json):
+        form = RubricForm({'name': "Bad Rubric", 'rubric': json})
+        self.assertFalse(form.is_valid())
+
+    def test_bad_json(self):
+        self.assertBad("Im bad json!")
+
+    def test_no_rows(self):
+        self.assertBad('{"som-other-val": "Im some other val!"}')
+
+    def test_rows_string(self):
+        self.assertBad('{"rows": "Uh oh"}')
+
+    def test_rows_are_not_dicts(self):
+        self.assertBad('{"rows": [3, 4, 5]}')
+
+    def test_rows_no_name(self):
+        self.assertBad('{"rows": [{"description": "a", "cells": []}]}')
+
+    def test_rows_no_desc(self):
+        self.assertBad('{"rows": [{"name": "a", "cells": []}]}')
+
+    def test_rows_no_cells(self):
+        self.assertBad('{"rows": [{"name": "a", "description": "a"}]}')
+
+    def test_row_cell_is_not_list(self):
+        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": "uh oh"}]}')
+
+    def test_row_cell_is_not_dict(self):
+        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [3, 4, 5]}]}')
+
+    def test_row_cell_no_desc(self):
+        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [{"score": 5}]}]}')
+
+    def test_row_cell_no_score(self):
+        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [{"description": "a"}]}]}')
+
+    def test_row_cell_score_non_numeric(self):
+        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [{"description": "a", "score": "aaa"}]}]}')
+
+    def test_good_rubric(self):
+        self.assertTrue(RubricForm(
+            {'name': "Good Rubric",
+             'rubric':
+                 '{"rows": '
+                 '[{"name": "cool row", "description": "cool row!!!", "cells":[{"score":5, "description": "is cool"}]}]'
+                 '}'
+             }).is_valid())
 
 
 class RubricFactory(TestCase):
-
     new_rubric = None
     rows = []
 
-    def setUp(self) -> None:
+    def setUp(self):
         with open("tests/test_rubric.json", 'r') as file:
             test_json = file.read()
-        self.new_rubric = rubric_factory(test_json)
+        self.new_rubric = Rubric.create_from_json("Test Rubric", test_json)
         self.rows = RubricRow.objects.filter(parent_rubric=self.new_rubric)
 
     def test_rubric_main(self):
@@ -45,5 +96,3 @@ class RubricFactory(TestCase):
         self.assertEquals(row_2_cell_2.description, "cell 2 row 2")
         self.assertEquals(row_2_cell_1.score, 2)
         self.assertEquals(row_2_cell_2.score, 1)
-
-
