@@ -2,11 +2,12 @@ name: Django Tests
 
 on:
   push:
+    paths-ignore: 
+      - "docs/**"
+      - "README.md"
+      - ".gitignore"
+      - ".github/**"
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-  workflow_dispatch:
 
 jobs:
   run_tests:
