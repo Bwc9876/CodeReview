@@ -1,4 +1,5 @@
 from json import JSONDecoder, JSONDecodeError
+from typing import List
 
 from django.forms import Form, ModelForm, Field, TextInput
 from django.forms.fields import CharField
@@ -10,12 +11,26 @@ class CreateRubricWidget(TextInput):
     template_name = "widgets/create_rubric.html"
 
     class Media:
-        css = {'all': ('css/rubric_create.css',)}
-        js = ('js/rubric-create-widget.js',)
+        css = {'all': ('css/rubrics/rubric_create.css',)}
+        js = ('js/rubrics/rubric-create-widget.js',)
 
 
 class CreateRubricField(Field):
     widget = CreateRubricWidget()
+
+
+class GradeReviewWidget(TextInput):
+    template_name = "widgets/rubric_grade.html"
+    rubric = None
+
+    class Media:
+        css = {'all': ('css/rubrics/rubric_grade.css',)}
+        js = ('js/rubrics/rubric-grade-widget.js',)
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['widget']['rubric'] = self.rubric
+        return context
 
 
 class RubricForm(Form):
@@ -86,3 +101,30 @@ class CreateReviewForm(ModelForm):
     class Meta:
         model = models.Review
         fields = ['schoology_id', 'rubric']
+
+
+class GradeReviewForm(ModelForm):
+    scores = CharField(max_length=200, widget=GradeReviewWidget())
+
+    class Meta:
+        model = models.Review
+        fields = ['additional_comments']
+
+    def save(self, commit=True):
+        new_review: models.Review = super(GradeReviewForm, self).save(commit=False)
+        scores_array: List[str] = self.cleaned_data.get("scores").split(',')
+        for i in range(len(scores_array)):
+            score = float(scores_array[i])
+            row = models.RubricRow.objects.get(parent_rubric=new_review.rubric, index=i)
+            scored_row = models.ScoredRow.objects.create(source_row=row, parent_review=new_review, score=score)
+            scored_row.save()
+        if commit:
+            new_review.save()
+        return new_review
+
+    field_order = ['scores', 'additional_comments']
+
+    def set_rubric(self, rubric):
+        self.fields['scores'].widget.rubric = rubric
+
+    # TODO: Add validation

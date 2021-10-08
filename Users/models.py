@@ -9,7 +9,7 @@ class User(AbstractUser):
     is_reviewer = models.BooleanField(default=False)
 
     def __str__(self):
-        if self.first_name is None or self.last_name is None:
+        if self.first_name == "" or self.last_name == "":
             return self.username
         else:
             return f'{self.first_name} {self.last_name}'

@@ -28,7 +28,7 @@ class RubricCell(BaseModel):
     index = models.SmallIntegerField()
 
     class Meta:
-        ordering = ['-score']
+        ordering = ['index']
 
 
 class RubricRow(BaseModel):
@@ -37,6 +37,15 @@ class RubricRow(BaseModel):
     max_score = models.FloatField()
     parent_rubric = models.ForeignKey('Rubric', on_delete=models.CASCADE)
     index = models.SmallIntegerField()
+
+    class Meta:
+        ordering = ['index']
+
+
+class ScoredRow(BaseModel):
+    parent_review = models.ForeignKey('Review', on_delete=models.CASCADE)
+    source_row = models.ForeignKey('RubricRow', on_delete=models.CASCADE)
+    score = models.FloatField()
 
 
 class Rubric(BaseModel):
@@ -100,6 +109,9 @@ class Rubric(BaseModel):
 
         return JSONEncoder().encode(new_obj)
 
+    def __str__(self):
+        return self.name
+
 
 class Review(BaseModel):
     class Status(models.TextChoices):
@@ -116,3 +128,22 @@ class Review(BaseModel):
     additional_comments = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_completed = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Review from {str(self.student)}"
+
+    def score_fraction(self):
+        my_score = 0
+        max_score = self.rubric.max_score
+        for scoredRow in self.scoredrow_set.all():
+            if scoredRow.score == -1:
+                max_score -= scoredRow.source_row.max_score
+            else:
+                my_score += scoredRow.score
+        return f'{my_score}/{max_score}'
+
+    def get_status(self):
+        return Review.Status.labels[self.status]
+
+    def affiliated(self, user):
+        return self.student == user or (self.reviewer is not None and self.reviewer == user) or user.is_superuser

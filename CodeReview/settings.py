@@ -1,12 +1,6 @@
 import os
 from pathlib import Path
 
-""" 
-    Env variables are as follows:
-        SECRET_KEY: the key to use as the secret key
-        DEV_STAGE: The current stage of development we're on.  Dev, Production, GH_TEST
-"""
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 STAGE = os.getenv("DEV_STAGE", "Dev")
@@ -96,15 +90,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "Users.User"
 
+LOGIN_URL = "/users/login"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/users/logout-done"
+
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_L10N = True
+USE_L10N = False
 
-USE_TZ = True
+USE_TZ = False
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
@@ -116,5 +114,4 @@ if DEBUG:
         '127.0.0.1'
     ]
     import mimetypes
-
     mimetypes.add_type("text/javascript", '.js')

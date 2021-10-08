@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+    <table>
+        <tbody>
+            {% for rubric in rubrics %}
+                <tr>
+                    <td>{{ rubric.name }}</td>
+                    <td><a href="{% url "rubric_edit" %}?id={{ rubric.id }}">Edit</a></td>
+                    <td><a href="{% url "rubric_del" %}?id={{ rubric.id }}">Delete</a></td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2"><a href="{% url "rubric_edit" %}">Add New Rubric</a></td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

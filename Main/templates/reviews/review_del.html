@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+    <form method="post">
+        {% csrf_token %}
+        <h1>Are you sure you want to cancel review with Schoology id: <b>{{ review.schoology_id }}</b>?</h1>
+        <button>Yes</button>
+        <a href="{% url "home" %}">Cancel</a>
+    </form>
+{% endblock %}

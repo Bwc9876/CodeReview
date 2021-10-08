@@ -1,5 +1,100 @@
 {% extends 'base.html' %}
 
 {% block mainContent %}
-    <h2>Home Page</h2>
+    <h1>Welcome, {{ user.username }}{% if user.is_reviewer %}*{% endif %}</h1>
+        <h2>Your Requested Reviews</h2>
+            <table>
+                {% for review in active %}
+                    {% if forloop.first %}
+                        <tr>
+                            <th>Schoology ID</th>
+                            <th>Status</th>
+                            <th>Date Created</th>
+                            <th>Edit</th>
+                            <th>Cancel</th>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{{ review.schoology_id }}</th>
+                        <td>{{ review.get_status }}</td>
+                        <td>{{ review.date_created|date }}</td>
+                        <td><a href="{% url "review_edit" %}?id={{ review.id }}">Edit</a></td>
+                        <td><a href="{% url "review_delete" %}?id={{ review.id }}">Cancel</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" style="color:grey;">No Requested Reviews</td></tr>
+                {% endfor %}
+            </table>
+        {% if user.is_reviewer %}
+            <h2>Your Assigned Reviews</h2>
+            <table>
+                {% for review in assigned %}
+                    {% if forloop.first %}
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Schoology ID</th>
+                            <th>Date Created</th>
+                            <th>Grade</th>
+                            <th>Abandon</th>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{{ review.student }}</th>
+                        <td>{{ review.schoology_id }}</td>
+                        <td>{{ review.date_created|date }}</td>
+                        <td><a href="{% url "review_grade" %}?id={{ review.id }}">Grade</a></td>
+                        <td><a href="{% url "review_abandon" %}?id={{ review.id }}">Abandon</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" style="color:grey;">No Assigned Reviews</td></tr>
+                {% endfor %}
+            </table>
+            <h2>Available Reviews</h2>
+            <table>
+                {% for review in open %}
+                    {% if forloop.first %}
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Schoology ID</th>
+                            <th>Date Created</th>
+                            <th>Claim</th>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{{ review.student }}</th>
+                        <td>{{ review.schoology_id }}</td>
+                        <td>{{ review.date_created|date }}</td>
+                        <td>
+                            <form method="post" action="{% url "review_claim" %}?id={{ review.id }}">
+                                {% csrf_token %}
+                                <button>Claim</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" style="color:grey;">No Available Reviews</td></tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+        <h2>Completed Reviews</h2>
+        <table>
+                {% for review in complete %}
+                    {% if forloop.first %}
+                        <tr>
+                            <th>Schoology ID</th>
+                            <th>Date Completed</th>
+                            <th>View</th>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{{ review.schoology_id }}</th>
+                        <td>{{ review.date_completed|date }}</td>
+                        <td><a href="{% url "review_view" %}?id={{ review.id }}">View</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" style="color:grey;">No Requested Reviews</td></tr>
+                {% endfor %}
+        </table>
+
+
 {% endblock %}
