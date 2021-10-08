@@ -24,7 +24,7 @@ class GradeReviewWidget(TextInput):
     rubric = None
 
     class Media:
-        css = {'all': ('css/rubrics/rubric_grade.css',)}
+        css = {'all': ('css/rubrics/rubric_table.css',)}
         js = ('js/rubrics/rubric-grade-widget.js',)
 
     def get_context(self, name, value, attrs):

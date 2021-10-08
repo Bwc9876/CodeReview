@@ -1,7 +1,7 @@
 <input class="rubric_grade_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
        value="" {% include "widgets/attrs.html" %}/>
 {% load rubric_tags %}
-<table class="gradable-rubric">
+<table class="rubric rubric-grading">
     <tr>
         <th>Criteria</th>
         <th colspan="{{ widget.rubric|colspan|add:1 }}">Score</th>

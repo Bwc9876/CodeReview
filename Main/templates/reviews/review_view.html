@@ -2,11 +2,8 @@
 
 {% block resources %}
 
-    <style>
-        td.selected {
-            background-color: #9f9fce;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/rubrics/rubric_table.css' %}"/>
 
 {% endblock %}
 
@@ -15,7 +12,7 @@
     <h1>Review for {{ review.student }} on {{ review.date_created }}</h1>
     <h2>Completed By {{ review.reviewer }} on {{ review.date_completed }}</h2>
     <h3>Score</h3>
-    <table>
+    <table class="rubric rubric-graded">
         <tr>
             <th>Criteria</th>
             <th colspan="{{ review.rubric|colspan|add:1 }}">Score</th>

@@ -1,0 +1,30 @@
+/* Use to render rubric tables */
+
+.rubric {
+    border-collapse: collapse;
+    --border: solid 1px black;
+    --selectedColor: #caf3a4;
+    border: var(--border);
+    user-select: none;
+}
+
+.rubric-graded td.selected, .rubric-grading td.selected {
+    background-color: var(--selectedColor);
+}
+
+.rubric-grading td{
+    transition: background-color 100ms linear;
+}
+
+.rubric-grading td:hover {
+    background-color: #97c074;
+}
+
+.rubric, .rubric td, .rubric tr, .rubric th {
+    border: var(--border);
+    padding: 2vh 2vw;
+}
+
+.rubric th {
+    padding: 1vh 2vw;
+}

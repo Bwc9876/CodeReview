@@ -1,8 +1,15 @@
 'use strict';
 
+function update_cell_colors() {
+    $(".rubric-grading td.cell").each(function(index, object) {
+        console.log($(object).children("input:checked").length);
+        $(object).toggleClass("selected", $(object).children("label").children("input:checked").length > 0)
+    });
+}
+
 function get_scores(){
     let scores = [];
-    $(".gradable-rubric .criteria input:checked").each(function(index, object) {
+    $(".rubric-grading .criteria input:checked").each(function(index, object) {
         scores.push(parseFloat($(object).val()));
     });
     return scores;
@@ -32,17 +39,13 @@ function update_total_score(scores) {
 
 function score_button_callback(event) {
     let scores = get_scores();
+    update_cell_colors();
     update_scores_input(scores);
     update_total_score(scores);
 }
 
-function cell_click_callback(event){
-    $(event.target).children("input").click();
-}
-
 function  loadCallback(event){
     $(".score-select").click(score_button_callback);
-    $(".cell").click(cell_click_callback);
 }
 
 $(document).ready(loadCallback);
