@@ -33,9 +33,59 @@ class GradeReviewWidget(TextInput):
         return context
 
 
-class RubricForm(Form):
-    name = CharField(max_length=100)
+class RubricForm(ModelForm):
     rubric = CreateRubricField()
+
+    class Meta:
+        model = models.Rubric
+        fields = ['name']
+
+    def save(self, commit=True):
+        new_rubric = super().save(commit=False)
+        new_rubric.max_score = 0
+        new_rubric.save()
+        json = self.cleaned_data.get('rubric')
+        possible_points = 0
+
+        new_obj = JSONDecoder().decode(json)
+
+        for index, row in enumerate(new_obj.get("rows", [])):
+            new_row, created = models.RubricRow.objects.get_or_create(parent_rubric=new_rubric, index=index, defaults={
+                'name': row.get('name'),
+                'description': row.get('description'),
+                'index': index,
+                'parent_rubric': new_rubric,
+                'max_score': 0
+            })
+            if not created:
+                new_row.name = row.get('name')
+                new_row.description = row.get('description')
+                new_row.max_score = 0
+            new_row.save()
+            for cell_index, cell in enumerate(row.get("cells", [])):
+                score = int(cell.get("score"))
+                new_row.max_score = max(score, new_row.max_score)
+                new_cell, cell_created = models.RubricCell.objects.get_or_create(parent_row=new_row, index=cell_index,
+                                                                          defaults={
+                                                                              'description': cell.get("description"),
+                                                                              'score': score,
+                                                                              'parent_row': new_row,
+                                                                              'index': cell_index
+                                                                          })
+                if not cell_created:
+                    new_cell.description = cell.get('description')
+                    new_cell.score = score
+                new_cell.save()
+            possible_points += new_row.max_score
+            new_row.save()
+
+            models.RubricCell.objects.filter(index__gt=len(row.get("cells", [])) - 1).delete()
+
+        models.RubricRow.objects.filter(index__gt=len(new_obj.get("rows", [])) - 1).delete()
+
+        new_rubric.max_score = possible_points
+        new_rubric.save()
+        return new_rubric
 
     def json_exit(self) -> None:
         self.add_error('rubric', "Invalid JSON")

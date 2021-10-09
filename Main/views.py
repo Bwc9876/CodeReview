@@ -43,14 +43,16 @@ def edit_rubric(request) -> Union[HttpResponse, HttpResponseRedirect]:
             form = forms.RubricForm()
         else:
             current_rubric = get_object_or_404(models.Rubric, id=models.val_uuid(current_id))
-            form = forms.RubricForm({'name': current_rubric.name, 'rubric': current_rubric.to_json()})
+            form = forms.RubricForm(initial={'rubric': current_rubric.to_json()}, instance=current_rubric)
         return render(request, 'form_base.html', {'form': form})
-    elif request.method == "POST":
-        form = forms.RubricForm(request.POST)
+    else:
+        if current_id == "":
+            form = forms.RubricForm(request.POST)
+        else:
+            current_rubric = get_object_or_404(models.Rubric, id=models.val_uuid(current_id))
+            form = forms.RubricForm(request.POST, instance=current_rubric)
         if form.is_valid():
-            current_id: str = request.GET.get("id", None)
-            data = form.cleaned_data
-            models.Rubric.create_from_json(data.get("name"), data.get("rubric"), current_id=models.val_uuid(current_id))
+            form.save()
             return redirect("rubric_list")
         else:
             return render(request, 'form_base.html', {'form': form})
@@ -167,25 +169,22 @@ def abandon_review(request) -> Union[HttpResponse, HttpResponseRedirect]:
 def grade_review(request) -> Union[HttpResponse, HttpResponseRedirect]:
     target_id = request.GET.get("id", "")
     target_object = get_object_or_404(models.Review, id=models.val_uuid(target_id))
-    if target_object.reviewer == request.user or request.user.is_superuser:
-        if request.method == "GET":
-            form = forms.GradeReviewForm(instance=target_object)
-            form.set_rubric(target_object.rubric)
-            return render(request, "form_base.html", {'form': form})
-        else:
-            form = forms.GradeReviewForm(request.POST, instance=target_object)
-            form.set_rubric(target_object.rubric)
-            if form.is_valid():
-                new_object: models.Review = form.save(commit=False)
-                new_object.date_completed = datetime.now()
-                new_object.status = models.Review.Status.CLOSED
-                new_object.save()
-                # TODO: Send email
-                return redirect("home")
-            else:
-                return render(request, "form_base.html", {'form': form})
+    if request.method == "GET":
+        form = forms.GradeReviewForm(instance=target_object)
+        form.set_rubric(target_object.rubric)
+        return render(request, "form_base.html", {'form': form})
     else:
-        raise Http404()
+        form = forms.GradeReviewForm(request.POST, instance=target_object)
+        form.set_rubric(target_object.rubric)
+        if form.is_valid():
+            new_object: models.Review = form.save(commit=False)
+            new_object.date_completed = datetime.now()
+            new_object.status = models.Review.Status.CLOSED
+            new_object.save()
+            # TODO: Send email
+            return redirect("home")
+        else:
+            return render(request, "form_base.html", {'form': form})
 
 
 @require_safe

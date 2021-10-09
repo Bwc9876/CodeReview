@@ -52,52 +52,6 @@ class Rubric(BaseModel):
     name = models.CharField(max_length=20)
     max_score = models.FloatField()
 
-    @staticmethod
-    def create_from_json(name: str, json: str, current_id: Optional[UUID] = None):
-        new_rubric = Rubric.objects.get_or_create(id=current_id, defaults={'max_score': 0, 'name': name})[0]
-        new_rubric.save()
-        possible_points = 0
-
-        new_obj = JSONDecoder().decode(json)
-
-        for index, row in enumerate(new_obj.get("rows", [])):
-            new_row, created = RubricRow.objects.get_or_create(parent_rubric=new_rubric, index=index, defaults={
-                'name': row.get('name'),
-                'description': row.get('description'),
-                'index': index,
-                'parent_rubric': new_rubric,
-                'max_score': 0
-            })
-            if not created:
-                new_row.name = row.get('name')
-                new_row.description = row.get('description')
-                new_row.max_score = 0
-            new_row.save()
-            for cell_index, cell in enumerate(row.get("cells", [])):
-                score = int(cell.get("score"))
-                new_row.max_score = max(score, new_row.max_score)
-                new_cell, cell_created = RubricCell.objects.get_or_create(parent_row=new_row, index=cell_index,
-                                                                          defaults={
-                                                                              'description': cell.get("description"),
-                                                                              'score': score,
-                                                                              'parent_row': new_row,
-                                                                              'index': cell_index
-                                                                          })
-                if not cell_created:
-                    new_cell.description = cell.get('description')
-                    new_cell.score = score
-                new_cell.save()
-            possible_points += new_row.max_score
-            new_row.save()
-
-            RubricCell.objects.filter(index__gt=len(row.get("cells", [])) - 1).delete()
-
-        RubricRow.objects.filter(index__gt=len(new_obj.get("rows", [])) - 1).delete()
-
-        new_rubric.max_score = possible_points
-        new_rubric.save()
-        return new_rubric
-
     def to_json(self) -> str:
         new_obj = {'rows': []}
 
