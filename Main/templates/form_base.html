@@ -24,6 +24,13 @@
             {% csrf_token %}
             {% for field in form %}
                 <div id="{{ field.label }}_fieldset" class="field-div{% if field|is_checkbox %} checkbox_c{% endif %}">
+                    {% if field.errors %}
+                        <ul style="color: red;">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                     <label id="{{ field.label }}_label" for="{{ field.id_for_label }}">{{ field.label|title }}:</label>
                     {% if field.help_text and not field.errors %}
                         <p class="help-text">{{ field.help_text|safe }}</p>

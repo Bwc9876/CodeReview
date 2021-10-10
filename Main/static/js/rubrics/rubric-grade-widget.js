@@ -16,7 +16,7 @@ function get_scores(){
 }
 
 function update_scores_input(scores) {
-    $(".rubric_grade_input").val(scores.join(','));
+    $(".rubric_grade_input").val(`[${scores.join(',')}]`);
 }
 
 function get_max(row_index) {
@@ -37,15 +37,20 @@ function update_total_score(scores) {
     report.text(report_lst.join('/'));
 }
 
-function score_button_callback(event) {
+function score_button_callback() {
     let scores = get_scores();
     update_cell_colors();
     update_scores_input(scores);
     update_total_score(scores);
 }
 
+function score_cell_callback(event){
+    $(event.target).children('label').children(".score-select").click();
+}
+
 function  loadCallback(event){
     $(".score-select").click(score_button_callback);
+    $(".cell").click(score_cell_callback);
 }
 
 $(document).ready(loadCallback);

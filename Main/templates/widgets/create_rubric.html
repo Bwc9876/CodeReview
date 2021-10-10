@@ -1,9 +1,9 @@
 <input class="rubric_create_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
-       value="{{ widget.value|default_if_none:"{}" }}" {% include "widgets/attrs.html" %}/>
-<table class="rubric-edit-table">
+       value="{{ widget.value|default_if_none:"[]" }}" {% include "widgets/attrs.html" %}/>
+<table class="rubric rubric-editing">
     <tr>
-        <th class="cell">Category</th>
-        <th class="cell" id="scoreHeader" colspan="2">Scores</th>
+        <th class="cell">Criteria</th>
+        <th class="cell" id="scoreHeader" colspan="2">Score</th>
     </tr>
     <tr class="row">
         <th class="cell">

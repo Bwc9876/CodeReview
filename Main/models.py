@@ -20,6 +20,10 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+    @classmethod
+    def max_length(cls, field_name: str) -> int:
+        return cls._meta.get_field(field_name).max_length
+
 
 class RubricCell(BaseModel):
     description = models.TextField()
@@ -53,17 +57,17 @@ class Rubric(BaseModel):
     max_score = models.FloatField()
 
     def to_json(self) -> str:
-        new_obj = {'rows': []}
+        new_obj = []
 
         for row in list(self.rubricrow_set.all()):
             new_row = {'name': row.name, 'description': row.description, 'cells': []}
-            [new_row['cells'].append({'score': cell.score, 'description': cell.description})
+            [new_row['cells'].append({'score': float(cell.score), 'description': cell.description})
              for cell in list(row.rubriccell_set.all())]
-            new_obj['rows'].append(new_row)
+            new_obj.append(new_row)
 
         return JSONEncoder().encode(new_obj)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -78,7 +82,6 @@ class Review(BaseModel):
     schoology_id = models.CharField(max_length=10, null=True)
     status = models.IntegerField(choices=Status.choices, default=Status.OPEN)
     rubric = models.ForeignKey(Rubric, on_delete=models.CASCADE, related_name="source_rubric")
-    scores = models.CharField(default="", max_length=100)
     additional_comments = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_completed = models.DateTimeField(blank=True, null=True)

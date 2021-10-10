@@ -16,11 +16,14 @@
 <body>
 {#  Navigation goes here #}
 {# For now it'll be a list of links #}
-<a aria-label="Home" href="{% url "home" %}"><h1>Test site</h1></a>
+<a aria-label="Home" href="{% url "home" %}"><h1>Code Review</h1></a>
 <div style="display: flex; flex-direction: row; float: right;">
     <a style="margin-right: 30px;" href="{% url "logout" %}">Logout</a>
-    <a style="margin-right: 30px;" href="{% url "review_edit" %}">New Review</a>
-    <a href="/admin">Admin</a>
+    <a style="margin-right: 30px;" href="{% url "review_create" %}">New Review</a>
+    {% if user.is_superuser %}
+        <a style="margin-right: 30px;" href="{% url "rubric_list"%}">Rubrics</a>
+        <a href="/admin">Admin</a>
+    {% endif %}
 </div>
 {% block mainContent %}
 

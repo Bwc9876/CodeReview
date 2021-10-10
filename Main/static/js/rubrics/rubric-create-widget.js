@@ -3,13 +3,13 @@ let scoreHeader = undefined;
 
 function convert_from_json(src_json) {
 
-    if (src_json === "{}") return;
+    if (src_json === "[]") return;
 
     let src_obj = JSON.parse(src_json);
 
-    for (let i = 0; i < src_obj.rows.length; i++) {
+    for (let i = 0; i < src_obj.length; i++) {
 
-        let row = src_obj.rows[i];
+        let row = src_obj[i];
         let row_elem = $(table.find(".row").eq(i));
         row_elem.find(".row-name").val(row['name']);
         row_elem.find(".row-description").val(row['description']);
@@ -25,7 +25,7 @@ function convert_from_json(src_json) {
 
         }
 
-        if (i !== src_obj.rows.length - 1) $(".add-row-button").click();
+        if (i !== src_obj.length - 1) $(".add-row-button").click();
 
     }
 
@@ -33,7 +33,7 @@ function convert_from_json(src_json) {
 
 function convert_to_json() {
 
-    let new_rubric = {"rows": []};
+    let new_rubric = [];
 
     table.find(".row").each(function (index, object) {
 
@@ -46,16 +46,18 @@ function convert_to_json() {
         $(object).children(".data-cell").each(function (index, cell) {
 
             let new_cell = {
-                "score": $(cell).find(".cell-score").val(),
+                "score": parseFloat($(cell).find(".cell-score").val()),
                 "description": $(cell).find(".cell-description").val()
             };
             new_row["cells"].push(new_cell);
 
         });
 
-        new_rubric["rows"].push(new_row);
+        new_rubric.push(new_row);
 
     });
+
+    console.log(new_rubric);
 
     return JSON.stringify(new_rubric);
 
@@ -150,7 +152,7 @@ function submit_callback() {
 
 $(document).ready(() => {
 
-    table = $(".rubric-edit-table");
+    table = $(".rubric-editing");
     scoreHeader = $("#scoreHeader");
 
     $(".add-row-button").click(add_row_callback);

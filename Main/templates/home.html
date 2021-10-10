@@ -18,8 +18,8 @@
                         <th>{{ review.schoology_id }}</th>
                         <td>{{ review.get_status }}</td>
                         <td>{{ review.date_created|date }}</td>
-                        <td><a href="{% url "review_edit" %}?id={{ review.id }}">Edit</a></td>
-                        <td><a href="{% url "review_delete" %}?id={{ review.id }}">Cancel</a></td>
+                        <td><a href="{% url "review_edit" review.id %}">Edit</a></td>
+                        <td><a href="{% url "review_cancel" review.id %}">Cancel</a></td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="5" style="color:grey;">No Requested Reviews</td></tr>
@@ -42,8 +42,8 @@
                         <th>{{ review.student }}</th>
                         <td>{{ review.schoology_id }}</td>
                         <td>{{ review.date_created|date }}</td>
-                        <td><a href="{% url "review_grade" %}?id={{ review.id }}">Grade</a></td>
-                        <td><a href="{% url "review_abandon" %}?id={{ review.id }}">Abandon</a></td>
+                        <td><a href="{% url "review_grade" review.id %}">Grade</a></td>
+                        <td><a href="{% url "review_abandon" review.id %}">Abandon</a></td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="5" style="color:grey;">No Assigned Reviews</td></tr>
@@ -65,7 +65,7 @@
                         <td>{{ review.schoology_id }}</td>
                         <td>{{ review.date_created|date }}</td>
                         <td>
-                            <form method="post" action="{% url "review_claim" %}?id={{ review.id }}">
+                            <form method="post" action="{% url "review_claim" review.id %}">
                                 {% csrf_token %}
                                 <button>Claim</button>
                             </form>
@@ -78,7 +78,7 @@
         {% endif %}
         <h2>Completed Reviews</h2>
         <table>
-                {% for review in complete %}
+                {% for review in completed %}
                     {% if forloop.first %}
                         <tr>
                             <th>Schoology ID</th>
@@ -89,7 +89,7 @@
                     <tr>
                         <th>{{ review.schoology_id }}</th>
                         <td>{{ review.date_completed|date }}</td>
-                        <td><a href="{% url "review_view" %}?id={{ review.id }}">View</a></td>
+                        <td><a href="{% url "review_view" review.id %}">View</a></td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="3" style="color:grey;">No Requested Reviews</td></tr>

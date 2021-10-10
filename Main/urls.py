@@ -3,14 +3,17 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home_view, name="home"),
-    path('rubric/edit', views.edit_rubric, name="rubric_edit"),
-    path('rubric/list', views.list_rubrics, name="rubric_list"),
-    path('rubric/delete', views.delete_rubric, name="rubric_del"),
-    path('review/edit', views.edit_review, name="review_edit"),
-    path('review/delete', views.delete_review, name="review_delete"),
-    path('review/claim', views.claim_review, name="review_claim"),
-    path('review/abandon', views.abandon_review, name="review_abandon"),
-    path('review/grade', views.grade_review, name="review_grade"),
-    path('review/view', views.view_review, name="review_view")
+    path('', views.HomeView.as_view(), name="home"),
+    path('rubric/', views.RubricListView.as_view(), name="rubric_list"),
+    path('rubric/create/', views.RubricCreateView.as_view(), name="rubric_create"),
+    path('rubric/edit/<uuid:pk>/', views.RubricEditView.as_view(), name="rubric_edit"),
+    path('rubric/delete/<uuid:pk>/', views.RubricDeleteView.as_view(), name="rubric_del"),
+    path('review/create/', views.ReviewCreateView.as_view(), name="review_create"),
+    path('review/edit/<uuid:pk>/', views.ReviewEditView.as_view(), name="review_edit"),
+    path('review/cancel/<uuid:pk>/', views.ReviewCancelView.as_view(), name="review_cancel"),
+    path('review/delete/<uuid:pk>/', views.ReviewDeleteView.as_view(), name="review_delete"),
+    path('review/claim/<uuid:pk>/', views.ReviewClaimView.as_view(), name="review_claim"),
+    path('review/abandon/<uuid:pk>/', views.ReviewAbandonView.as_view(), name="review_abandon"),
+    path('review/grade/<uuid:pk>/', views.ReviewGradeView.as_view(), name="review_grade"),
+    path('review/view/<uuid:pk>/', views.ReviewDetailView.as_view(), name="review_view")
 ]

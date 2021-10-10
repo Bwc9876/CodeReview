@@ -6,10 +6,13 @@
     --selectedColor: #caf3a4;
     border: var(--border);
     user-select: none;
+    text-align: center;
+    background-color: lightgray;
 }
 
 .rubric-graded td.selected, .rubric-grading td.selected {
     background-color: var(--selectedColor);
+    font-weight: 600;
 }
 
 .rubric-grading td{
@@ -17,7 +20,11 @@
 }
 
 .rubric-grading td:hover {
-    background-color: #97c074;
+    background-color: #b2e39c;
+}
+
+.rubric td, .rubric tr, .rubric th {
+    background-color: white;
 }
 
 .rubric, .rubric td, .rubric tr, .rubric th {
@@ -27,4 +34,19 @@
 
 .rubric th {
     padding: 1vh 2vw;
+}
+
+.delete-button {
+    width: 50px;
+    margin-left: auto;
+}
+
+.rubric-editing .cell-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.rubric-editing .cell_part {
+    display: flex;
+    flex-direction: row;
 }

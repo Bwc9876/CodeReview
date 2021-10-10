@@ -1,98 +1,162 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.urls import reverse
+from json import JSONDecoder, JSONEncoder
 
 from Main.forms import RubricForm
 from Main.models import Rubric, RubricRow, RubricCell
+from Main.views import RubricCreateView, RubricEditView, RubricDeleteView
+
+from Users.models import User
+
+with open("tests/test_rubric.json", 'r') as file:
+    test_json = file.read()
 
 
-class RubricValidation(TestCase):
-
-    def assertBad(self, json):
-        form = RubricForm({'name': "Bad Rubric", 'rubric': json})
-        self.assertFalse(form.is_valid())
-
-    def test_bad_json(self):
-        self.assertBad("Im bad json!")
-
-    def test_no_rows(self):
-        self.assertBad('{"som-other-val": "Im some other val!"}')
-
-    def test_rows_string(self):
-        self.assertBad('{"rows": "Uh oh"}')
-
-    def test_rows_are_not_dicts(self):
-        self.assertBad('{"rows": [3, 4, 5]}')
-
-    def test_rows_no_name(self):
-        self.assertBad('{"rows": [{"description": "a", "cells": []}]}')
-
-    def test_rows_no_desc(self):
-        self.assertBad('{"rows": [{"name": "a", "cells": []}]}')
-
-    def test_rows_no_cells(self):
-        self.assertBad('{"rows": [{"name": "a", "description": "a"}]}')
-
-    def test_row_cell_is_not_list(self):
-        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": "uh oh"}]}')
-
-    def test_row_cell_is_not_dict(self):
-        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [3, 4, 5]}]}')
-
-    def test_row_cell_no_desc(self):
-        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [{"score": 5}]}]}')
-
-    def test_row_cell_no_score(self):
-        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [{"description": "a"}]}]}')
-
-    def test_row_cell_score_non_numeric(self):
-        self.assertBad('{"rows": [{"name": "a", "description": "a", "cells": [{"description": "a", "score": "aaa"}]}]}')
-
-    def test_good_rubric(self):
-        self.assertTrue(RubricForm(
-            {'name': "Good Rubric",
-             'rubric':
-                 '{"rows": '
-                 '[{"name": "cool row", "description": "cool row!!!", "cells":[{"score":5, "description": "is cool"}]}]'
-                 '}'
-             }).is_valid())
-
-
-class RubricFactory(TestCase):
+class RubricFormTest(TestCase):
     new_rubric = None
     rows = []
 
     def setUp(self):
-        with open("tests/test_rubric.json", 'r') as file:
-            test_json = file.read()
-        self.new_rubric = Rubric.create_from_json("Test Rubric", test_json)
-        self.rows = RubricRow.objects.filter(parent_rubric=self.new_rubric)
+        self.user = User.objects.create_user('test-user')
+        self.user.is_superuser = True
+        self.user.save()
+        self.client = Client()
+        self.client.force_login(self.user)
+        self.url = reverse('rubric_create')
 
-    def test_rubric_main(self):
-        self.assertEquals(self.new_rubric.name, "Test Rubric")
-        self.assertEquals(self.new_rubric.max_score, 12)
+    def test_access(self):
+        bad_user = User.objects.create_user('unauthorized_user_for_rubrics')
+        bad_user.save()
+        c = Client()
+        c.force_login(bad_user)
+        bad_response = c.get(self.url)
+        self.assertEqual(bad_response.status_code, 403)
+        good_response = self.client.get(self.url)
+        self.assertNotEqual(good_response, 403)
 
-    def test_rubric_rows(self):
-        row_1 = self.rows[0]
-        self.assertEquals(row_1.name, "row 1")
-        self.assertEquals(row_1.description, "row desc 1")
-        self.assertEquals(row_1.max_score, 10)
-        row_2 = self.rows[1]
-        self.assertEquals(row_2.name, "row 2")
-        self.assertEquals(row_2.description, "row desc 2")
-        self.assertEquals(row_2.max_score, 2)
+    def test_form(self):
+        post_data = {'name': 'Create Rubric', 'rubric': test_json}
+        self.client.post(self.url, post_data)
+        try:
+            new_rubric = Rubric.objects.get(name='Create Rubric')
+            self.assertEqual(new_rubric.max_score, 12)
+            d = JSONDecoder()
+            self.assertListEqual(d.decode(test_json), d.decode(new_rubric.to_json()))
+            self.assertEquals(10, new_rubric.rubricrow_set.get(index=0).max_score)
+            self.assertEquals(2, new_rubric.rubricrow_set.get(index=1).max_score)
+        except Rubric.DoesNotExist:
+            self.fail("Rubric Not Created")
 
-    def test_rubric_cells(self):
-        row_1_cells = RubricCell.objects.filter(parent_row=self.rows[0])
-        row_1_cell_1 = row_1_cells[0]
-        row_1_cell_2 = row_1_cells[1]
-        self.assertEquals(row_1_cell_1.description, "cell 2 row 1")
-        self.assertEquals(row_1_cell_2.description, "cell 1 row 1")
-        self.assertEquals(row_1_cell_1.score, 10)
-        self.assertEquals(row_1_cell_2.score, 5)
+    def assertBad(self, src_dict, error):
+        form = RubricForm({'name': "Bad Rubric", 'rubric': JSONEncoder().encode(src_dict)})
+        if not form.is_valid():
+            self.assertEqual(form.errors.get("rubric")[0], error + ".")
+        else:
+            self.fail("Invalid Rubric Passed Validation!")
 
-        row_2_cells = RubricCell.objects.filter(parent_row=self.rows[1])
-        row_2_cell_1 = row_2_cells[0]
-        row_2_cell_2 = row_2_cells[1]
-        self.assertEquals(row_2_cell_1.description, "cell 1 row 2")
-        self.assertEquals(row_2_cell_2.description, "cell 2 row 2")
-        self.assertEquals(row_2_cell_1.score, 2)
-        self.assertEquals(row_2_cell_2.score, 1)
+    def new_current(self) -> list:
+        return JSONDecoder().decode(test_json)
+
+    def test_validation(self):
+        current = []
+        self.assertBad(current, "Please provide at least one row")
+        current = self.new_current()
+        current[0]['name'] = ""
+        self.assertBad(current, "Please enter a name in row 1")
+        current = self.new_current()
+        current[0]['description'] = ""
+        self.assertBad(current, "Please enter a description in row 1")
+        current = self.new_current()
+        current[0]['cells'] = []
+        self.assertBad(current, "Row 1 must have at least one cell")
+        current = self.new_current()
+        current[0]['cells'][0]['score'] = ""
+        self.assertBad(current, "Please enter a number for the score in row 1, cell 1")
+        current = self.new_current()
+        current[0]['cells'][0]['description'] = ""
+        self.assertBad(current, "Please enter a description in row 1, cell 1")
+
+        form = RubricForm({'name': "Good Rubric", 'rubric': test_json})
+        self.assertTrue(form.is_valid())
+
+
+class RubricActionTest(TestCase):
+
+    rubric_name = ""
+    url_name = ""
+
+    def setUp(self):
+        self.user = User.objects.create_superuser(username="test-user")
+        self.client = Client()
+        self.client.force_login(self.user)
+        self.client.post(reverse('rubric_create'), {'name': self.rubric_name, "rubric": test_json})
+        self.rubric = Rubric.objects.get(name=self.rubric_name)
+        self.url = reverse(self.url_name, kwargs={'pk': self.rubric.id})
+
+
+class RubricDeleteTest(RubricActionTest):
+
+    rubric_name = "Deleted Rubric"
+    url_name = "rubric_del"
+
+    def test_access(self):
+        bad_user = User.objects.create_user("bad-user")
+        bad_client = Client()
+        bad_client.force_login(bad_user)
+        self.assertEqual(403, bad_client.get(self.url).status_code)
+        self.assertNotEqual(403, self.client.get(self.url).status_code)
+
+    def test_delete(self):
+        self.client.post(self.url)
+
+        def get_rubric():
+            Rubric.objects.get(name=self.rubric_name)
+
+        self.assertRaises(Rubric.DoesNotExist, get_rubric)
+
+
+class RubricEditTest(RubricActionTest):
+
+    rubric_name = "Edited Rubric"
+    url_name = "rubric_edit"
+
+    def test_access(self):
+        bad_user = User.objects.create_user("bad-user")
+        bad_client = Client()
+        bad_client.force_login(bad_user)
+        self.assertEqual(403, bad_client.get(self.url).status_code)
+        self.assertNotEqual(403, self.client.get(self.url).status_code)
+
+    def test_edit(self):
+        new_json = JSONDecoder().decode(test_json)
+        new_json[0]['description'] = "New desc"
+        new_json[1]['name'] = "New Row"
+        new_json[0]['cells'][0]['score'] = 30
+        new_json[1]['cells'][1]['description'] = "New desc"
+        self.client.post(self.url, {"name": self.rubric_name, "rubric": JSONEncoder().encode(new_json)})
+        new_rubric = Rubric.objects.get(name=self.rubric_name)
+        self.assertListEqual(JSONDecoder().decode(new_rubric.to_json()), new_json)
+        self.assertEqual(new_rubric.max_score, 32)
+        self.assertEqual(new_rubric.rubricrow_set.get(index=0).max_score, 30)
+
+
+class RubricListTest(TestCase):
+
+    def setUp(self) -> None:
+        self.user = User.objects.create_superuser(username="test-user")
+        self.client = Client()
+        self.client.force_login(self.user)
+        self.client.post(reverse('rubric_create'), {'name': "Listed Rubric", "rubric": test_json})
+        self.rubric = Rubric.objects.get(name="Listed Rubric")
+        self.url = reverse('rubric_list')
+
+    def test_access(self):
+        bad_user = User.objects.create_user("bad-user")
+        bad_client = Client()
+        bad_client.force_login(bad_user)
+        self.assertEqual(403, bad_client.get(self.url).status_code)
+        self.assertNotEqual(403, self.client.get(self.url).status_code)
+
+    def test_list(self):
+        response = self.client.get(self.url)
+        self.assertIn(self.rubric, response.context['rubrics'])
