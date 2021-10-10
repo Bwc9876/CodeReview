@@ -4,7 +4,7 @@ on:
   push:
     paths-ignore: 
       - "docs/**"
-      - "README.md"
+      - "*.md"
       - ".gitignore"
       - ".github/**"
     branches: [ master ]
