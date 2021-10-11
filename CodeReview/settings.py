@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'Main',
     'Users',
+    'Instructor',
 ]
 
 MIDDLEWARE = [

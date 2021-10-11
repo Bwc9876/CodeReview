@@ -1,0 +1,11 @@
+{% extends "form_base.html" %}
+
+{% block nav %}
+    <a href="{% url "instructor-home" %}">Reviews</a>
+    <a href="{% url "rubric-list" %}">Rubrics</a>
+    <a href="{% url "user-list" %}">Users</a>
+    {% if debug %}
+        <a href="/admin">Debug</a>
+    {% endif %}
+    <a href="{% url "logout" %}">Logout</a>
+{% endblock %}

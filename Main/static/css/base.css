@@ -1,0 +1,10 @@
+.nav-div {
+    display: flex;
+    flex-direction: row;
+    text-align: right;
+    float: right;
+}
+
+.nav-div a {
+    margin-right: 20px;
+}

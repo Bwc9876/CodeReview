@@ -21,7 +21,8 @@
             <tr>
                 <th>{{ row.name }} <br> {{ row.description }}</th>
                 {% for cell in row|cells %}
-                    <td class="cell {% if cell|is_score:review %}selected{% endif %}">{{ cell.score }} <br> {{ cell.description }}</td>
+                    <td class="cell {% if cell|is_score:review %}selected{% endif %}">{{ cell.score }}
+                        <br> {{ cell.description }}</td>
                 {% endfor %}
                 <td class="cell {% if row|no_score:review %}selected{% endif %}">N/A <br> Does not apply</td>
             </tr>
@@ -32,4 +33,6 @@
         <h3>Additional Comments</h3>
         <p>{{ review.additional_comments }}</p>
     {% endif %}
+    <h4><a href="{% url "review-delete" review.id %}">Delete</a></h4>
+
 {% endblock %}

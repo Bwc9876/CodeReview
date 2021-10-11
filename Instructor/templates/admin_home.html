@@ -1,0 +1,52 @@
+{% extends "admin_base.html" %}
+
+{% block mainContent %}
+    <h1>Ongoing Reviews</h1>
+    <table>
+        {% for review in active %}
+            {% if forloop.first %}
+                <tr>
+                    <th>Schoology ID</th>
+                    <th>Status</th>
+                    <th>Date Created</th>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>{{ review.schoology_id }}</th>
+                <td>{{ review.get_status }}</td>
+                <td>{{ review.date_created|date }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" style="color:grey;">No Ongoing Reviews</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h1>Completed Reviews</h1>
+    <table>
+        {% for review in completed %}
+            {% if forloop.first %}
+                <tr>
+                    <th>Schoology ID</th>
+                    <th>Student</th>
+                    <th>Reviewer</th>
+                    <th>Date Created</th>
+                    <th>Date Completed</th>
+                    <th>View</th>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>{{ review.schoology_id }}</th>
+                <td>{{ review.student }}</td>
+                <td>{{ review.reviewer }}</td>
+                <td>{{ review.date_created|date }}</td>
+                <td>{{ review.date_completed|date }}</td>
+                <td><a href="{% url "review-view" review.id %}">View</a></td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" style="color:grey;">No Completed Reviews</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

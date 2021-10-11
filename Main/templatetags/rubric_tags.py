@@ -1,8 +1,9 @@
 from typing import List
 
 from django import template
-from django.db.models import Count
-from Main.models import Rubric, RubricRow, RubricCell, Review
+
+from Instructor.models import Rubric, RubricRow, RubricCell
+from Main.models import Review
 
 register = template.Library()
 
