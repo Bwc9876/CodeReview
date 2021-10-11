@@ -15,7 +15,7 @@
     font-weight: 600;
 }
 
-.rubric-grading td{
+.rubric-grading td {
     transition: background-color 100ms linear;
 }
 

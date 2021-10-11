@@ -2,9 +2,9 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from json import JSONDecoder, JSONEncoder
 
-from Main.forms import RubricForm
-from Main.models import Rubric, RubricRow, RubricCell
-from Main.views import RubricCreateView, RubricEditView, RubricDeleteView
+from Instructor.forms import RubricForm
+from Instructor.models import Rubric, RubricRow, RubricCell
+from Instructor.views import RubricCreateView, RubricEditView, RubricDeleteView
 
 from Users.models import User
 
@@ -22,7 +22,7 @@ class RubricFormTest(TestCase):
         self.user.save()
         self.client = Client()
         self.client.force_login(self.user)
-        self.url = reverse('rubric_create')
+        self.url = reverse('rubric-create')
 
     def test_access(self):
         bad_user = User.objects.create_user('unauthorized_user_for_rubrics')
@@ -89,7 +89,7 @@ class RubricActionTest(TestCase):
         self.user = User.objects.create_superuser(username="test-user")
         self.client = Client()
         self.client.force_login(self.user)
-        self.client.post(reverse('rubric_create'), {'name': self.rubric_name, "rubric": test_json})
+        self.client.post(reverse('rubric-create'), {'name': self.rubric_name, "rubric": test_json})
         self.rubric = Rubric.objects.get(name=self.rubric_name)
         self.url = reverse(self.url_name, kwargs={'pk': self.rubric.id})
 
@@ -97,7 +97,7 @@ class RubricActionTest(TestCase):
 class RubricDeleteTest(RubricActionTest):
 
     rubric_name = "Deleted Rubric"
-    url_name = "rubric_del"
+    url_name = "rubric-delete"
 
     def test_access(self):
         bad_user = User.objects.create_user("bad-user")
@@ -118,7 +118,7 @@ class RubricDeleteTest(RubricActionTest):
 class RubricEditTest(RubricActionTest):
 
     rubric_name = "Edited Rubric"
-    url_name = "rubric_edit"
+    url_name = "rubric-edit"
 
     def test_access(self):
         bad_user = User.objects.create_user("bad-user")
@@ -146,9 +146,9 @@ class RubricListTest(TestCase):
         self.user = User.objects.create_superuser(username="test-user")
         self.client = Client()
         self.client.force_login(self.user)
-        self.client.post(reverse('rubric_create'), {'name': "Listed Rubric", "rubric": test_json})
+        self.client.post(reverse('rubric-create'), {'name': "Listed Rubric", "rubric": test_json})
         self.rubric = Rubric.objects.get(name="Listed Rubric")
-        self.url = reverse('rubric_list')
+        self.url = reverse('rubric-list')
 
     def test_access(self):
         bad_user = User.objects.create_user("bad-user")

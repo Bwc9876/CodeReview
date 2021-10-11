@@ -1,0 +1,28 @@
+{% extends "admin_base.html" %}
+
+{% block mainContent %}
+    {# TODO: Add the ability to sync this user list with ActiveDirectory #}
+    <form method="post">
+        {% csrf_token %}
+        <h1>Users</h1>
+        <table>
+            {% for user in users %}
+                {% if forloop.first %}
+                    <tr>
+                        <th>Name</th>
+                        <th>Reviewer</th>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th>{{ user }}</th>
+                    <td><label>Reviewer:
+                        <input {% if user.is_reviewer %}checked{% endif %} type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/>
+                    </label></td>
+                </tr>
+            {% empty %}
+                <td colspan="2" style="color:gray">No Users</td>
+            {% endfor %}
+        </table>
+        <button>Save</button>
+    </form>
+{% endblock %}

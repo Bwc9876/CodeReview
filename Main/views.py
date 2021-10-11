@@ -1,22 +1,21 @@
 from datetime import datetime
 
-from django.urls import reverse_lazy
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView, DetailView
-from django.views import View
-from django.shortcuts import redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, DetailView
 
-from . import models, forms
 from Users.models import User
+from . import models, forms
 
 
 # Mixins
 
 
 class IsSuperUserMixin(UserPassesTestMixin):
-
     request = None
 
     def test_func(self):
@@ -24,7 +23,6 @@ class IsSuperUserMixin(UserPassesTestMixin):
 
 
 class IsReviewerMixin(UserPassesTestMixin):
-
     request = None
 
     def test_func(self):
@@ -51,34 +49,6 @@ class HomeView(LoginRequiredMixin, TemplateView):
             context['assigned'] = rubrics.filter(status=models.Review.Status.ASSIGNED)
 
         return context
-
-
-# Rubrics
-
-
-class RubricListView(LoginRequiredMixin, IsSuperUserMixin, ListView):
-    template_name = 'rubrics/rubric_list.html'
-    model = models.Rubric
-    context_object_name = 'rubrics'
-
-
-class RubricCreateView(LoginRequiredMixin, IsSuperUserMixin, CreateView):
-    form_class = forms.RubricForm
-    success_url = reverse_lazy('rubric_list')
-    template_name = 'form_base.html'
-
-
-class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, UpdateView):
-    form_class = forms.RubricForm
-    model = models.Rubric
-    success_url = reverse_lazy('rubric_list')
-    template_name = 'form_base.html'
-
-
-class RubricDeleteView(LoginRequiredMixin, IsSuperUserMixin, DeleteView):
-    template_name = 'rubrics/rubric_del.html'
-    model = models.Rubric
-    success_url = reverse_lazy('rubric_list')
 
 
 # Reviews
@@ -111,7 +81,7 @@ class ReviewEditView(LoginRequiredMixin, UpdateView):
 
 
 class ReviewCancelView(LoginRequiredMixin, DeleteView):
-    template_name = 'reviews/review_del.html'
+    template_name = 'reviews/review_cancel.html'
     success_url = reverse_lazy('home')
     model = models.Review
 
@@ -120,13 +90,12 @@ class ReviewCancelView(LoginRequiredMixin, DeleteView):
 
 
 class ReviewDeleteView(LoginRequiredMixin, IsSuperUserMixin, DeleteView):
-    template_name = 'reviews/review_del.html'
+    template_name = 'reviews/review_delete.html'
     success_url = reverse_lazy('home')
     model = models.Review
 
 
-class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin,  View):
-
+class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
@@ -153,7 +122,6 @@ class ReviewerAction(LoginRequiredMixin, IsReviewerMixin, View):
 
 
 class ReviewAbandonView(ReviewerAction):
-
     http_method_names = ['get', 'post']
 
     def post(self, *args, **kwargs) -> HttpResponseRedirect:
@@ -184,7 +152,7 @@ class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ReviewDetailView(DetailView):
+class ReviewDetailView(LoginRequiredMixin, DetailView):
     template_name = 'reviews/review_view.html'
     model = models.Review
     context_object_name = 'review'
@@ -194,17 +162,3 @@ class ReviewDetailView(DetailView):
         if not self.request.user.is_superuser:
             query = query.filter(Q(student=self.request.user) | Q(reviewer=self.request.user))
         return query
-
-#
-#
-# @require_safe
-# @login_required
-# @decorators.review_require_either(allow_404=False)
-# @decorators.review_require_status(models.Review.Status.CLOSED)
-# def view_review(request) -> HttpResponse:
-#     target_id = request.GET.get('id', "")
-#     target_object = get_object_or_404(models.Review, id=models.val_uuid(target_id))
-#     if target_object.status == int(models.Review.Status.CLOSED):
-#         return render(request, "reviews/review_view.html", {'review': target_object})
-#     else:
-#         raise Http404()
