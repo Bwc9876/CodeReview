@@ -47,6 +47,7 @@ review, the instructor will get a final email with the notes the senior has give
 - [lapd3](https://pypi.org/project/ldap3/)
 - [Jquery](https://jquery.com/)
 - [FontAwesome](https://fontawesome.com/)
+- [JsonSchema](https://pypi.org/project/jsonschema/)
 
 ## Running
 

@@ -2,12 +2,12 @@
 
 ## Supported Versions
 
-Security is considered in teh following versions
+Security is considered in the following versions
 
 | Version | Supported          |
 | ------- | ------------------ |
-| dev   | :white_check_mark: |
-| production   | :x:                |
+| dev   | :x: |
+| production   | :white_check_mark:                |
 
 ## Reporting a Vulnerability
 
