@@ -91,7 +91,7 @@ class GradeReviewForm(ModelForm):
         if scores_json:
             try:
                 errors = sorted(self._json_validator.iter_errors(JSONDecoder().decode(scores_json)), key=str)
-                [self.add_error('scores', f"{error.message} at {'/'.join(error.relative_path)}.") for error in errors]
+                [self.add_error('scores', f"{error.message}") for error in errors]
             except JSONDecodeError:
                 self.add_error('scores', "Invalid JSON")
 
