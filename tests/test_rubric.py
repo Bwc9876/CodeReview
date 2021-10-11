@@ -1,11 +1,10 @@
-from django.test import TestCase, Client
-from django.urls import reverse
 from json import JSONDecoder, JSONEncoder
 
-from Instructor.forms import RubricForm
-from Instructor.models import Rubric, RubricRow, RubricCell
-from Instructor.views import RubricCreateView, RubricEditView, RubricDeleteView
+from django.test import TestCase, Client
+from django.urls import reverse
 
+from Instructor.forms import RubricForm
+from Instructor.models import Rubric
 from Users.models import User
 
 with open("tests/test_rubric.json", 'r') as file:
@@ -81,7 +80,6 @@ class RubricFormTest(TestCase):
 
 
 class RubricActionTest(TestCase):
-
     rubric_name = ""
     url_name = ""
 
@@ -95,7 +93,6 @@ class RubricActionTest(TestCase):
 
 
 class RubricDeleteTest(RubricActionTest):
-
     rubric_name = "Deleted Rubric"
     url_name = "rubric-delete"
 
@@ -116,7 +113,6 @@ class RubricDeleteTest(RubricActionTest):
 
 
 class RubricEditTest(RubricActionTest):
-
     rubric_name = "Edited Rubric"
     url_name = "rubric-edit"
 
