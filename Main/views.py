@@ -25,7 +25,6 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
         message.attach_alternative(html_content, "text/html")
         message.to = [user.email]
         message.send(fail_silently=False)
-        print(f"Sent email to {user}")
 
 
 # Mixins
