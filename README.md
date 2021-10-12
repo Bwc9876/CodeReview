@@ -50,13 +50,33 @@ review, the instructor will get a final email with the notes the senior has give
 - [JsonSchema](https://pypi.org/project/jsonschema/)
 
 ## Running
-
+For both development and production, you'll need to clone the repository:
+```sh
+git clone https://github.com/Bwc9876/CodeReview.git
+```
+...And install dependencies
+```sh
+pip install -r requirements.txt
+```
 ### Development
 
-First, install all requirements in requirements.txt  
-Then, simply run the django run command:  
-```python manage.py runserver YOUR_HOST:8080```  
-Development is insecure and inefficient, only use when testing
+First, setup a database to test with by running:
+```sh
+python manage.py migrate
+```
+Then, you'll need to create a superuser to login as
+```sh
+python manage.py createsuperuser
+Username: admin
+Email:       (Can be left blank)
+Password: ********
+Confirm Password: ********
+```
+Now you're ready to host the local development server by running
+```sh
+python manage.py runserver 127.0.0.1:8000
+```
+You can connect by typing "127.0.0.1:8000" in your browser
 
 ### Production
 
