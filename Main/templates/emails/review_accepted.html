@@ -1,0 +1,8 @@
+{% extends "emails/email_base.html" %}
+
+{% block title %}Review accepted by {{ review.reviewer }}{% endblock %}
+
+{% block body %}
+    <p>We're emailing to let you know that the review created by {{ review.student }} has been accepted by {{ review.reviewer }}.</p>
+    <p>Once the review is complete, you can view it's grade in the Instructor section of the CodeReview website.</p>
+{% endblock %}

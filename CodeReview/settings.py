@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mailer',
     'debug_toolbar',
     'Main',
     'Users',
@@ -94,6 +95,15 @@ AUTH_USER_MODEL = "Users.User"
 LOGIN_URL = "/users/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/users/logout-done"
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = 'debug-emails'
+else:
+    EMAIL_BACKEND = "mailer.backend.DbBackend"
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+    EMAIL_HOST_USER = os.getenv("EMAIL_USER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS", "")
 
 LANGUAGE_CODE = 'en-us'
 
