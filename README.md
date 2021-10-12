@@ -78,6 +78,9 @@ python manage.py runserver 127.0.0.1:8000
 ```
 You can connect by typing "127.0.0.1:8000" in your browser
 
+#### Note about emails
+The app is setup to output all emails to the "debug-emails" folder in the project, so no emails will actually be sent.
+
 ### Production
 
 Will require an SQL server to connect to, an ActiveDirectory server, an email to send notifications from, and a

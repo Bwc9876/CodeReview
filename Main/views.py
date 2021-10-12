@@ -1,7 +1,9 @@
 from datetime import datetime
 
+from django.core import mail
+from django.template.loader import render_to_string
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -10,6 +12,20 @@ from django.views.generic import TemplateView, CreateView, UpdateView, DeleteVie
 
 from Users.models import User
 from . import models, forms
+
+# Email Utility Functions
+
+
+def send_email(subject_template: str, text_template: str, template_name: str, review: models.Review, query_set: QuerySet):
+    for user in list(query_set):
+        html_content = render_to_string(template_name, {'target_user': user, 'review': review})
+        text_content = text_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
+        subject = subject_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
+        message = mail.EmailMultiAlternatives(subject=subject, body=text_content)
+        message.attach_alternative(html_content, "text/html")
+        message.to = [user.email]
+        message.send(fail_silently=False)
+        print(f"Sent email to {user}")
 
 
 # Mixins
@@ -66,8 +82,13 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        # TODO: Send Email When Created
-        return super(ReviewCreateView, self).form_valid(form)
+        response = super(ReviewCreateView, self).form_valid(form)
+        send_email("Review created by {student}",
+                   "Hello {target_user}, a new review has been created by {student}",
+                   "emails/review_created.html",
+                   self.object,
+                   User.objects.filter(is_reviewer=True))
+        return response
 
 
 class ReviewEditView(LoginRequiredMixin, UpdateView):
@@ -105,7 +126,11 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
             target_object.status = models.Review.Status.ASSIGNED
             target_object.reviewer = request.user
             target_object.save()
-            # TODO: Send Email When Claimed
+            send_email("Review accepted by {reviewer}",
+                       "Hello, {target_user}, a review by {student} has been accepted by {reviewer}.",
+                       "emails/review_accepted.html",
+                       target_object,
+                       User.objects.filter(is_superuser=True))
             return redirect('home')
         except models.Review.DoesNotExist:
             raise Http404()
@@ -148,7 +173,11 @@ class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, UpdateView):
     def form_valid(self, form):
         self.object.date_completed = datetime.now()
         self.object.save()
-        # TODO: Send Email When Completed
+        send_email("Review completed by {reviewer}",
+                   "Hello, {target_user}, the review requested by {student} has been completed by {reviewer}.",
+                   "emails/review_completed.html",
+                   self.object,
+                   User.objects.filter(is_superuser=True))
         return super().form_valid(form)
 
 
