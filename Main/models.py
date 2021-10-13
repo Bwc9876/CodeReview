@@ -56,7 +56,7 @@ class Review(BaseModel):
         return f'{my_score}/{max_score}'
 
     def get_status(self):
-        return Review.Status.labels[Review.Status.values.index(self.status)]
+        return Review.get_status_from_string(self.status)
 
     @staticmethod
     def get_status_from_string(status):

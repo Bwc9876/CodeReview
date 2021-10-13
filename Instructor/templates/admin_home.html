@@ -1,6 +1,16 @@
 {% extends "admin_base.html" %}
 
+
+{% block resources %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/reviews/review-table.css" %}"/>
+{% endblock %}
+
 {% block mainContent %}
     {# TODO: Create table filter to make rendering tables easier #}
-    <h1>Temp</h1>
+    {% load review_tags %}
+    <h1>Ongoing Reviews</h1>
+    {{ active|review_table:"schoology_id,student,status" }}
+    <h1>Completed Reviews</h1>
+    {{ completed|review_table:"schoology_id,student,reviewer,date_completed,view" }}
 {% endblock %}

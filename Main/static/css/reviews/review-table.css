@@ -1,0 +1,21 @@
+.review-table {
+    width: 75%;
+    text-align: center;
+}
+
+.review-table thead {
+    background-color: lightgray;
+}
+
+.row-color-1 {
+    background-color: whitesmoke;
+}
+
+.row-color-2 {
+    background-color: #dce8ff;
+}
+
+.none-notification {
+    color: darkgray;
+    background-color: whitesmoke;
+}

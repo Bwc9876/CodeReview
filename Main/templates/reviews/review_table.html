@@ -1,28 +1,42 @@
-<table>
+<table class="review-table">
+    {% load common_tags %}
     <thead>
         <tr>
             {% for field in fields %}
-                <th>{{ field }}</th>
+                <th>{{ field|make_spaces|title }}</th>
             {% endfor %}
             {% for action in actions %}
-                <th>{{ action }}</th>
+                <th>{{ action|make_spaces|title }}</th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
         {% for object in objects %}
-            <tr>
+            <tr class="row-color-{% cycle "1" "2" %}">
                 {% for value in object %}
                     {% if forloop.first %}
                         <th>{{ value }}</th>
                     {% elif forloop.last %}
                         {% for action in actions %}
-                            <a href="{% url action value %}">{{ action }}</a>
+                            {% if action == "claim" %}
+                            <form method="post" action="{% url "review-claim" value %}">
+                                {% csrf_token %}
+                                <button class="btn btn-link">Claim</button>
+                            </form>
+                            {% else %}
+                            <td>
+                                <a href="{% url "review-"|add:action value %}">{{ action|title }}</a>
+                            </td>
+                            {% endif %}
                         {% endfor %}
                     {% else %}
                         <td>{{ value }}</td>
                     {% endif %}
                 {% endfor %}
+            </tr>
+        {% empty %}
+            <tr class="none-notification">
+                <td colspan="{{ colspan }}">No Reviews</td>
             </tr>
         {% endfor %}
     </tbody>
