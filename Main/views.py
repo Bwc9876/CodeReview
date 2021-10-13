@@ -60,7 +60,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
             rubrics = models.Review.objects.exclude(status=models.Review.Status.CLOSED).filter(
                 Q(status=models.Review.Status.OPEN, ) | Q(status=models.Review.Status.ASSIGNED, reviewer=user)
             )
-            context['open'] = rubrics.filter(status=models.Review.Status.OPEN).exclude(student=user)
+            context['open'] = rubrics.filter(status=models.Review.Status.OPEN, student__session=user.session).exclude(student=user)
             context['assigned'] = rubrics.filter(status=models.Review.Status.ASSIGNED)
 
         return context
@@ -121,7 +121,8 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
     def post(self, request, *args, **kwargs):
         target_pk = kwargs.get('pk', '')
         try:
-            target_object = models.Review.objects.get(id=models.val_uuid(target_pk), status=models.Review.Status.OPEN)
+            target_object = models.Review.objects.get(id=models.val_uuid(target_pk), status=models.Review.Status.OPEN,
+                                                      student__session=self.request.user.session)
             target_object.status = models.Review.Status.ASSIGNED
             target_object.reviewer = request.user
             target_object.save()

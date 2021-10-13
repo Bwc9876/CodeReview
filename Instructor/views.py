@@ -1,7 +1,12 @@
+from json import JSONDecoder, JSONDecodeError
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
+from django.http import Http404
 from django.shortcuts import redirect
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError as JsonValidationError
 
 from Main import models as main_models
 from Main.views import IsSuperUserMixin
@@ -19,22 +24,62 @@ class AdminHomeView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
         return context
 
 
-class UserListView(LoginRequiredMixin, IsSuperUserMixin, ListView):
+class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
     template_name = "user_list.html"
-    context_object_name = "users"
-    model = User
-
     http_method_names = ['get', 'post']
+
+    _schema = {
+        'type': "object",
+        'properties': {
+            'AM': {
+                'type': "array",
+                'items': {
+                    'type': "string"
+                }
+            },
+            'PM': {
+                'type': "array",
+                'items': {
+                    'type': "string"
+                }
+            }
+        }
+    }
 
     def get_queryset(self):
         return User.objects.filter(is_superuser=False)
+
+    def update_sessions(self, sessions_json, objs):
+        try:
+            sessions = JSONDecoder().decode(sessions_json)
+            validate(sessions, self._schema)
+            for user_id in sessions['AM']:
+                user = User.objects.get(id=main_models.val_uuid(user_id))
+                objs[objs.index(user)].session = User.Session.AM
+            for user_id in sessions['PM']:
+                user = User.objects.get(id=main_models.val_uuid(user_id))
+                objs[objs.index(user)].session = User.Session.PM
+            self.get_queryset().bulk_update(objs, ['session'], batch_size=10)
+        except User.DoesNotExist:
+            raise Http404('Invalid Data')
+        except JSONDecodeError:
+            raise Http404('Invalid Data')
+        except JsonValidationError:
+            raise Http404('Invalid Data')
 
     def post(self, *args, **kwargs):
         objs = list(self.get_queryset())
         for index, user in enumerate(objs):
             objs[index].is_reviewer = str(user.id) in self.request.POST.getlist('reviewers')
         self.get_queryset().bulk_update(objs, ['is_reviewer'], batch_size=10)
+        self.update_sessions(self.request.POST.get("sessions"), objs)
         return redirect("user-list")
+
+    def get_context_data(self, **kwargs):
+        context = super(UserListView, self).get_context_data(**kwargs)
+        context['AM'] = self.get_queryset().filter(session=User.Session.AM)
+        context['PM'] = self.get_queryset().filter(session=User.Session.PM)
+        return context
 
 
 # Rubrics

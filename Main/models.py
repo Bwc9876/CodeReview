@@ -26,14 +26,14 @@ class BaseModel(models.Model):
 
 class Review(BaseModel):
     class Status(models.TextChoices):
-        OPEN = 0, "Open"
-        ASSIGNED = 1, "Taken"
-        CLOSED = 2, "Completed"
+        OPEN = 'O', "Open"
+        ASSIGNED = 'A', "Taken"
+        CLOSED = 'C', "Completed"
 
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="student")
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviewer", null=True)
     schoology_id = models.CharField(max_length=10, null=True)
-    status = models.IntegerField(choices=Status.choices, default=Status.OPEN)
+    status = models.CharField(choices=Status.choices, default=Status.OPEN, max_length=1)
     rubric = models.ForeignKey("Instructor.Rubric", on_delete=models.CASCADE, related_name="source_rubric")
     additional_comments = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -56,7 +56,11 @@ class Review(BaseModel):
         return f'{my_score}/{max_score}'
 
     def get_status(self):
-        return Review.Status.labels[self.status]
+        return Review.Status.labels[Review.Status.values.index(self.status)]
+
+    @staticmethod
+    def get_status_from_string(status):
+        return Review.Status.labels[Review.Status.values.index(status)]
 
     def affiliated(self, user):
         return self.student == user or (self.reviewer is not None and self.reviewer == user) or user.is_superuser

@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from Instructor.models import Rubric, ScoredRow
+from Instructor.models import Rubric
 from Main.forms import GradeReviewForm
 from Main.models import Review
 from Users.models import User
@@ -51,8 +51,17 @@ class ReviewAccessTest(BaseCase):
         'claim': ("-nynn", "nnnnn", "nnnnn"),
         'abandon': ("nnnnn", "ynnnn", "nnnnn"),
         'grade': ("nnnnn", "ynnnn", "nnnnn"),
-        'view': ("nnnnn", "nnnnn", "nnnnn")
+        'view': ("nnnnn", "nnnnn", "yynny")
     }
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.review.status = Review.Status.ASSIGNED
+        self.review.save()
+        self.clients['reviewer-affiliated'].post(reverse("review-grade", kwargs={'pk': self.review.id}),
+                                                 {'scores': "[10,2]", 'additional_comments': ""})
+        self.review.status = Review.Status.OPEN
+        self.review.save()
 
     def assertResponses(self, expected_key, add_pk=True, http_type='get') -> None:
         target_statuses = self.expected[expected_key]
@@ -62,7 +71,7 @@ class ReviewAccessTest(BaseCase):
             url = reverse(f'review-{expected_key}')
         for index in range(len(target_statuses)):
             target_responses = target_statuses[index]
-            self.review.status = index
+            self.review.status = Review.Status.values[index]
             self.review.save()
             for code_index, expected in enumerate(target_responses):
                 if expected != "-":
@@ -100,41 +109,44 @@ class ReviewAccessTest(BaseCase):
         self.assertResponses('grade')
 
     def test_view(self) -> None:
-        try:
-            self.assertResponses('view')
-        except ScoredRow.DoesNotExist:
-            pass
+        self.assertResponses('view')
 
 
 class HomeListTest(BaseCase):
-    expected = [
-        ("-", "active", "open", "none"),
-        ("assigned", "active", "none", "none"),
-        ("completed", "completed", "none", "none"),
-    ]
+    expected = {
+        "O": ("-", "active", "open", "none"),
+        "A": ("assigned", "active", "none", "none"),
+        "C": ("completed", "completed", "none", "none"),
+    }
 
     url = reverse("home")
 
-    def assertStatus(self, status_num):
-        self.review.status = status_num
+    def assertStatus(self, status_code):
+        self.review.status = status_code
         self.review.save()
-        for index, group in enumerate(self.expected[status_num]):
+        for index, group in enumerate(self.expected[status_code]):
             if group != "-":
                 response = self.clients.get(list(self.clients.keys())[index]).get(self.url)
                 if group == "none":
                     for not_group in ["open", "assigned", "completed", "active"]:
-                        self.assertNotIn(self.rubric, response.context.get(not_group, []))
+                        self.assertNotIn(self.review, response.context.get(not_group, []))
                 else:
-                    self.assertNotIn(self.rubric, response.context.get(group, []))
+                    self.assertIn(self.review, response.context.get(group, []))
 
     def test_open(self) -> None:
-        self.assertStatus(0)
+        self.assertStatus('O')
+
+    def test_open_different_session(self) -> None:
+        self.users['reviewer-not'].session = User.Session.PM
+        self.users['reviewer-not'].save()
+        response = self.clients['reviewer-not'].get(self.url)
+        self.assertNotIn(self.review, response.context.get("open", []))
 
     def test_assigned(self) -> None:
-        self.assertStatus(1)
+        self.assertStatus('A')
 
     def test_closed(self) -> None:
-        self.assertStatus(2)
+        self.assertStatus('C')
 
 
 class BaseReviewAction(TestCase):
@@ -226,8 +238,14 @@ class ReviewClaimTest(BaseReviewAction):
     def test_claim(self) -> None:
         self.reviewer_client.post(self.url)
         new_review = Review.objects.get(schoology_id=self.schoology_id)
-        self.assertEqual(int(Review.Status.ASSIGNED), new_review.status)
+        self.assertEqual(Review.Status.ASSIGNED, new_review.status)
         self.assertEqual(self.reviewer, new_review.reviewer)
+
+    def test_claim_different_session(self) -> None:
+        self.reviewer.session = User.Session.PM
+        self.reviewer.save()
+        response = self.reviewer_client.post(self.url)
+        self.assertEqual(response.status_code, 404)
 
 
 class ReviewAbandonTest(BaseReviewAction):
@@ -239,7 +257,7 @@ class ReviewAbandonTest(BaseReviewAction):
     def test_abandon(self) -> None:
         self.reviewer_client.post(self.url)
         new_review = Review.objects.get(schoology_id=self.schoology_id)
-        self.assertEqual(int(Review.Status.OPEN), new_review.status)
+        self.assertEqual(Review.Status.OPEN, new_review.status)
         self.assertIsNone(new_review.reviewer)
 
 

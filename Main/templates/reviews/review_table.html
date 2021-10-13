@@ -1,0 +1,29 @@
+<table>
+    <thead>
+        <tr>
+            {% for field in fields %}
+                <th>{{ field }}</th>
+            {% endfor %}
+            {% for action in actions %}
+                <th>{{ action }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for object in objects %}
+            <tr>
+                {% for value in object %}
+                    {% if forloop.first %}
+                        <th>{{ value }}</th>
+                    {% elif forloop.last %}
+                        {% for action in actions %}
+                            <a href="{% url action value %}">{{ action }}</a>
+                        {% endfor %}
+                    {% else %}
+                        <td>{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
