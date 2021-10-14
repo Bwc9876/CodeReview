@@ -21,7 +21,7 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
         html_content = render_to_string(template_name, {'target_user': user, 'review': review})
         text_content = text_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
         subject = subject_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
-        message = mail.EmailMultiAlternatives(subject=subject, body=text_content)
+        message = mail.EmailMultiAlternatives(subject=f'{review.student.session} | {subject}', body=text_content)
         message.attach_alternative(html_content, "text/html")
         message.to = [user.email]
         message.send(fail_silently=False)
@@ -60,7 +60,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
             rubrics = models.Review.objects.exclude(status=models.Review.Status.CLOSED).filter(
                 Q(status=models.Review.Status.OPEN, ) | Q(status=models.Review.Status.ASSIGNED, reviewer=user)
             )
-            context['open'] = rubrics.filter(status=models.Review.Status.OPEN).exclude(student=user)
+            context['open'] = rubrics.filter(status=models.Review.Status.OPEN, student__session=user.session).exclude(student=user)
             context['assigned'] = rubrics.filter(status=models.Review.Status.ASSIGNED)
 
         return context
@@ -86,7 +86,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
                    "Hello {target_user}, a new review has been created by {student}",
                    "emails/review_created.html",
                    self.object,
-                   User.objects.filter(is_reviewer=True))
+                   User.objects.filter(is_reviewer=True, session=self.request.user.session).exclude(id=self.request.user.id))
         return response
 
 
@@ -121,7 +121,8 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
     def post(self, request, *args, **kwargs):
         target_pk = kwargs.get('pk', '')
         try:
-            target_object = models.Review.objects.get(id=models.val_uuid(target_pk), status=models.Review.Status.OPEN)
+            target_object = models.Review.objects.get(id=models.val_uuid(target_pk), status=models.Review.Status.OPEN,
+                                                      student__session=self.request.user.session)
             target_object.status = models.Review.Status.ASSIGNED
             target_object.reviewer = request.user
             target_object.save()

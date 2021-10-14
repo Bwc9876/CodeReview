@@ -1,52 +1,21 @@
 {% extends "admin_base.html" %}
 
+
+{% block resources %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/reviews/review-table.css" %}"/>
+{% endblock %}
+
 {% block mainContent %}
-    <h1>Ongoing Reviews</h1>
-    <table>
-        {% for review in active %}
-            {% if forloop.first %}
-                <tr>
-                    <th>Schoology ID</th>
-                    <th>Status</th>
-                    <th>Date Created</th>
-                </tr>
-            {% endif %}
-            <tr>
-                <th>{{ review.schoology_id }}</th>
-                <td>{{ review.get_status }}</td>
-                <td>{{ review.date_created|date }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5" style="color:grey;">No Ongoing Reviews</td>
-            </tr>
-        {% endfor %}
-    </table>
-    <h1>Completed Reviews</h1>
-    <table>
-        {% for review in completed %}
-            {% if forloop.first %}
-                <tr>
-                    <th>Schoology ID</th>
-                    <th>Student</th>
-                    <th>Reviewer</th>
-                    <th>Date Created</th>
-                    <th>Date Completed</th>
-                    <th>View</th>
-                </tr>
-            {% endif %}
-            <tr>
-                <th>{{ review.schoology_id }}</th>
-                <td>{{ review.student }}</td>
-                <td>{{ review.reviewer }}</td>
-                <td>{{ review.date_created|date }}</td>
-                <td>{{ review.date_completed|date }}</td>
-                <td><a href="{% url "review-view" review.id %}">View</a></td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5" style="color:grey;">No Completed Reviews</td>
-            </tr>
-        {% endfor %}
-    </table>
+    {% load review_tags %}
+    <h1>AM Session</h1>
+        <h2>Ongoing</h2>
+        {% review_table am_active "schoology_id,student,status" %}
+        <h2>Completed</h2>
+        {% review_table am_completed "schoology_id,student,reviewer,view" %}
+    <h1>PM Session</h1>
+        <h2>Ongoing</h2>
+        {% review_table pm_active "schoology_id,student,status" %}
+        <h2>Completed</h2>
+        {% review_table pm_completed "schoology_id,student,reviewer,view" %}
 {% endblock %}
