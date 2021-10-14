@@ -9,6 +9,7 @@ on:
       - ".github/**"
       - "coverage.svg"
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   run_tests:
