@@ -9,13 +9,13 @@
     {% load review_tags %}
     <h1>Welcome, {{ user.username }}{% if user.is_reviewer %}*{% endif %}</h1>
     <h2>Your Requested Reviews</h2>
-    {{ active|review_table:"schoology_id,status,date_created,edit" }}
+    {% review_table active "schoology_id,status,date_created,edit,cancel" %}
     {% if user.is_reviewer %}
         <h2>Your Assigned Reviews</h2>
-
+        {% review_table assigned "schoology_id,student,grade,abandon"%}
         <h2>Available Reviews</h2>
-
+        {% review_table open "schoology_id,student,date_created,claim" request %}
     {% endif %}
     <h2>Completed Reviews</h2>
-
+    {% review_table completed "schoology_id,student,reviewer,date_completed,view" %}
 {% endblock %}

@@ -19,10 +19,12 @@
                     {% elif forloop.last %}
                         {% for action in actions %}
                             {% if action == "claim" %}
-                            <form method="post" action="{% url "review-claim" value %}">
-                                {% csrf_token %}
-                                <button class="btn btn-link">Claim</button>
-                            </form>
+                            <td>
+                                <form method="post" action="{% url "review-claim" value %}">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+                                    <button class="btn btn-link">Claim</button>
+                                </form>
+                            </td>
                             {% else %}
                             <td>
                                 <a href="{% url "review-"|add:action value %}">{{ action|title }}</a>

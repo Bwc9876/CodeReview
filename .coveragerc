@@ -1,0 +1,15 @@
+[run]
+command_line = 'run_tests.py'
+relative_files = True
+include =
+	Main/**
+	Users/**
+	Instructor/**
+omit = 
+	*/migrations/*
+	*/__pycache__/*
+	*/__init__.py
+	*/admin.py
+	*/urls.py
+	*/apps.py
+	

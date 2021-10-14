@@ -21,7 +21,7 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
         html_content = render_to_string(template_name, {'target_user': user, 'review': review})
         text_content = text_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
         subject = subject_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
-        message = mail.EmailMultiAlternatives(subject=subject, body=text_content)
+        message = mail.EmailMultiAlternatives(subject=f'{review.student.session} | {subject}', body=text_content)
         message.attach_alternative(html_content, "text/html")
         message.to = [user.email]
         message.send(fail_silently=False)
@@ -86,7 +86,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
                    "Hello {target_user}, a new review has been created by {student}",
                    "emails/review_created.html",
                    self.object,
-                   User.objects.filter(is_reviewer=True))
+                   User.objects.filter(is_reviewer=True, session=self.request.user.session).exclude(id=self.request.user.id))
         return response
 
 

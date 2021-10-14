@@ -1,6 +1,8 @@
 from django import template
 from django.template.loader import render_to_string
+from django.template.context import RequestContext
 from django.db.models import QuerySet
+from django.template.context_processors import csrf
 
 from Users.models import User
 from Main.models import Review
@@ -14,14 +16,15 @@ formatters = {
 }
 
 
-@register.filter(name="review_table")
-def review_table(queryset: QuerySet, fields_str: str):
-    fields = fields_str.split(",")
+@register.simple_tag(name="review_table")
+def review_table(queryset: QuerySet, fields_str: str, request=None):
+    fields = []
     actions = []
-    for field in fields:
+    for field in fields_str.split(","):
         if field in ["edit", "cancel", "claim", "abandon", "grade", "view"]:
-            fields.remove(field)
             actions.append(field)
+        else:
+            fields.append(field)
     objects = []
     for old_object in queryset.values_list(*fields, 'id'):
         new_object = []
@@ -31,5 +34,7 @@ def review_table(queryset: QuerySet, fields_str: str):
             else:
                 new_object.append(field)
         objects.append(new_object)
-    return render_to_string('reviews/review_table.html', {'objects': objects, 'actions': actions, 'fields': fields,
-                                                          'colspan': len(fields) + len(actions)})
+    context = {'objects': objects, 'actions': actions,
+               'fields': fields, 'colspan': len(fields) + len(actions),
+               'csrf_token': "" if request is None else csrf(request)['csrf_token'] }
+    return render_to_string('reviews/review_table.html', context)

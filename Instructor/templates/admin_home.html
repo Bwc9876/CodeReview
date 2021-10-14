@@ -7,10 +7,15 @@
 {% endblock %}
 
 {% block mainContent %}
-    {# TODO: Create table filter to make rendering tables easier #}
     {% load review_tags %}
-    <h1>Ongoing Reviews</h1>
-    {{ active|review_table:"schoology_id,student,status" }}
-    <h1>Completed Reviews</h1>
-    {{ completed|review_table:"schoology_id,student,reviewer,date_completed,view" }}
+    <h1>AM Session</h1>
+        <h2>Ongoing</h2>
+        {% review_table am_active "schoology_id,student,status" %}
+        <h2>Completed</h2>
+        {% review_table am_completed "schoology_id,student,reviewer,view" %}
+    <h1>PM Session</h1>
+        <h2>Ongoing</h2>
+        {% review_table pm_active "schoology_id,student,status" %}
+        <h2>Completed</h2>
+        {% review_table pm_completed "schoology_id,student,reviewer,view" %}
 {% endblock %}

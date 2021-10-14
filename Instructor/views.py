@@ -19,8 +19,12 @@ class AdminHomeView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active'] = main_models.Review.objects.exclude(status=main_models.Review.Status.CLOSED)
-        context['completed'] = main_models.Review.objects.filter(status=main_models.Review.Status.CLOSED)
+        active = main_models.Review.objects.exclude(status=main_models.Review.Status.CLOSED)
+        completed = main_models.Review.objects.filter(status=main_models.Review.Status.CLOSED)
+        context['am_active'] = active.filter(student__session=User.Session.AM)
+        context['am_completed'] = completed.filter(student__session=User.Session.AM)
+        context['pm_active'] = active.filter(student__session=User.Session.PM)
+        context['pm_completed'] = completed.filter(student__session=User.Session.PM)
         return context
 
 
