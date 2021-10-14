@@ -17,5 +17,5 @@
         {% review_table open "schoology_id,student,date_created,claim" request %}
     {% endif %}
     <h2>Completed Reviews</h2>
-    {% review_table completed "schoology_id,student,reviewer,date_completed,view" %}
+    {% review_table completed "schoology_id,student,reviewer,date_completed,view" template_name="reviews/review_completed_preview_table.html" %}
 {% endblock %}

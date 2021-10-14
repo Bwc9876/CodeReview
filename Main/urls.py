@@ -15,6 +15,7 @@ reviews = [
     path('review/abandon/<uuid:pk>/', views.ReviewAbandonView.as_view(), name="review-abandon"),
     path('review/grade/<uuid:pk>/', views.ReviewGradeView.as_view(), name="review-grade"),
     path('review/view/<uuid:pk>/', views.ReviewDetailView.as_view(), name="review-view"),
+    path('review/completed/', views.ReviewCompleteListView.as_view(), name="review-complete")
 ]
 
 urlpatterns = home + reviews

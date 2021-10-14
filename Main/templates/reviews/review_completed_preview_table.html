@@ -1,0 +1,5 @@
+{% extends "reviews/review_table.html" %}
+
+{% block tableFooter %}
+    <tr><td colspan="{{ colspan }}"><a href="{% url "review-complete" %}">View All</a></td></tr>
+{% endblock %}

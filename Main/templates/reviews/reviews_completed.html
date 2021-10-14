@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block mainContent %}
+    <h1>Completed Reviews</h1>
+    {% load review_tags %}
+    {% review_table reviews "schoology_id,student,reviewer,date_completed,view" template_name="reviews/review_completed_table.html" %}
+{% endblock %}

@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, DetailView, ListView
 
 from Users.models import User
 from . import models, forms
@@ -185,6 +185,19 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
     template_name = 'reviews/review_view.html'
     model = models.Review
     context_object_name = 'review'
+
+    def get_queryset(self):
+        query = models.Review.objects.filter(status=models.Review.Status.CLOSED)
+        if not self.request.user.is_superuser:
+            query = query.filter(Q(student=self.request.user) | Q(reviewer=self.request.user))
+        return query
+
+
+class ReviewCompleteListView(LoginRequiredMixin, ListView):
+    template_name = "reviews/reviews_completed.html"
+    model = models.Review
+    paginate_by = 10
+    context_object_name = 'reviews'
 
     def get_queryset(self):
         query = models.Review.objects.filter(status=models.Review.Status.CLOSED)
