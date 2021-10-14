@@ -13,6 +13,7 @@ class RubricCell(BaseModel):
 
     class Meta:
         ordering = ['index']
+        unique_together = (('parent_row', 'index'),)
 
 
 class RubricRow(BaseModel):
@@ -24,6 +25,7 @@ class RubricRow(BaseModel):
 
     class Meta:
         ordering = ['index']
+        unique_together = (('parent_rubric', 'index'),)
 
 
 class ScoredRow(BaseModel):

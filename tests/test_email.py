@@ -41,15 +41,18 @@ class TestEmail(TestCase):
         self.rubric = Rubric.objects.get(name="Test Review Rubric")
 
     def test_created(self) -> None:
-        self.clients['student-affiliated'].post(reverse("review-create"), {"schoology_id": "12.34.56", "rubric": self.rubric.id})
+        self.clients['student-affiliated'].post(reverse("review-create"),
+                                                {"schoology_id": "12.34.56", "rubric": self.rubric.id})
         self.assertEqual(len(mail.outbox), 2)
         for msg in mail.outbox:
-            self.assertTrue(msg.to[0] == self.users['reviewer-affiliated'].email or msg.to[0] == self.users['reviewer-not'].email,
-                            msg=f"{msg.to[0]} is not a reviewer")
+            self.assertTrue(
+                msg.to[0] == self.users['reviewer-affiliated'].email or msg.to[0] == self.users['reviewer-not'].email,
+                msg=f"{msg.to[0]} is not a reviewer")
             self.assertEqual(msg.subject, "AM | Review created by student-affiliated")
 
     def test_claimed(self) -> None:
-        self.review = Review.objects.create(schoology_id="12.34.56", student=self.users['student-affiliated'], rubric=self.rubric)
+        self.review = Review.objects.create(schoology_id="12.34.56", student=self.users['student-affiliated'],
+                                            rubric=self.rubric)
         self.clients['reviewer-affiliated'].post(reverse("review-claim", kwargs={'pk': self.review.id}))
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], self.users['super'].email)
@@ -68,11 +71,13 @@ class TestEmail(TestCase):
     def test_session_checks(self) -> None:
         self.users['student-affiliated'].session = User.Session.PM
         self.users['student-affiliated'].save()
-        self.clients['student-affiliated'].post(reverse("review-create"), {"schoology_id": "12.34.56", "rubric": self.rubric.id})
+        self.clients['student-affiliated'].post(reverse("review-create"),
+                                                {"schoology_id": "12.34.56", "rubric": self.rubric.id})
         self.assertEqual(len(mail.outbox), 0)
 
     def test_not_self(self) -> None:
         self.users['reviewer-not'].session = User.Session.PM
         self.users['reviewer-not'].save()
-        self.clients['reviewer-not'].post(reverse("review-create"), {"schoology_id": "12.34.56", "rubric": self.rubric.id})
+        self.clients['reviewer-not'].post(reverse("review-create"),
+                                          {"schoology_id": "12.34.56", "rubric": self.rubric.id})
         self.assertEqual(len(mail.outbox), 0)

@@ -12,10 +12,10 @@
     {% review_table active "schoology_id,status,date_created,edit,cancel" %}
     {% if user.is_reviewer %}
         <h2>Your Assigned Reviews</h2>
-        {% review_table assigned "schoology_id,student,grade,abandon"%}
+        {% review_table assigned "schoology_id,student,grade,abandon" %}
         <h2>Available Reviews</h2>
-        {% review_table open "schoology_id,student,date_created,claim" request %}
+        {% review_table open "schoology_id,student,date_created,claim" %}
     {% endif %}
     <h2>Completed Reviews</h2>
-    {% review_table completed "schoology_id,student,reviewer,date_completed,view" %}
+    {% review_complete_preview_table completed "schoology_id,student,reviewer,date_completed,view" %}
 {% endblock %}

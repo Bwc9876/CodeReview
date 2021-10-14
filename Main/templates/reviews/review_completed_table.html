@@ -1,0 +1,24 @@
+{% extends "reviews/review_table.html" %}
+
+{% block tableFooter %}
+    {% if page_obj.has_other_pages %}
+        <tr class="paginator-controls-row">
+            {% if page_obj.has_previous %}
+                <td><a href="{% url "review-complete" %}?page=1">First Page</a></td>
+                <td><a href="{% url "review-complete" %}?page={{ page_obj.previous_page_number }}">Previous Page</a>
+                </td>
+            {% else %}
+                <td>First Page</td>
+                <td>Previous Page</td>
+            {% endif %}
+            <td colspan="2">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</td>
+            {% if page_obj.has_next %}
+                <td><a href="{% url "review-complete" %}?page={{ page_obj.next_page_number }}">Next Page</a></td>
+                <td><a href="{% url "review-complete" %}?page={{ page_obj.paginator.num_pages }}">Last Page</a></td>
+            {% else %}
+                <td>Next Page</td>
+                <td>Last Page</td>
+            {% endif %}
+        </tr>
+    {% endif %}
+{% endblock %}

@@ -51,21 +51,29 @@ review, the instructor will get a final email with the notes the senior has give
 - [JsonSchema](https://pypi.org/project/jsonschema/)
 
 ## Running
+
 For both development and production, you'll need to clone the repository:
+
 ```sh
 git clone https://github.com/Bwc9876/CodeReview.git
 ```
+
 ...And install dependencies
+
 ```sh
 pip install -r requirements.txt
 ```
+
 ### Development
 
 First, set up a database to test with by running:
+
 ```sh
 python manage.py migrate
 ```
+
 Then, you'll need to create a superuser to log in as
+
 ```sh
 python manage.py createsuperuser
 Username: admin
@@ -73,13 +81,17 @@ Email:       (Can be left blank)
 Password: ********
 Confirm Password: ********
 ```
+
 Now you're ready to host the local development server by running
+
 ```sh
 python manage.py runserver 127.0.0.1:8000
 ```
+
 You can connect by typing "127.0.0.1:8000" in your browser
 
 #### Note about emails
+
 The app is set up to output all emails to the "debug-emails" folder in the project, so no emails will be sent.
 
 ### Production
@@ -92,19 +104,24 @@ This will require [environment variables](#Environment-Variables)
 ### Tests
 
 Tests are available through a file named run_tests.py
-``` python run_tests.py ```  
+``` python run_tests.py ```
 
 #### Test Coverage
 
 To see how well tests cover the code, install coverage:
+
 ```sh
 pip install coverage==6.0.2
 ```
+
 Then run coverage
+
 ```sh
 coverage run
 ```
+
 Finally, do this to show the report
+
 ```sh
 coverage report
 ```

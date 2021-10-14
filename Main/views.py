@@ -1,26 +1,30 @@
 from datetime import datetime
 
-from django.core import mail
-from django.template.loader import render_to_string
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core import mail
 from django.db.models import Q, QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, DetailView, ListView
 
 from Users.models import User
 from . import models, forms
 
+
 # Email Utility Functions
 
 
-def send_email(subject_template: str, text_template: str, template_name: str, review: models.Review, query_set: QuerySet):
+def send_email(subject_template: str, text_template: str, template_name: str, review: models.Review,
+               query_set: QuerySet):
     for user in list(query_set):
         html_content = render_to_string(template_name, {'target_user': user, 'review': review})
-        text_content = text_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
-        subject = subject_template.format(target_user=str(user), student=str(review.student), reviewer=str(review.reviewer))
+        text_content = text_template.format(target_user=str(user), student=str(review.student),
+                                            reviewer=str(review.reviewer))
+        subject = subject_template.format(target_user=str(user), student=str(review.student),
+                                          reviewer=str(review.reviewer))
         message = mail.EmailMultiAlternatives(subject=f'{review.student.session} | {subject}', body=text_content)
         message.attach_alternative(html_content, "text/html")
         message.to = [user.email]
@@ -50,6 +54,12 @@ class IsReviewerMixin(UserPassesTestMixin):
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "home.html"
 
+    def get(self, *args, **kwargs):
+        if self.request.user.is_superuser:
+            return redirect('instructor-home')
+        else:
+            return super(HomeView, self).get(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user: User = self.request.user
@@ -60,7 +70,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
             rubrics = models.Review.objects.exclude(status=models.Review.Status.CLOSED).filter(
                 Q(status=models.Review.Status.OPEN, ) | Q(status=models.Review.Status.ASSIGNED, reviewer=user)
             )
-            context['open'] = rubrics.filter(status=models.Review.Status.OPEN, student__session=user.session).exclude(student=user)
+            context['open'] = rubrics.filter(status=models.Review.Status.OPEN, student__session=user.session).exclude(
+                student=user)
             context['assigned'] = rubrics.filter(status=models.Review.Status.ASSIGNED)
 
         return context
@@ -86,7 +97,8 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
                    "Hello {target_user}, a new review has been created by {student}",
                    "emails/review_created.html",
                    self.object,
-                   User.objects.filter(is_reviewer=True, session=self.request.user.session).exclude(id=self.request.user.id))
+                   User.objects.filter(is_reviewer=True, session=self.request.user.session).exclude(
+                       id=self.request.user.id))
         return response
 
 
@@ -191,3 +203,35 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
         if not self.request.user.is_superuser:
             query = query.filter(Q(student=self.request.user) | Q(reviewer=self.request.user))
         return query
+
+
+class ReviewCompleteListView(LoginRequiredMixin, ListView):
+    template_name = "reviews/reviews_completed.html"
+    model = models.Review
+    paginate_by = 10
+    context_object_name = 'reviews'
+
+    def get_session(self):
+        session = self.request.GET.get("session", "AM")
+        if session == "AM" or session == "PM":
+            return session
+        else:
+            return None
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ReviewCompleteListView, self).get_context_data(object_list=object_list, **kwargs)
+        if self.request.user.is_superuser:
+            context['target_session'] = self.get_session()
+            context['opposite_session'] = "PM" if self.get_session() == "AM" else "AM"
+        return context
+
+    def get_queryset(self):
+        query = models.Review.objects.filter(status=models.Review.Status.CLOSED)
+        if self.request.user.is_superuser:
+            session = self.get_session()
+            if session is None:
+                raise Http404()
+            else:
+                return query.filter(student__session=session)
+        else:
+            return query.filter(Q(student=self.request.user) | Q(reviewer=self.request.user))
