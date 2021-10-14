@@ -1,4 +1,4 @@
-function formSaveCallback(){
+function formSaveCallback() {
     let newObj = {"AM": [], "PM": []};
     $(".AM-session").children("tr").each((index, object) => {
         newObj["AM"].push($(object).children("th").attr('id'));

@@ -3,7 +3,8 @@
 {% block resources %}
     {% load static %}
     <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
+    <script crossorigin="anonymous"
+            src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
     <script defer src="{% static "js/user-designate.js" %}"></script>
     <link rel="stylesheet" href="{% static "css/user-designate.css" %}"/>
 {% endblock %}
@@ -13,40 +14,42 @@
     <form method="post" class="session-form">
         <input name="sessions" type="hidden" class="session-input"/>
         {% csrf_token %}
-            <h1>AM Session</h1>
-            <table class="user-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Reviewer</th>
-                    </tr>
-                </thead>
-                <tbody class="session AM-session">
-                    {% for user in AM %}
-                        <tr>
-                            <th id="{{ user.id }}">{{ user }}</th>
-                            <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %} type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <h1>PM Session</h1>
-            <table class="user-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Reviewer</th>
-                    </tr>
-                </thead>
-                <tbody class="session PM-session">
-                    {% for user in PM %}
-                        <tr>
-                            <th id="{{ user.id }}">{{ user }}</th>
-                            <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %} type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button>Save</button>
+        <h1>AM Session</h1>
+        <table class="user-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Reviewer</th>
+            </tr>
+            </thead>
+            <tbody class="session AM-session">
+            {% for user in AM %}
+                <tr>
+                    <th id="{{ user.id }}">{{ user }}</th>
+                    <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
+                               type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <h1>PM Session</h1>
+        <table class="user-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Reviewer</th>
+            </tr>
+            </thead>
+            <tbody class="session PM-session">
+            {% for user in PM %}
+                <tr>
+                    <th id="{{ user.id }}">{{ user }}</th>
+                    <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
+                               type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button>Save</button>
     </form>
 {% endblock %}

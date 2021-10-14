@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 
+{% block resources %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/reviews/review-table.css" %}"/>
+{% endblock %}
+
 {% block mainContent %}
-    <h1>Completed Reviews</h1>
+    <h1>Completed Reviews {% if target_session %}({{ target_session }}){% endif %}</h1>
+    {% if opposite_session %}
+        <h2><a href="{% url "review-complete" %}?session={{ opposite_session }}">Switch to {{ opposite_session }}</a>
+        </h2>
+    {% endif %}
     {% load review_tags %}
-    {% review_table reviews "schoology_id,student,reviewer,date_completed,view" template_name="reviews/review_completed_table.html" %}
+    {% review_complete_table reviews "schoology_id,student,reviewer,date_created,date_completed,view" %}
 {% endblock %}

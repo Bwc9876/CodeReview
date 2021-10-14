@@ -9,13 +9,13 @@
 {% block mainContent %}
     {% load review_tags %}
     <h1>AM Session</h1>
-        <h2>Ongoing</h2>
-        {% review_table am_active "schoology_id,student,status" %}
-        <h2>Completed</h2>
-        {% review_table am_completed "schoology_id,student,reviewer,view" %}
+    <h2>Ongoing</h2>
+    {% review_table am_active "schoology_id,student,status" %}
+    <h2>Completed</h2>
+    {% review_complete_preview_table am_completed "schoology_id,student,reviewer,view" session="AM" %}
     <h1>PM Session</h1>
-        <h2>Ongoing</h2>
-        {% review_table pm_active "schoology_id,student,status" %}
-        <h2>Completed</h2>
-        {% review_table pm_completed "schoology_id,student,reviewer,view" %}
+    <h2>Ongoing</h2>
+    {% review_table pm_active "schoology_id,student,status" %}
+    <h2>Completed</h2>
+    {% review_complete_preview_table pm_completed "schoology_id,student,reviewer,view" session="PM" %}
 {% endblock %}

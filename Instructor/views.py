@@ -1,10 +1,10 @@
 from json import JSONDecoder, JSONDecodeError
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 from django.http import Http404
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError as JsonValidationError
 
@@ -77,7 +77,7 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
             objs[index].is_reviewer = str(user.id) in self.request.POST.getlist('reviewers')
         self.get_queryset().bulk_update(objs, ['is_reviewer'], batch_size=10)
         self.update_sessions(self.request.POST.get("sessions"), objs)
-        return redirect("user-list")
+        return redirect("instructor-home")
 
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data(**kwargs)

@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    paths-ignore: 
+    paths-ignore:
       - "docs/**"
       - "*.md"
       - ".gitignore"

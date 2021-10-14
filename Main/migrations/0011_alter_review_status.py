@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('Main', '0010_alter_review_status'),
     ]
@@ -13,6 +12,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='review',
             name='status',
-            field=models.CharField(choices=[('O', 'Open'), ('A', 'Taken'), ('C', 'Completed')], default='O', max_length=1),
+            field=models.CharField(choices=[('O', 'Open'), ('A', 'Taken'), ('C', 'Completed')], default='O',
+                                   max_length=1),
         ),
     ]

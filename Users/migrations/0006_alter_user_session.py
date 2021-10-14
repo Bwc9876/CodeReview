@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('Users', '0005_alter_user_session'),
     ]
@@ -13,6 +12,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='session',
-            field=models.IntegerField(choices=[('0', 'Not Assigned'), ('1', 'AM Session'), ('2', 'PM Session')], default='0'),
+            field=models.IntegerField(choices=[('0', 'Not Assigned'), ('1', 'AM Session'), ('2', 'PM Session')],
+                                      default='0'),
         ),
     ]

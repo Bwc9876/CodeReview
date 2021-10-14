@@ -1,5 +1,11 @@
 {% extends "reviews/review_table.html" %}
 
 {% block tableFooter %}
-    <tr><td colspan="{{ colspan }}"><a href="{% url "review-complete" %}">View All</a></td></tr>
+    {% if not hide_view_all %}
+        <tr>
+            <td colspan="{{ colspan }}"><a
+                    href="{% url "review-complete" %}{% if target_session %}?session={{ target_session }}{% endif %}">View
+                All</a></td>
+        </tr>
+    {% endif %}
 {% endblock %}

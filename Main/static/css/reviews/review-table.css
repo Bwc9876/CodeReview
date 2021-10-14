@@ -1,10 +1,23 @@
 .review-table {
     width: 75%;
     text-align: center;
+    border-collapse: collapse;
+    border-left: solid 2px black;
+    border-right: solid 2px black;
 }
 
-.review-table thead {
+.review-table * tr td, .review-table * tr th {
+    border: solid 1px black;
+}
+
+.review-table thead, .review-table tfoot {
     background-color: lightgray;
+    border: solid 2px black;
+}
+
+.review-table tbody {
+    border-top: solid 2px black;
+    border-bottom: solid 2px black;
 }
 
 .row-color-1 {
@@ -16,6 +29,6 @@
 }
 
 .none-notification {
-    color: darkgray;
+    color: #0a0a0a;
     background-color: whitesmoke;
 }

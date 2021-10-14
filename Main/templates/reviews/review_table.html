@@ -1,48 +1,48 @@
 <table class="review-table">
     {% load common_tags %}
     <thead>
-        <tr>
-            {% for field in fields %}
-                <th>{{ field|make_spaces|title }}</th>
-            {% endfor %}
-            {% for action in actions %}
-                <th>{{ action|make_spaces|title }}</th>
-            {% endfor %}
-        </tr>
+    <tr>
+        {% for field in fields %}
+            <th>{{ field|make_spaces|title }}</th>
+        {% endfor %}
+        {% for action in actions %}
+            <th>{{ action|make_spaces|title }}</th>
+        {% endfor %}
+    </tr>
     </thead>
     <tbody>
-        {% for object in objects %}
-            <tr class="row-color-{% cycle "1" "2" %}">
-                {% for value in object %}
-                    {% if forloop.first %}
-                        <th>{{ value }}</th>
-                    {% elif forloop.last %}
-                        {% for action in actions %}
-                            {% if action == "claim" %}
+    {% for object in objects %}
+        <tr class="row-color-{% cycle "1" "2" %}">
+            {% for value in object %}
+                {% if forloop.first %}
+                    <th>{{ value }}</th>
+                {% elif forloop.last %}
+                    {% for action in actions %}
+                        {% if action == "claim" %}
                             <td>
                                 <form method="post" action="{% url "review-claim" value %}">
-                                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+                                    {% csrf_token %}
                                     <button class="btn btn-link">Claim</button>
                                 </form>
                             </td>
-                            {% else %}
+                        {% else %}
                             <td>
                                 <a href="{% url "review-"|add:action value %}">{{ action|title }}</a>
                             </td>
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <td>{{ value }}</td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
-        {% empty %}
-            <tr class="none-notification">
-                <td colspan="{{ colspan }}">No Reviews</td>
-            </tr>
-        {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <td>{{ value }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% empty %}
+        <tr class="none-notification">
+            <td colspan="{{ colspan }}">No Reviews</td>
+        </tr>
+    {% endfor %}
     </tbody>
     <tfoot>
-        {% block tableFooter %} {% endblock %}
+    {% block tableFooter %} {% endblock %}
     </tfoot>
 </table>
