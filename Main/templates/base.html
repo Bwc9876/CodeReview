@@ -15,30 +15,40 @@
 
     {% endblock %}
 </head>
-<body>
-{#  Navigation goes here #}
-{# For now it'll be a list of links #}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="{% url "home" %}">Code Review</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarText">
-      <div class="navbar-nav me-auto mb-2 mb-lg-0">
-          <a class="nav-link" aria-current="page" href="{% url "home" %}">Home</a>
-          {% block nav %}
-            <a class="nav-link" href="{% url "review-create" %}">New Review</a>
-            <a class="nav-link" href="{% url "logout" %}">Logout</a>
-          {% endblock %}
-          <a class="nav-link" href="#">Help</a>
+<body class="vh-100">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url "home" %}">Code Review</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <div class="navbar-nav me-auto mb-2 mb-lg-0">
+              <a class="nav-link" aria-current="page" href="{% url "home" %}">Home</a>
+              {% block nav %}
+                <a class="nav-link" href="{% url "review-create" %}">New Review</a>
+                <a class="nav-link" href="{% url "logout" %}">Logout</a>
+              {% endblock %}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</nav>
-{% block mainContent %}
+    </nav>
+    <main class="container-fluid">
+        {% block mainContent %}
 
-{% endblock %}
-{# Footer goes here #}
+        {% endblock %}
+    </main>
+    <footer class="footer w-100 position-fixed bottom-0 py-4 bg-light user-select-none">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col text-center">
+                    Made by <a class="link-secondary" rel="noopener" target="_blank" href="https://github.com/Bwc9876">Benjamin Crocker</a>
+                </div>
+                <div class="col text-center">
+                    <a class="link-secondary" rel="noopener" target="_blank" href="#">Help</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

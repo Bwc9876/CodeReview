@@ -8,14 +8,46 @@
 
 {% block mainContent %}
     {% load review_tags %}
-    <h1>AM Session</h1>
-    <h2>Ongoing</h2>
-    {% review_table am_active "schoology_id,student,status" %}
-    <h2>Completed</h2>
-    {% review_complete_preview_table am_completed "schoology_id,student,reviewer,view" session="AM" %}
-    <h1>PM Session</h1>
-    <h2>Ongoing</h2>
-    {% review_table pm_active "schoology_id,student,status" %}
-    <h2>Completed</h2>
-    {% review_complete_preview_table pm_completed "schoology_id,student,reviewer,view" session="PM" %}
+    <div class="row text-center pt-3 pb-4">
+        <h1>Welcome, {{ user }}</h1>
+    </div>
+    <div class="row pb-3">
+        <div class="col"><h2>AM Session</h2></div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h3>Ongoing</h3>
+        </div>
+        <div class="col">
+            <h3>Completed</h3>
+        </div>
+    </div>
+    <div class="row pb-3">
+        <div class="col">
+            {% review_table am_active "schoology_id,student,status" %}
+        </div>
+        <div class="col">
+            {% review_complete_preview_table am_completed "schoology_id,student,reviewer,view,delete" session="AM" %}
+        </div>
+    </div>
+    <div class="row pb-3">
+        <div class="col"><h2>PM Session</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h3>Ongoing</h3>
+        </div>
+        <div class="col">
+            <h3>Completed</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {% review_table pm_active "schoology_id,student,status" %}
+        </div>
+        <div class="col">
+            {% review_complete_preview_table pm_completed "schoology_id,student,reviewer,view,delete" session="PM" %}
+        </div>
+    </div>
 {% endblock %}

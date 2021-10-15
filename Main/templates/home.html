@@ -7,15 +7,33 @@
 
 {% block mainContent %}
     {% load review_tags %}
-    <h1>Welcome, {{ user.username }}{% if user.is_reviewer %}*{% endif %}</h1>
-    <h2>Your Requested Reviews</h2>
-    {% review_table active "schoology_id,status,date_created,edit,cancel" %}
-    {% if user.is_reviewer %}
-        <h2>Your Assigned Reviews</h2>
-        {% review_table assigned "schoology_id,student,grade,abandon" %}
-        <h2>Available Reviews</h2>
-        {% review_table open "schoology_id,student,date_created,claim" %}
-    {% endif %}
-    <h2>Completed Reviews</h2>
-    {% review_complete_preview_table completed "schoology_id,student,reviewer,date_completed,view" %}
+        <div class="row pt-3 pb-4">
+            <div class="col text-center">
+                <h1>Welcome, {{ user.username }}</h1>
+            </div>
+        </div>
+        <div class="row">
+                <div class="col">
+                    <h2 class="user-select-none">Your Requested Reviews</h2>
+                    {% review_table active "schoology_id,status,date_created,edit,cancel" %}
+                </div>
+            {% if user.is_reviewer %}
+                <div class="col">
+                        <h2 class="user-select-none">Your Assigned Reviews</h2>
+                        {% review_table assigned "schoology_id,student,grade,abandon" %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2 class="user-select-none">Completed Reviews</h2>
+                {% review_complete_preview_table completed "schoology_id,student,reviewer,date_completed,view" %}
+            </div>
+            {% if user.is_reviewer %}
+                <div class="col">
+                    <h2 class="user-select-none">Available Reviews</h2>
+                    {% review_table open "schoology_id,student,date_created,claim" %}
+                </div>
+            {% endif %}
+        </div>
 {% endblock %}

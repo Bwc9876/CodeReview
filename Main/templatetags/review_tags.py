@@ -17,7 +17,7 @@ def get_table_context(queryset: QuerySet, fields_str: str):
     fields = []
     actions = []
     for field in fields_str.split(","):
-        if field in ["edit", "cancel", "claim", "abandon", "grade", "view"]:
+        if field in ["edit", "cancel", "claim", "abandon", "grade", "view", "delete"]:
             actions.append(field)
         else:
             fields.append(field)
@@ -47,13 +47,6 @@ def review_complete_preview_table(queryset: QuerySet, fields_str: str, session: 
     else:
         new_context['hide_view_all'] = True
         return new_context
-
-
-@register.inclusion_tag('reviews/review_completed_table.html', takes_context=True)
-def review_complete_table(context, queryset: QuerySet, fields_str: str):
-    new_context = get_table_context(queryset, fields_str)
-    new_context['page_obj'] = context['page_obj']
-    return new_context
 
 
 @register.filter()
