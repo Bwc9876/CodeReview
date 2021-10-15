@@ -96,15 +96,33 @@ The app is set up to output all emails to the "debug-emails" folder in the proje
 
 ### Production
 
-Will require an SQL server to connect to, an ActiveDirectory server, an email to send notifications from, and a
-webserver to run the Django code on.  
-Set up your webserver and then point it to ```CodeReview/wsgi.py```.  
-This will require [environment variables](#Environment-Variables)
+First, set up your [environment variables](#Environment-Variables).
+Afterward, you'll need to run the following to set up your database
+```sh
+python manage.py migrate
+```
+After this is completed, it's recommended you run [tests](#Tests) to ensure the website will work.  
+Next, you will need to set up Django with IIS, directions can be found [here](https://medium.com/nonstopio/deploy-django-application-on-windows-iis-server-93aee2864c41).  
+In addition, you'll need to set up IIS to pass the app the REMOTE_USER header, directions for this can be found [here](https://www.ibm.com/docs/en/cognos-analytics/11.1.0?topic=essbadscc-enabling-single-signon-between-active-directory-server-cognos-components-use-remote-user).  
+Now students and reviewers can log in through ActiveDirectory, however, the instructor is not in the ActiveDirectory system. To add the instructor, run the following:
+```sh
+python manage.py createsuperuser
+```
+Follow the interactive prompt to create the instructor's account.  
+
+#### Changing the instructor's password
+If the password for the instructor's account is lost, the following can be run to reset it
+```sh
+python manage.py changepassword {Instructor's username}
+```
+Then, follow the interactive prompt to reset the password.
 
 ### Tests
 
-Tests are available through a file named run_tests.py
-``` python run_tests.py ```
+Tests are available through a file named run_tests.py  
+```sh
+python run_tests.py 
+```
 
 #### Test Coverage
 
