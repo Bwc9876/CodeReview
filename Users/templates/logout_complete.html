@@ -3,7 +3,14 @@
 
 {% block nav %}{% endblock %}
 
+{% block pageHeader %}You have been logged out{% endblock %}
+
+{% block containerClass %}container{% endblock %}
+
 {% block mainContent %}
-  <h1>Logout Successful</h1>
-  <a href="{% url "login" %}">Log Back In</a>
+  <div class="row text-center mb-3">
+    <div class="col">
+        <a class="display-4" href="{% url "login" %}">Log Back In</a>
+    </div>
+  </div>
 {% endblock %}

@@ -1,19 +1,39 @@
 {% extends 'admin_base.html' %}
 
+{% block pageHeader %}Rubrics{% endblock %}
+
 {% block mainContent %}
-    <h1>Rubrics</h1>
-    <table>
-        <tbody>
-        {% for rubric in rubrics %}
-            <tr>
-                <td>{{ rubric.name }}</td>
-                <td><a href="{% url "rubric-edit" rubric.id %}">Edit</a></td>
-                <td><a href="{% url "rubric-delete" rubric.id %}">Delete</a></td>
-            </tr>
-        {% endfor %}
-        <tr>
-            <td colspan="2"><a href="{% url "rubric-create" %}">Add New Rubric</a></td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Max Score</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rubric in rubrics %}
+                        <tr>
+                            <th scope="row">{{ rubric.name }}</th>
+                            <td>{{ rubric.max_score }}</td>
+                            <td><a href="{% url "rubric-edit" rubric.id %}">Edit</a></td>
+                            <td><a class="link-danger" href="{% url "rubric-delete" rubric.id %}">Delete</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2">No Rubrics</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <thead>
+                    <tr class="text-center">
+                        <td colspan="4"><a class="link-secondary" href="{% url "rubric-create" %}">Create Rubric</a></td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
 {% endblock %}

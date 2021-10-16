@@ -10,6 +10,7 @@ from . import models
 
 class CreateRubricWidget(TextInput):
     template_name = "widgets/rubric_create.html"
+    input_type = 'hidden'
 
     class Media:
         css = {'all': ('css/rubrics/rubric_table.css',)}

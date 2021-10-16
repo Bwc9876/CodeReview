@@ -1,10 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'delete_base.html' %}
 
-{% block mainContent %}
-    <form method="post">
-        {% csrf_token %}
-        <h1>Are you sure you want to abandon review with {{ review.student }}?</h1>
-        <button>Yes</button>
-        <a href="{% url "home" %}">Cancel</a>
-    </form>
-{% endblock %}
+{% block pageHeader %}Abandon Review{% endblock %}
+
+{% block deleteVerb %}abandon{% endblock %}
+
+{% block submitVerb %}Abandon{% endblock %}

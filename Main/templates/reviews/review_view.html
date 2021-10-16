@@ -1,38 +1,64 @@
 {% extends "base.html" %}
 
 {% block resources %}
-
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/rubrics/rubric_table.css' %}"/>
-
 {% endblock %}
+
+{% block pageHeader %}Review Details{% endblock %}
 
 {% block mainContent %}
     {% load rubric_tags %}
-    <h1>Review for {{ review.student }} on {{ review.date_created }}</h1>
-    <h2>Completed by {{ review.reviewer }} on {{ review.date_completed }}</h2>
-    <h3>Score</h3>
-    <table class="rubric rubric-graded">
-        <tr>
-            <th>Criteria</th>
-            <th colspan="{{ review.rubric|colspan|add:1 }}">Score</th>
-        </tr>
-        {% for row in review.rubric|rows %}
-            <tr>
-                <th>{{ row.name }} <br> {{ row.description }}</th>
-                {% for cell in row|cells %}
-                    <td class="cell {% if cell|is_score:review %}selected{% endif %}">{{ cell.score }}
-                        <br> {{ cell.description }}</td>
+    <div class="row">
+        <div class="col">
+            <h2>Student: {{ review.student }}</h2>
+        </div>
+        <div class="col text-end">
+            <h2>Created On {{ review.date_created|date }} at {{ review.date_created|time }}</h2>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Reviewer: {{ review.reviewer }}</h2>
+        </div>
+        <div class="col text-end">
+            <h2>Completed On {{ review.date_completed|date }} at {{ review.date_completed|time }}</h2>
+        </div>
+    </div>
+    <div class="row text-start">
+        <div class="col">
+            <h2>Grade: {{ review.score_fraction }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered rubric rubric-graded">
+                <tr>
+                    <th>Criteria</th>
+                    <th colspan="{{ review.rubric|colspan|add:1 }}">Score</th>
+                </tr>
+                {% for row in review.rubric|rows %}
+                    <tr>
+                        <th>{{ row.name }} <br> {{ row.description }}</th>
+                        {% for cell in row|cells %}
+                            <td class="cell {% if cell|is_score:review %}selected fw-bolder {% endif %}">{{ cell.score }}
+                                <br> {{ cell.description }}</td>
+                        {% endfor %}
+                        <td class="cell {% if row|no_score:review %}selected fw-bolder{% endif %}">N/A <br> Does not apply</td>
+                    </tr>
                 {% endfor %}
-                <td class="cell {% if row|no_score:review %}selected{% endif %}">N/A <br> Does not apply</td>
-            </tr>
-        {% endfor %}
-    </table>
-    <p>Grade: {{ review.score_fraction }}</p>
-    {% if review.additional_comments %}
-        <h3>Additional Comments</h3>
-        <p>{{ review.additional_comments }}</p>
-    {% endif %}
-    <h4><a href="{% url "review-delete" review.id %}">Delete</a></h4>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2>Additional Comments</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <textarea rows="10" style="resize: none !important;" class="form-control-plaintext" readonly>{{ review.additional_comments|default:"No comments" }}</textarea>
+        </div>
+    </div>
 
 {% endblock %}

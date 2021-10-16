@@ -1,48 +1,48 @@
 <table class="table table-striped w-100 review-table">
     {% load common_tags %}
-    <thead>
-    <tr>
-        {% for field in fields %}
-            <th scope="col">{{ field|make_spaces|title }}</th>
-        {% endfor %}
-        {% for action in actions %}
-            <th scope="col">{{ action|make_spaces|title }}</th>
-        {% endfor %}
-    </tr>
-    </thead>
-    <tbody>
-    {% for object in objects %}
+    <thead class="user-select-none">
         <tr>
-            {% for value in object %}
-                {% if forloop.first %}
-                    <th scope="row">{{ value }}</th>
-                {% elif forloop.last %}
-                    {% for action in actions %}
-                        {% if action == "claim" %}
-                            <td>
-                                <form method="post" action="{% url "review-claim" value %}">
-                                    {% csrf_token %}
-                                    <button class="btn btn-link p-0">Claim</button>
-                                </form>
-                            </td>
-                        {% else %}
-                            <td>
-                                <a class="{{ action|link_class }}" href="{% url "review-"|add:action value %}">{{ action|title }}</a>
-                            </td>
-                        {% endif %}
-                    {% endfor %}
-                {% else %}
-                    <td>{{ value }}</td>
-                {% endif %}
+            {% for field in fields %}
+                <th scope="col">{{ field|make_spaces|title }}</th>
+            {% endfor %}
+            {% for action in actions %}
+                <th scope="col">{{ action|make_spaces|title }}</th>
             {% endfor %}
         </tr>
-    {% empty %}
-        <tr class="none-notification">
-            <td colspan="{{ colspan }}">No Reviews</td>
-        </tr>
-    {% endfor %}
+    </thead>
+    <tbody>
+        {% for object in objects %}
+            <tr>
+                {% for value in object %}
+                    {% if forloop.first %}
+                        <th scope="row">{{ value }}</th>
+                    {% elif forloop.last %}
+                        {% for action in actions %}
+                            {% if action == "claim" %}
+                                <td>
+                                    <form method="post" action="{% url "review-claim" value %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-link p-0">Claim</button>
+                                    </form>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <a class="{{ action|link_class }}" href="{% url "review-"|add:action value %}">{{ action|title }}</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <td>{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% empty %}
+            <tr class="text-center">
+                <td class="text-black-50" colspan="{{ colspan }}">No Reviews</td>
+            </tr>
+        {% endfor %}
     </tbody>
-    <tfoot>
-    {% block tableFooter %} {% endblock %}
+    <tfoot class="user-select-none">
+        {% block tableFooter %} {% endblock %}
     </tfoot>
 </table>

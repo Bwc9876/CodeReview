@@ -1,0 +1,25 @@
+/*!* Use to render rubric tables *!*/
+
+.rubric-graded td.selected, .rubric-grading td.selected {
+    background-color: #edffdd !important;
+}
+
+.rubric-grading td {
+    transition: background-color 100ms linear;
+}
+
+.rubric-grading td:hover {
+    background-color: #c8eeb7 !important;
+}
+
+.rubric-editing .cell {
+    width: 200px !important;
+}
+
+.rubric-editing .cell-wrapper {
+    min-width: 200px;
+}
+
+.rubric-editing .cell_part {
+    min-width: 200px;
+}

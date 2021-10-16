@@ -1,9 +1,0 @@
-.cell-wrapper {
-    display: flex;
-    flex-direction: column;
-}
-
-.cell_part {
-    display: flex;
-    flex-direction: row;
-}

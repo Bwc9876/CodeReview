@@ -1,7 +1,7 @@
 from json import JSONDecoder, JSONDecodeError
 from typing import List
 
-from django.forms import ModelForm, TextInput
+from django.forms import ModelForm, TextInput, Textarea
 from django.forms.fields import CharField
 from jsonschema.validators import Draft202012Validator
 
@@ -11,6 +11,7 @@ from . import models
 
 class GradeReviewWidget(TextInput):
     template_name = "widgets/rubric_grade.html"
+    input_type = 'hidden'
     rubric = None
 
     class Media:
@@ -68,6 +69,9 @@ class GradeReviewForm(ModelForm):
     class Meta:
         model = models.Review
         fields = ['additional_comments']
+        widgets = {
+            'additional_comments': Textarea(attrs={"style": "height: 150px;"})
+        }
 
     def save(self, commit=True):
         new_review: models.Review = super(GradeReviewForm, self).save(commit=False)

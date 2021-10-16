@@ -5,13 +5,10 @@
     <link rel="stylesheet" href="{% static "css/reviews/review-table.css" %}"/>
 {% endblock %}
 
+{% block pageHeader %}Home{% endblock %}
+
 {% block mainContent %}
     {% load review_tags %}
-        <div class="row pt-3 pb-4">
-            <div class="col text-center">
-                <h1>Welcome, {{ user.username }}</h1>
-            </div>
-        </div>
         <div class="row">
                 <div class="col">
                     <h2 class="user-select-none">Your Requested Reviews</h2>

@@ -1,5 +1,6 @@
 from django import template
 from django.db.models import QuerySet
+from django.core.paginator import Page
 
 from Main.models import Review
 from Users.models import User
@@ -41,7 +42,7 @@ def review_table(queryset: QuerySet, fields_str: str):
 @register.inclusion_tag('reviews/review_completed_preview_table.html')
 def review_complete_preview_table(queryset: QuerySet, fields_str: str, session: str = None):
     new_context = get_table_context(queryset[:4], fields_str)
-    if queryset.count() > 5:
+    if queryset.count() > 4:
         new_context['target_session'] = session
         return new_context
     else:

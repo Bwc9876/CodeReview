@@ -1,6 +1,7 @@
 from json import JSONDecoder, JSONDecodeError
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -9,7 +10,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError as JsonValidationError
 
 from Main import models as main_models
-from Main.views import IsSuperUserMixin
+from Main.views import IsSuperUserMixin, FormNameMixin, FormAlertMixin, SuccessDeleteMixin
 from Users.models import User
 from . import models, forms
 
@@ -77,6 +78,7 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
             objs[index].is_reviewer = str(user.id) in self.request.POST.getlist('reviewers')
         self.get_queryset().bulk_update(objs, ['is_reviewer'], batch_size=10)
         self.update_sessions(self.request.POST.get("sessions"), objs)
+        messages.add_message(self.request, messages.SUCCESS, "Users Updated")
         return redirect("instructor-home")
 
     def get_context_data(self, **kwargs):
@@ -95,20 +97,30 @@ class RubricListView(LoginRequiredMixin, IsSuperUserMixin, ListView):
     context_object_name = 'rubrics'
 
 
-class RubricCreateView(LoginRequiredMixin, IsSuperUserMixin, CreateView):
+class RubricCreateView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAlertMixin, CreateView):
     form_class = forms.RubricForm
     success_url = reverse_lazy('rubric-list')
-    template_name = 'admin_form_base.html'
+    template_name = 'form_base.html'
+    form_name = "Create Rubric"
+    success_message = "New Rubric Saved"
 
 
-class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, UpdateView):
+class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAlertMixin, UpdateView):
     form_class = forms.RubricForm
+    form_name = "Edit Rubric"
     model = models.Rubric
     success_url = reverse_lazy('rubric-list')
-    template_name = 'admin_form_base.html'
+    template_name = 'form_base.html'
+    success_message = "Rubric Updated"
 
 
-class RubricDeleteView(LoginRequiredMixin, IsSuperUserMixin, DeleteView):
+class RubricDeleteView(LoginRequiredMixin, IsSuperUserMixin, SuccessDeleteMixin, DeleteView):
     template_name = 'rubrics/rubric_delete.html'
     model = models.Rubric
     success_url = reverse_lazy('rubric-list')
+    success_message = "Rubric Deleted"
+
+    def get_context_data(self, **kwargs):
+        context = super(RubricDeleteView, self).get_context_data(**kwargs)
+        context['objectString'] = self.object.name
+        return context
