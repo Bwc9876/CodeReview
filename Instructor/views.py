@@ -112,6 +112,20 @@ class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAl
     success_url = reverse_lazy('rubric-list')
     template_name = 'form_base.html'
     success_message = "Rubric Updated"
+    
+    def form_valid(self, form):
+        row_count = self.object.rubricrow_set.count()
+        for review in main_models.Review.objects.filter(rubric=self.object, status=main_models.Review.Status.CLOSED):
+            if review.scoredrow_set.count() != row_count:
+                for row in self.object.rubricrow_set.all():
+                    try:
+                        review.scoredrow_set.get(source_row__index=row.index)
+                    except models.ScoredRow.DoesNotExist:
+                        scored = review.scoredrow_set.create(score=-1, source_row=row)
+                        scored.save()
+                review.scoredrow_set.filter(source_row__index__gte=row_count).delete()
+
+        return super(RubricEditView, self).form_valid(form)
 
 
 class RubricDeleteView(LoginRequiredMixin, IsSuperUserMixin, SuccessDeleteMixin, DeleteView):
