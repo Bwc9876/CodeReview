@@ -7,13 +7,13 @@
 {% block submitWord %}Login{% endblock %}
 
 {% block errorHandling %}
-        {% if form.non_field_errors %}
-            <div class="d-flex align-items-center alert alert-danger text-start" role="alert">
-                <i class="bi bi-exclamation-circle me-2 fs-5"></i>
-                {% for error in form.non_field_errors %}
-                    <span>{{ error }}</span>
-                {% endfor %}
-                <button data-bs-dismiss="alert" type="button" class="btn-close ms-auto" aria-label="Close"></button>
-            </div>
-        {% endif %}
+    {% if form.non_field_errors %}
+        <div class="d-flex align-items-center alert alert-danger text-start" role="alert">
+            <i class="bi bi-exclamation-circle me-2 fs-5"></i>
+            {% for error in form.non_field_errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+            <button data-bs-dismiss="alert" type="button" class="btn-close ms-auto" aria-label="Close"></button>
+        </div>
+    {% endif %}
 {% endblock %}

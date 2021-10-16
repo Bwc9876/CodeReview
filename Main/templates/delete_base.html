@@ -13,9 +13,11 @@
         <div class="col">
             <form method="post" class="form-main">
                 {% csrf_token %}
-                <h2 class="mb-5">Are you sure you want to {% block deleteVerb %}delete{% endblock %} {{ objectString }}?</h2>
+                <h2 class="mb-5">Are you sure you want to {% block deleteVerb %}
+                    delete{% endblock %} {{ objectString }}?</h2>
                 <button class="btn mt-2 w-100 btn-outline-danger submit-button" type="submit">
-                    <span class="loading spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    <span class="loading spinner-border spinner-border-sm d-none" role="status"
+                          aria-hidden="true"></span>
                     <span class="submit-word">{% block submitVerb %}Delete{% endblock %}</span>
                 </button>
                 <button type="button" class="btn mt-2 w-100 btn-outline-secondary back-button">Back</button>

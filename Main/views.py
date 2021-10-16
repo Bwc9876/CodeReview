@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core import mail
 from django.db.models import Q, QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -10,11 +10,12 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, DetailView, ListView
-from django.views.generic.edit import FormMixin, DeletionMixin
 from django.views.generic.base import ContextMixin
+from django.views.generic.edit import FormMixin, DeletionMixin
 
 from Users.models import User
 from . import models, forms
+
 
 # Email Utility Functions
 
@@ -60,7 +61,6 @@ class FormNameMixin(ContextMixin):
 
 
 class FormAlertMixin(FormMixin):
-
     request = None
 
     success_message: str = "Complete"
@@ -76,12 +76,12 @@ class FormAlertMixin(FormMixin):
 
 
 class SuccessDeleteMixin(DeletionMixin):
-
     success_message: str = "Deleted"
 
     def delete(self, request, *args, **kwargs):
         messages.add_message(request, messages.SUCCESS, self.success_message)
         return super(SuccessDeleteMixin, self).delete(request, *args, **kwargs)
+
 
 # Home
 

@@ -1,6 +1,6 @@
 from django import template
+from django.forms import BoundField
 from django.forms.fields import CheckboxInput
-from django.forms import Field, BoundField
 
 register = template.Library()
 

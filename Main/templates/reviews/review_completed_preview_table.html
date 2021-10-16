@@ -4,7 +4,9 @@
     {% if not hide_view_all %}
         <tr>
             <td class="text-center" colspan="{{ colspan }}">
-                <a class="link-primary" href="{% url "review-complete" %}{% if target_session %}?session={{ target_session }}{% endif %}">View All</a></td>
+                <a class="link-primary"
+                   href="{% url "review-complete" %}{% if target_session %}?session={{ target_session }}{% endif %}">View
+                    All</a></td>
         </tr>
     {% endif %}
 {% endblock %}

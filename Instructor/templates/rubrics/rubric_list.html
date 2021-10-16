@@ -7,31 +7,31 @@
         <div class="col">
             <table class="table table-striped">
                 <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Max Score</th>
-                        <th scope="col">Edit</th>
-                        <th scope="col">Delete</th>
-                    </tr>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Max Score</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Delete</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {% for rubric in rubrics %}
-                        <tr>
-                            <th scope="row">{{ rubric.name }}</th>
-                            <td>{{ rubric.max_score }}</td>
-                            <td><a href="{% url "rubric-edit" rubric.id %}">Edit</a></td>
-                            <td><a class="link-danger" href="{% url "rubric-delete" rubric.id %}">Delete</a></td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="2">No Rubrics</td>
-                        </tr>
-                    {% endfor %}
+                {% for rubric in rubrics %}
+                    <tr>
+                        <th scope="row">{{ rubric.name }}</th>
+                        <td>{{ rubric.max_score }}</td>
+                        <td><a href="{% url "rubric-edit" rubric.id %}">Edit</a></td>
+                        <td><a class="link-danger" href="{% url "rubric-delete" rubric.id %}">Delete</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">No Rubrics</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
                 <thead>
-                    <tr class="text-center">
-                        <td colspan="4"><a class="link-secondary" href="{% url "rubric-create" %}">Create Rubric</a></td>
-                    </tr>
+                <tr class="text-center">
+                    <td colspan="4"><a class="link-secondary" href="{% url "rubric-create" %}">Create Rubric</a></td>
+                </tr>
                 </thead>
             </table>
         </div>

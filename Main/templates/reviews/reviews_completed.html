@@ -10,14 +10,14 @@
 {% block belowHeader %}
     {% if opposite_session %}
         <nav aria-label="Session navigation">
-          <ul class="pagination justify-content-center">
-            <li class="page-item {% if target_session == "AM" %}active{% endif %}">
-                <a class="page-link" href="{% url "review-complete" %}?session=AM">AM</a>
-            </li>
-            <li class="page-item {% if target_session == "PM" %}active{% endif %}">
-                <a class="page-link" href="{% url "review-complete" %}?session=PM">PM</a>
-            </li>
-          </ul>
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if target_session == "AM" %}active{% endif %}">
+                    <a class="page-link" href="{% url "review-complete" %}?session=AM">AM</a>
+                </li>
+                <li class="page-item {% if target_session == "PM" %}active{% endif %}">
+                    <a class="page-link" href="{% url "review-complete" %}?session=PM">PM</a>
+                </li>
+            </ul>
         </nav>
     {% endif %}
 {% endblock %}
@@ -37,34 +37,40 @@
         <div class="row">
             <div class="col">
                 <nav aria-label="Page navigation">
-                  <ul class="pagination justify-content-center">
-                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-                      <a class="page-link"
-                         href="
-                        {% if page_obj.has_previous %}{% url "review-complete" %}?page=1&session={{ target_session }}{% else %}#{% endif %}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                      </a>
-                    </li>
-                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-                        <a class="page-link" href="
-                        {% if page_obj.has_previous %}{% url "review-complete" %}?page={{ page_obj.previous_page_number }}&session={{ target_session }}{% else %}#{% endif %}">
-                            <span aria-hidden="true">&#8249;</span>
-                        </a>
-                    </li>
-                    <li class="page-item disabled"><a class="page-link" href="#">Page {{ page_obj.number }}</a></li>
-                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                      <a class="page-link" href="
-                        {% if page_obj.has_next %}{% url "review-complete" %}?page={{ page_obj.next_page_number }}&session={{ target_session }}{% else %}#{% endif %}">
-                        <span aria-hidden="true">&#8250;</span>
-                      </a>
-                    </li>
-                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                      <a class="page-link {% if not page_obj.has_next %}disabled{% endif %}" href="
-                        {% if page_obj.has_next %}{% url "review-complete" %}?page={{ paginator.num_pages }}&session={{ target_session }}{% else %}#{% endif %}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                      </a>
-                    </li>
-                  </ul>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                            <a class="page-link"
+                               href="
+                        {% if page_obj.has_previous %}{% url "review-complete" %}?page=1&session=
+                                   {{ target_session }}{% else %}#{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                            <a class="page-link" href="
+
+                                    {% if page_obj.has_previous %}{% url "review-complete" %}?page={{ page_obj.previous_page_number }}&session=
+                                        {{ target_session }}{% else %}#{% endif %}">
+                                <span aria-hidden="true">&#8249;</span>
+                            </a>
+                        </li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Page {{ page_obj.number }}</a></li>
+                        <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                            <a class="page-link" href="
+
+                                    {% if page_obj.has_next %}{% url "review-complete" %}?page={{ page_obj.next_page_number }}&session=
+                                        {{ target_session }}{% else %}#{% endif %}">
+                                <span aria-hidden="true">&#8250;</span>
+                            </a>
+                        </li>
+                        <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                            <a class="page-link {% if not page_obj.has_next %}disabled{% endif %}" href="
+                        {% if page_obj.has_next %}{% url "review-complete" %}?page={{ paginator.num_pages }}&session=
+                                {{ target_session }}{% else %}#{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
                 </nav>
             </div>
         </div>

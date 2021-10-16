@@ -3,20 +3,20 @@
 <div class="overflow-auto">
     <table class="table table-bordered rubric-editing">
         <thead>
-            <tr>
-                <th class="cell">Criteria</th>
-                <th class="cell" colspan="500">Score</th>
-            </tr>
+        <tr>
+            <th class="cell">Criteria</th>
+            <th class="cell" colspan="500">Score</th>
+        </tr>
         </thead>
         <tbody>
-            {# This will be filled in through JS #}
+        {# This will be filled in through JS #}
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="500">
-                    <button type="button" class="add-row-button btn btn-outline-secondary w-100">Add Row</button>
-                </td>
-            </tr>
+        <tr>
+            <td colspan="500">
+                <button type="button" class="add-row-button btn btn-outline-secondary w-100">Add Row</button>
+            </td>
+        </tr>
         </tfoot>
     </table>
 </div>
@@ -25,7 +25,9 @@
         <tr id="row-template">
             <th class="cell p-1">
                 <div class="cell-wrapper w-100 text-center">
-                    <button type="button" class="delete-button w-75 delete-row btn btn-outline-secondary btn-sm">Delete</button>
+                    <button type="button" class="delete-button w-75 delete-row btn btn-outline-secondary btn-sm">
+                        Delete
+                    </button>
                     <div class="cell_part">
                         <input placeholder="Name" class="cell-input row-name form-control" type="text"/>
                     </div>
@@ -36,13 +38,16 @@
                 </div>
             </th>
             <td class="cell align-middle text-center">
-                <button type="button" class="nowrap add-cell-button btn btn-outline-secondary text-nowrap">Add Cell</button>
+                <button type="button" class="nowrap add-cell-button btn btn-outline-secondary text-nowrap">Add Cell
+                </button>
             </td>
         </tr>
         <tr class="d-none">
             <td id="cell-template">
                 <div class="cell-wrapper text-center">
-                    <button type="button" class="w-75 delete-button delete-cell btn btn-outline-secondary btn-sm">Delete</button>
+                    <button type="button" class="w-75 delete-button delete-cell btn btn-outline-secondary btn-sm">
+                        Delete
+                    </button>
                     <div class="cell_part">
                         <input placeholder="Score" class="cell-input cell-score form-control" type="number"/>
                     </div>

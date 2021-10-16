@@ -44,7 +44,9 @@
                             <td class="cell {% if cell|is_score:review %}selected fw-bolder {% endif %}">{{ cell.score }}
                                 <br> {{ cell.description }}</td>
                         {% endfor %}
-                        <td class="cell {% if row|no_score:review %}selected fw-bolder{% endif %}">N/A <br> Does not apply</td>
+                        <td class="cell {% if row|no_score:review %}selected fw-bolder{% endif %}">N/A <br> Does not
+                            apply
+                        </td>
                     </tr>
                 {% endfor %}
             </table>
@@ -57,7 +59,8 @@
     </div>
     <div class="row">
         <div class="col">
-            <textarea rows="10" style="resize: none !important;" class="form-control-plaintext" readonly>{{ review.additional_comments|default:"No comments" }}</textarea>
+            <textarea rows="10" style="resize: none !important;" class="form-control-plaintext"
+                      readonly>{{ review.additional_comments|default:"No comments" }}</textarea>
         </div>
     </div>
 

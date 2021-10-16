@@ -9,28 +9,28 @@
 
 {% block mainContent %}
     {% load review_tags %}
-        <div class="row">
-                <div class="col">
-                    <h2 class="user-select-none">Your Requested Reviews</h2>
-                    {% review_table active "schoology_id,status,date_created,edit,cancel" %}
-                </div>
-            {% if user.is_reviewer %}
-                <div class="col">
-                        <h2 class="user-select-none">Your Assigned Reviews</h2>
-                        {% review_table assigned "schoology_id,student,grade,abandon" %}
-                </div>
-            {% endif %}
+    <div class="row">
+        <div class="col">
+            <h2 class="user-select-none">Your Requested Reviews</h2>
+            {% review_table active "schoology_id,status,date_created,edit,cancel" %}
         </div>
-        <div class="row">
+        {% if user.is_reviewer %}
             <div class="col">
-                <h2 class="user-select-none">Completed Reviews</h2>
-                {% review_complete_preview_table completed "schoology_id,student,reviewer,date_completed,view" %}
+                <h2 class="user-select-none">Your Assigned Reviews</h2>
+                {% review_table assigned "schoology_id,student,grade,abandon" %}
             </div>
-            {% if user.is_reviewer %}
-                <div class="col">
-                    <h2 class="user-select-none">Available Reviews</h2>
-                    {% review_table open "schoology_id,student,date_created,claim" %}
-                </div>
-            {% endif %}
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2 class="user-select-none">Completed Reviews</h2>
+            {% review_complete_preview_table completed "schoology_id,student,reviewer,date_completed,view" %}
         </div>
+        {% if user.is_reviewer %}
+            <div class="col">
+                <h2 class="user-select-none">Available Reviews</h2>
+                {% review_table open "schoology_id,student,date_created,claim" %}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

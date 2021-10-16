@@ -36,7 +36,8 @@
                         <tr class="">
                             <th id="{{ user.id }}">{{ user }}</th>
                             <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
-                                       type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
+                                       type="checkbox" class="reviewer-checkbox" name="reviewers"
+                                       value="{{ user.id }}"/></td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -45,30 +46,32 @@
             <div class="col">
                 <table class="table">
                     <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Reviewer</th>
-                        </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reviewer</th>
+                    </tr>
                     </thead>
                     <tbody class="session PM-session">
-                        {% for user in PM %}
-                            <tr>
-                                <th id="{{ user.id }}">{{ user }}</th>
-                                <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
-                                           type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
-                            </tr>
-                        {% endfor %}
+                    {% for user in PM %}
+                        <tr>
+                            <th id="{{ user.id }}">{{ user }}</th>
+                            <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
+                                       type="checkbox" class="reviewer-checkbox" name="reviewers"
+                                       value="{{ user.id }}"/></td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
         <div class="row my-5">
             <div class="col">
-                    <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
-                        <span class="loading spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                        <span class="submit-word">Save</span>
-                    </button>
-                    <button type="button" class="btn mt-2 w-100 btn-outline-secondary back-button">Back</button>
+                <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
+                    <span class="loading spinner-border spinner-border-sm d-none" role="status"
+                          aria-hidden="true"></span>
+                    <span class="submit-word">Save</span>
+                </button>
+                <button type="button" class="btn mt-2 w-100 btn-outline-secondary back-button">Back</button>
             </div>
         </div>
     </form>

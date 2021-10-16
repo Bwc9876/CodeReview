@@ -1,6 +1,5 @@
 from django import template
 from django.db.models import QuerySet
-from django.core.paginator import Page
 
 from Main.models import Review
 from Users.models import User
