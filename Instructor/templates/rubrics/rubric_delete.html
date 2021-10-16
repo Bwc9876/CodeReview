@@ -1,10 +1,3 @@
-{% extends 'admin_base.html' %}
+{% extends 'delete_base.html' %}
 
-{% block mainContent %}
-    <form method="post">
-        {% csrf_token %}
-        <h1>Are you sure you want to delete rubric: <b>{{ rubric.name }}?</b></h1>
-        <button>Yes</button>
-        <a href="{% url "rubric-list" %}">Cancel</a>
-    </form>
-{% endblock %}
+{% block pageHeader %}Delete Rubric{% endblock %}

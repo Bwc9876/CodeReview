@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
 {% block nav %}
-    <a href="{% url "instructor-home" %}">Reviews</a>
-    <a href="{% url "rubric-list" %}">Rubrics</a>
-    <a href="{% url "user-list" %}">Users</a>
+    <a class="nav-link" href="{% url "rubric-list" %}">Rubrics</a>
+    <a class="nav-link" href="{% url "user-list" %}">Users</a>
     {% if debug %}
-        <a href="/admin">Debug</a>
+        <a class="nav-link" href="/admin">Debug</a>
     {% endif %}
-    <a href="{% url "logout" %}">Logout</a>
 {% endblock %}

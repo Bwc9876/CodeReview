@@ -6,50 +6,73 @@
     <script crossorigin="anonymous"
             src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
     <script defer src="{% static "js/user-designate.js" %}"></script>
-    <link rel="stylesheet" href="{% static "css/user-designate.css" %}"/>
+    <script defer src="{% static "js/form.js" %}"></script>
 {% endblock %}
+
+{% block pageHeader %}Edit Users{% endblock %}
+
+{% block containerClass %}container{% endblock %}
 
 {% block mainContent %}
     {# TODO: Add the ability to sync this user list with ActiveDirectory #}
-    <form method="post" class="session-form">
+    <form method="post" class="session-form form-main">
         <input name="sessions" type="hidden" class="session-input"/>
         {% csrf_token %}
-        <h1>AM Session</h1>
-        <table class="user-table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Reviewer</th>
-            </tr>
-            </thead>
-            <tbody class="session AM-session">
-            {% for user in AM %}
-                <tr>
-                    <th id="{{ user.id }}">{{ user }}</th>
-                    <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
-                               type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <h1>PM Session</h1>
-        <table class="user-table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Reviewer</th>
-            </tr>
-            </thead>
-            <tbody class="session PM-session">
-            {% for user in PM %}
-                <tr>
-                    <th id="{{ user.id }}">{{ user }}</th>
-                    <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
-                               type="checkbox" class="reviewer-checkbox" name="reviewers" value="{{ user.id }}"/></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <button>Save</button>
+        <div class="row">
+            <div class="col"><h2>AM Session</h2></div>
+            <div class="col"><h2>PM Session</h2></div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reviewer</th>
+                    </tr>
+                    </thead>
+                    <tbody class="session AM-session">
+                    {% for user in AM %}
+                        <tr class="">
+                            <th id="{{ user.id }}">{{ user }}</th>
+                            <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
+                                       type="checkbox" class="reviewer-checkbox" name="reviewers"
+                                       value="{{ user.id }}"/></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reviewer</th>
+                    </tr>
+                    </thead>
+                    <tbody class="session PM-session">
+                    {% for user in PM %}
+                        <tr>
+                            <th id="{{ user.id }}">{{ user }}</th>
+                            <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
+                                       type="checkbox" class="reviewer-checkbox" name="reviewers"
+                                       value="{{ user.id }}"/></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row my-5">
+            <div class="col">
+                <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
+                    <span class="loading spinner-border spinner-border-sm d-none" role="status"
+                          aria-hidden="true"></span>
+                    <span class="submit-word">Save</span>
+                </button>
+                <button type="button" class="btn mt-2 w-100 btn-outline-secondary back-button">Back</button>
+            </div>
+        </div>
     </form>
 {% endblock %}

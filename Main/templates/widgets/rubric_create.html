@@ -1,44 +1,62 @@
 <input class="rubric_create_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
        value="{{ widget.value|default_if_none:"[]" }}" {% include "widgets/attrs.html" %}/>
-<table class="rubric rubric-editing">
-    <tr>
-        <th class="cell">Criteria</th>
-        <th class="cell" id="scoreHeader" colspan="2">Score</th>
-    </tr>
-    <tr class="row">
-        <th class="cell">
-            <div class="cell-wrapper">
-                <button type="button" class="delete-button delete-row">X</button>
-                <div class="cell_part">
-                    <label>
-                        Name: <input class="cell-input row-name" type="text"/>
-                    </label>
+<div class="overflow-auto">
+    <table class="table table-bordered rubric-editing">
+        <thead>
+        <tr>
+            <th class="cell">Criteria</th>
+            <th class="cell" colspan="500">Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        {# This will be filled in through JS #}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="500">
+                <button type="button" class="add-row-button btn btn-outline-secondary w-100">Add Row</button>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+<div class="d-none" id="templates">
+    <table>
+        <tr id="row-template">
+            <th class="cell p-1">
+                <div class="cell-wrapper w-100 text-center">
+                    <button type="button" class="delete-button w-75 delete-row btn btn-outline-secondary btn-sm">
+                        Delete
+                    </button>
+                    <div class="cell_part">
+                        <input placeholder="Name" class="cell-input row-name form-control" type="text"/>
+                    </div>
+                    <div class="cell_part">
+                        <textarea placeholder="Description" class="cell-input row-description form-control"
+                                  type="text"></textarea>
+                    </div>
                 </div>
-                <div class="cell_part">
-                    <label>
-                        Description: <input class="cell-input row-description" type="text"/>
-                    </label>
+            </th>
+            <td class="cell align-middle text-center">
+                <button type="button" class="nowrap add-cell-button btn btn-outline-secondary text-nowrap">Add Cell
+                </button>
+            </td>
+        </tr>
+        <tr class="d-none">
+            <td id="cell-template">
+                <div class="cell-wrapper text-center">
+                    <button type="button" class="w-75 delete-button delete-cell btn btn-outline-secondary btn-sm">
+                        Delete
+                    </button>
+                    <div class="cell_part">
+                        <input placeholder="Score" class="cell-input cell-score form-control" type="number"/>
+                    </div>
+                    <div class="cell_part">
+                        <textarea placeholder="Description" class="m-0 cell-input cell-description form-control"
+                                  type="text"></textarea>
+                    </div>
                 </div>
-            </div>
-        </th>
-        <td class="cell data-cell">
-            <div class="cell-wrapper">
-                <button type="button" class="delete-button delete-cell">X</button>
-                <div class="cell_part">
-                    <label>
-                        Score: <input class="cell-input cell-score" type="number"/>
-                    </label>
-                </div>
-                <div class="cell_part">
-                    <label>
-                        Description: <input class="cell-input cell-description" type="text"/>
-                    </label>
-                </div>
-            </div>
-        </td>
-        <td class="cell">
-            <button type="button" class="add-cell-button">Add Cell</button>
-        </td>
-    </tr>
-</table>
-<button type="button" class="add-row-button">Add Row</button>
+            </td>
+        </tr>
+    </table>
+</div>

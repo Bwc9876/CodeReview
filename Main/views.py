@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core import mail
 from django.db.models import Q, QuerySet
@@ -9,6 +10,8 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, DetailView, ListView
+from django.views.generic.base import ContextMixin
+from django.views.generic.edit import FormMixin, DeletionMixin
 
 from Users.models import User
 from . import models, forms
@@ -48,6 +51,38 @@ class IsReviewerMixin(UserPassesTestMixin):
         return self.request.user.is_reviewer
 
 
+class FormNameMixin(ContextMixin):
+    form_name = "Form"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formName'] = self.form_name
+        return context
+
+
+class FormAlertMixin(FormMixin):
+    request = None
+
+    success_message: str = "Complete"
+    failure_message: str = "The information you provided was incorrect, please correct the following errors"
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, self.success_message)
+        return super(FormAlertMixin, self).form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, self.failure_message)
+        return super(FormAlertMixin, self).form_invalid(form)
+
+
+class SuccessDeleteMixin(DeletionMixin):
+    success_message: str = "Deleted"
+
+    def delete(self, request, *args, **kwargs):
+        messages.add_message(request, messages.SUCCESS, self.success_message)
+        return super(SuccessDeleteMixin, self).delete(request, *args, **kwargs)
+
+
 # Home
 
 
@@ -80,11 +115,13 @@ class HomeView(LoginRequiredMixin, TemplateView):
 # Reviews
 
 
-class ReviewCreateView(LoginRequiredMixin, CreateView):
+class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, CreateView):
     template_name = 'form_base.html'
     success_url = reverse_lazy('home')
     model = models.Review
     form_class = forms.CreateReviewForm
+    form_name = "Create a Review"
+    success_message = "New Review Saved"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -102,29 +139,43 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
         return response
 
 
-class ReviewEditView(LoginRequiredMixin, UpdateView):
+class ReviewEditView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, UpdateView):
     template_name = 'form_base.html'
     success_url = reverse_lazy('home')
     fields = ['schoology_id', 'rubric']
     model = models.Review
+    form_name = "Edit Review"
+    success_message = "Review Updated"
 
     def get_queryset(self):
         return models.Review.objects.filter(student=self.request.user).exclude(status=models.Review.Status.CLOSED)
 
 
-class ReviewCancelView(LoginRequiredMixin, DeleteView):
+class ReviewCancelView(LoginRequiredMixin, SuccessDeleteMixin, DeleteView):
     template_name = 'reviews/review_cancel.html'
     success_url = reverse_lazy('home')
     model = models.Review
+    success_message = "Review Cancelled"
+
+    def get_context_data(self, **kwargs):
+        context = super(ReviewCancelView, self).get_context_data(**kwargs)
+        context['objectString'] = f"review with schoology id: {self.object.schoology_id}"
+        return context
 
     def get_queryset(self):
         return models.Review.objects.filter(student=self.request.user).exclude(status=models.Review.Status.CLOSED)
 
 
-class ReviewDeleteView(LoginRequiredMixin, IsSuperUserMixin, DeleteView):
+class ReviewDeleteView(LoginRequiredMixin, IsSuperUserMixin, SuccessDeleteMixin, DeleteView):
     template_name = 'reviews/review_delete.html'
     success_url = reverse_lazy('home')
     model = models.Review
+    success_message = "Review Deleted"
+
+    def get_context_data(self, **kwargs):
+        context = super(ReviewDeleteView, self).get_context_data(**kwargs)
+        context['objectString'] = f"review from {self.object.student}"
+        return context
 
 
 class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
@@ -143,6 +194,7 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
                        "emails/review_accepted.html",
                        target_object,
                        User.objects.filter(is_superuser=True))
+            messages.add_message(request, messages.SUCCESS, "Review Claimed")
             return redirect('home')
         except models.Review.DoesNotExist:
             raise Http404()
@@ -166,18 +218,22 @@ class ReviewAbandonView(ReviewerAction):
         target_object.status = models.Review.Status.OPEN
         target_object.reviewer = None
         target_object.save()
+        messages.add_message(self.request, messages.SUCCESS, "Review Abandoned")
         return redirect('home')
 
     def get(self, *args, **kwargs) -> HttpResponse:
         target_object = self.get_target_review(kwargs.get('pk', ""))
-        return render(self.request, 'reviews/review_abandon.html', {'review': target_object})
+        return render(self.request, 'reviews/review_abandon.html', {'review': target_object,
+                                                                    'objectString': f"review with {target_object.student}"})
 
 
-class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, UpdateView):
+class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, FormNameMixin, FormAlertMixin, UpdateView):
     template_name = 'form_base.html'
     success_url = reverse_lazy('home')
     model = models.Review
     form_class = forms.GradeReviewForm
+    form_name = "Grade Review"
+    success_message = "Review Graded"
 
     def get_queryset(self):
         return models.Review.objects.filter(reviewer=self.request.user, status=models.Review.Status.ASSIGNED)
@@ -208,7 +264,7 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
 class ReviewCompleteListView(LoginRequiredMixin, ListView):
     template_name = "reviews/reviews_completed.html"
     model = models.Review
-    paginate_by = 10
+    paginate_by = 2
     context_object_name = 'reviews'
 
     def get_session(self):

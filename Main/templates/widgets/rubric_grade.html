@@ -1,7 +1,8 @@
+<h5 id="grade_report">Grade: 0/{{ widget.rubric.max_score }}</h5>
 <input class="rubric_grade_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
        value="" {% include "widgets/attrs.html" %}/>
 {% load rubric_tags %}
-<table class="rubric rubric-grading">
+<table class="table table-bordered rubric-grading">
     <tr>
         <th>Criteria</th>
         <th colspan="{{ widget.rubric|colspan|add:1 }}">Score</th>
@@ -11,13 +12,13 @@
             <th>{{ row.name }} <br> {{ row.description }} <br> Max: <span
                     class="max-score-val">{{ row.max_score }}</span></th>
             {% for cell in row|cells %}
-                <td class="cell"><span class="score-val">{{ cell.score }}</span> <br> <label>{{ cell.description }} <br>
-                    <input class="score-select" value="{{ cell.score }}" name="{{ row.name }}_score"
-                           type="radio"/></label></td>
+                <td class="cell text-center"><span class="score-val">{{ cell.score }}</span> <br>
+                    <label>{{ cell.description }} <br>
+                        <input class="score-select" value="{{ cell.score }}" name="{{ row.name }}_score"
+                               type="radio"/></label></td>
             {% endfor %}
-            <td class="cell"><span class="score-val">N/A</span> <br> <label>Does Not Apply <br> <input
+            <td class="cell text-center"><span class="score-val">N/A</span> <br> <label>Does Not Apply <br> <input
                     class="score-select" value="-1" name="{{ row.name }}_score" type="radio"/></label></td>
         </tr>
     {% endfor %}
 </table>
-<p id="grade_report">Grade: 0/{{ widget.rubric.max_score }}</p>
