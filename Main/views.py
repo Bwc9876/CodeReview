@@ -264,7 +264,7 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
 class ReviewCompleteListView(LoginRequiredMixin, ListView):
     template_name = "reviews/reviews_completed.html"
     model = models.Review
-    paginate_by = 2
+    paginate_by = 10
     context_object_name = 'reviews'
 
     def get_session(self):
