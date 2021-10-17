@@ -114,6 +114,7 @@ class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAl
     success_message = "Rubric Updated"
     
     def form_valid(self, form):
+        self.object = form.save()
         row_count = self.object.rubricrow_set.count()
         for review in main_models.Review.objects.filter(rubric=self.object, status=main_models.Review.Status.CLOSED):
             if review.scoredrow_set.count() != row_count:

@@ -46,21 +46,18 @@ class Review(BaseModel):
         return f"Review from {str(self.student)}"
 
     def score_fraction(self):
-        my_score = 0
-        max_score = self.rubric.max_score
-        for scoredRow in self.scoredrow_set.all():
-            if scoredRow.score == -1:
-                max_score -= scoredRow.source_row.max_score
-            else:
-                my_score += scoredRow.score
-        return f'{my_score}/{max_score}'
-
-    def get_status(self):
-        return Review.get_status_from_string(self.status)
+        if self.status == Review.Status.CLOSED:
+            my_score = 0
+            max_score = self.rubric.max_score
+            for scoredRow in self.scoredrow_set.all():
+                if scoredRow.score == -1:
+                    max_score -= scoredRow.source_row.max_score
+                else:
+                    my_score += scoredRow.score
+            return f'{my_score}/{max_score}'
+        else:
+            return None
 
     @staticmethod
     def get_status_from_string(status):
         return Review.Status.labels[Review.Status.values.index(status)]
-
-    def affiliated(self, user):
-        return self.student == user or (self.reviewer is not None and self.reviewer == user) or user.is_superuser
