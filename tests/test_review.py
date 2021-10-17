@@ -82,10 +82,14 @@ class ReviewAccessTest(BaseCase):
                         response = client.get(url)
                     else:
                         response = client.post(url)
+
                     if expected == "y":
                         self.assertIn(response.status_code, (200, 302))
                     elif expected == "n":
-                        self.assertIn(response.status_code, (404, 403))
+                        if http_type == "get":
+                            self.assertIn(response.template_name[0], ['errors/403.html', 'errors/404.html'])
+                        else:
+                            self.assertIn(response.status_code, (403, 404, 405))
                     else:
                         self.fail("Invalid Setup Of Expected")
 
@@ -290,7 +294,7 @@ class ReviewClaimTest(BaseReviewAction):
         self.reviewer.session = User.Session.PM
         self.reviewer.save()
         response = self.reviewer_client.post(self.url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 405)
 
 
 class ReviewAbandonTest(BaseReviewAction):

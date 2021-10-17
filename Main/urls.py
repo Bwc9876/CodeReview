@@ -1,4 +1,5 @@
 from django.urls import path
+from django.conf import settings
 
 from . import views
 
@@ -19,3 +20,6 @@ reviews = [
 ]
 
 urlpatterns = home + reviews
+
+if settings.DEBUG:
+    urlpatterns.append(path('error/', views.TestError.as_view(), name='test-error'))

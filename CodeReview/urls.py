@@ -13,3 +13,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns.append(path('admin/', admin.site.urls))
     urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))
+
+handler404 = 'Main.views.error_404_handler'
+handler403 = 'Main.views.error_403_handler'
+handler500 = 'Main.views.error_500_handler'

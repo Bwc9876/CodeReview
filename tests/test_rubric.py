@@ -29,9 +29,9 @@ class RubricFormTest(TestCase):
         c = Client()
         c.force_login(bad_user)
         bad_response = c.get(self.url)
-        self.assertEqual(bad_response.status_code, 403)
+        self.assertEqual(bad_response.template_name[0], 'errors/403.html')
         good_response = self.client.get(self.url)
-        self.assertNotEqual(good_response, 403)
+        self.assertNotEqual(good_response.template_name[0], 'errors/403.html')
 
     def test_form(self):
         post_data = {'name': 'Create Rubric', 'rubric': test_json}
@@ -100,8 +100,8 @@ class RubricDeleteTest(RubricActionTest):
         bad_user = User.objects.create_user("bad-user")
         bad_client = Client()
         bad_client.force_login(bad_user)
-        self.assertEqual(403, bad_client.get(self.url).status_code)
-        self.assertNotEqual(403, self.client.get(self.url).status_code)
+        self.assertEqual('errors/403.html', bad_client.get(self.url).template_name[0])
+        self.assertNotEqual('errors/403.html', self.client.get(self.url).template_name[0])
 
     def test_delete(self):
         self.client.post(self.url)
@@ -120,8 +120,8 @@ class RubricEditTest(RubricActionTest):
         bad_user = User.objects.create_user("bad-user")
         bad_client = Client()
         bad_client.force_login(bad_user)
-        self.assertEqual(403, bad_client.get(self.url).status_code)
-        self.assertNotEqual(403, self.client.get(self.url).status_code)
+        self.assertEqual('errors/403.html', bad_client.get(self.url).template_name[0])
+        self.assertNotEqual('errors/403.html', self.client.get(self.url).template_name[0])
 
     def test_edit(self):
         new_json = JSONDecoder().decode(test_json)
@@ -150,8 +150,8 @@ class RubricListTest(TestCase):
         bad_user = User.objects.create_user("bad-user")
         bad_client = Client()
         bad_client.force_login(bad_user)
-        self.assertEqual(403, bad_client.get(self.url).status_code)
-        self.assertNotEqual(403, self.client.get(self.url).status_code)
+        self.assertEqual('errors/403.html', bad_client.get(self.url).template_name[0])
+        self.assertNotEqual('errors/403.html', self.client.get(self.url).template_name[0])
 
     def test_list(self):
         response = self.client.get(self.url)

@@ -179,7 +179,6 @@ class ReviewDeleteView(LoginRequiredMixin, IsSuperUserMixin, SuccessDeleteMixin,
 
 
 class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
-    http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
         target_pk = kwargs.get('pk', '')
@@ -291,3 +290,41 @@ class ReviewCompleteListView(LoginRequiredMixin, ListView):
                 return query.filter(student__session=session)
         else:
             return query.filter(Q(student=self.request.user) | Q(reviewer=self.request.user))
+
+
+# Errors
+
+
+class Error404(TemplateView):
+    template_name = 'errors/404.html'
+
+
+class Error403(TemplateView):
+    template_name = 'errors/403.html'
+
+
+class Error500(TemplateView):
+    template_name = 'errors/500.html'
+
+
+class TestError(View):
+
+    error_dict = {
+        '404': Error404,
+        '403': Error403,
+        '500': Error500
+    }
+
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        error_type = request.GET.get("type", "404")
+        return self.error_dict.get(error_type, Error404).as_view()(request, *args, **kwargs)
+
+
+error_404_handler = Error404.as_view()
+error_403_handler = Error403.as_view()
+
+
+def error_500_handler(request):
+    return Error500.as_view()(request)
