@@ -1,0 +1,14 @@
+{% extends base_template %}
+
+{% block mainContent %}
+    <div class="row mt-4">
+        <div class="col">
+            <h2 class="text-center">{% block message %}Error{% endblock %}</h2>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col">
+            <h3 class="text-center"><a href="{% url "home" %}">Back To Home</a></h3>
+        </div>
+    </div>
+{% endblock %}

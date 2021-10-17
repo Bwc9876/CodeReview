@@ -26,7 +26,7 @@ class ListPageAccessTest(TestCase):
     def test_access(self):
         for url in self.urls:
             response = self.bad_client.get(reverse(url))
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual('errors/403.html', response.template_name[0])
             response = self.super_client.get(reverse(url))
             self.assertEqual(response.status_code, 200)
 
