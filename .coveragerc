@@ -12,4 +12,5 @@ omit =
 	*/admin.py
 	*/urls.py
 	*/apps.py
+	Users/views.py
 	

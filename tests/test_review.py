@@ -1,7 +1,9 @@
+from json import JSONDecoder, JSONEncoder
+
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from Instructor.models import Rubric
+from Instructor.models import Rubric, ScoredRow
 from Main.forms import GradeReviewForm
 from Main.models import Review
 from Users.models import User
@@ -147,6 +149,49 @@ class HomeListTest(BaseCase):
 
     def test_closed(self) -> None:
         self.assertStatus('C')
+
+
+class CompleteListTest(BaseCase):
+
+    def setUp(self) -> None:
+        super(CompleteListTest, self).setUp()
+        self.review.status = Review.Status.ASSIGNED
+        self.review.save()
+        self.clients['reviewer-affiliated'].post(reverse('review-grade', kwargs={'pk': self.review.id}),
+                                                 {'scores': "[10,2]"})
+
+    def assertInContext(self, client, params=""):
+        response = client.get(reverse('review-complete') + params)
+        self.assertIn(self.review, response.context.get("reviews", []))
+
+    def assertNotInContext(self, client, params=""):
+        response = client.get(reverse('review-complete') + params)
+        self.assertNotIn(self.review, response.context.get("reviews", []))
+
+    def test_access(self):
+        self.assertInContext(self.clients['student-affiliated'])
+        self.assertInContext(self.clients['reviewer-affiliated'])
+        self.assertNotInContext(self.clients['student-not'])
+        self.assertNotInContext(self.clients['reviewer-not'])
+
+    def test_pagination(self):
+        response = self.clients['student-affiliated'].get(reverse('review-complete'))
+        self.assertFalse(response.context['page_obj'].has_other_pages())
+        for i in range(0, 12):
+            new_review = Review.objects.create(rubric=self.rubric, schoology_id="12.34.56",
+                                               student=self.users['student-affiliated'],
+                                               reviewer=self.users['reviewer-affiliated'],
+                                               status=Review.Status.ASSIGNED)
+            self.clients['reviewer-affiliated'].post(reverse('review-grade', kwargs={'pk': new_review.id}),
+                                                     {'scores': "[10,2]"})
+        response = self.clients['student-affiliated'].get(reverse('review-complete'))
+        self.assertTrue(response.context['page_obj'].has_other_pages())
+        response = self.clients['student-affiliated'].get(reverse('review-complete') + "?page=2")
+        self.assertEqual(response.status_code, 200)
+
+    def test_instructor_view(self):
+        self.assertInContext(self.clients['super'], params="?session=AM")
+        self.assertNotInContext(self.clients['super'], params="?session=PM")
 
 
 class BaseReviewAction(TestCase):
@@ -296,3 +341,41 @@ class ReviewGradeTest(BaseReviewAction):
 
     def test_grade_under_limit(self) -> None:
         self.assertBad("[-50,2]")
+
+
+class UpdateReviewScoreOnRubricEditTest(BaseCase):
+
+    def setUp(self) -> None:
+        super(UpdateReviewScoreOnRubricEditTest, self).setUp()
+        self.review.status = Review.Status.ASSIGNED
+        self.review.save()
+        self.clients['reviewer-affiliated'].post(reverse('review-grade', kwargs={'pk': self.review.id}),
+                                                 {'scores': "[10,2]"})
+
+    def test_new_rows(self) -> None:
+        new_obj = JSONDecoder().decode(test_json)
+        new_obj.append({
+            'name': "New Row",
+            'description': "New Row 3",
+            'cells': [
+                {
+                    'score': 1,
+                    'description': "New Cell 1"
+                },
+                {
+                    'score': 0,
+                    'description': "New Cell 2"
+                }
+            ]
+        })
+        self.clients['super'].post(reverse('rubric-edit', kwargs={'pk': self.rubric.id}),
+                                   {'name': "Edited Rubric", 'rubric': JSONEncoder().encode(new_obj)})
+        self.assertEqual(ScoredRow.objects.filter(parent_review__id=self.review.id).count(), 3)
+        self.assertEqual(ScoredRow.objects.get(parent_review=self.review, source_row__index=2).score, -1)
+
+    def test_delete_row(self):
+        new_obj: list = JSONDecoder().decode(test_json)
+        new_obj.pop(1)
+        self.clients['super'].post(reverse('rubric-edit', kwargs={'pk': self.rubric.id}),
+                                   {'name': "Edited Rubric", 'rubric': JSONEncoder().encode(new_obj)})
+        self.assertEqual(ScoredRow.objects.filter(parent_review__id=self.review.id).count(), 1)

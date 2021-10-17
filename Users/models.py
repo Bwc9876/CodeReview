@@ -15,7 +15,7 @@ class User(AbstractUser):
 
     @staticmethod
     def session_from_str(session_code):
-        return User.Session.labels[User.Session.choices.index(session_code)]
+        return User.Session.labels[User.Session.values.index(session_code)]
 
     def __str__(self):
         if self.first_name == "" or self.last_name == "":
