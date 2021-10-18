@@ -15,9 +15,9 @@ $(document).ready(function () {
         group: "sessions",
         animation: 150,
         multiDrag: true,
-        selectedClass: "selected-user",
+        selectedClass: "bg-light",
         fallbackTolerance: 3,
-        ghostClass: "hover-user"
+        ghostClass: "bg-light",
     };
 
     $(".AM-session").sortable(options);

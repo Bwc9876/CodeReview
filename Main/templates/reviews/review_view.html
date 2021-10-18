@@ -41,7 +41,7 @@
                     <tr>
                         <th>{{ row.name }} <br> {{ row.description }}</th>
                         {% for cell in row|cells %}
-                            <td class="cell {% if cell|is_score:review %}selected fw-bolder {% endif %}">{{ cell.score }}
+                            <td class="cell {% if cell|is_score:review %}selected fw-bolder{% endif %}">{{ cell.score }}
                                 <br> {{ cell.description }}</td>
                         {% endfor %}
                         <td class="cell {% if row|no_score:review %}selected fw-bolder{% endif %}">N/A <br> Does not
