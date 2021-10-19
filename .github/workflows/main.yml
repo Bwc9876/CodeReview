@@ -8,6 +8,7 @@ on:
       - ".gitignore"
       - ".github/**"
       - "coverage.svg"
+      - "concept/**"
     branches: [ master ]
 
 jobs:
