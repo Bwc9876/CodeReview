@@ -18,7 +18,7 @@ class CreateRubricWidget(TextInput):
 
 
 class RubricForm(ModelForm):
-    rubric = CharField(widget=CreateRubricWidget)
+    rubric = CharField(widget=CreateRubricWidget, help_text="This rubric will be used by reviewers to grade code")
     _validation_schema = {
         "type": "array",
         "minItems": 1,

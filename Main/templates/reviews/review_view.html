@@ -3,12 +3,21 @@
 {% block resources %}
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/rubrics/rubric_table.css' %}"/>
+    <script>function goBack(){history.go(-1)}</script>
 {% endblock %}
 
 {% block pageHeader %}Review Details{% endblock %}
 
 {% block mainContent %}
     {% load rubric_tags %}
+    <div class="row">
+        <div class="col">
+            <button onclick="goBack()" class="btn h2 btn-secondary"><i class="bi bi-arrow-left"></i> Back</button>
+        </div>
+        <div class="col text-end">
+            <h2>Schoology Id: {{ review.schoology_id }}</h2>
+        </div>
+    </div>
     <div class="row">
         <div class="col">
             <h2>Student: {{ review.student }}</h2>
