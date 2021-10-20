@@ -23,8 +23,8 @@
                         <td><a class="link-danger" href="{% url "rubric-delete" rubric.id %}">Delete</a></td>
                     </tr>
                 {% empty %}
-                    <tr>
-                        <td colspan="2">No Rubrics</td>
+                    <tr class="text-center">
+                        <td class="text-black-50" colspan="10">No Rubrics</td>
                     </tr>
                 {% endfor %}
                 </tbody>
