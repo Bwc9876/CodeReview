@@ -3,7 +3,7 @@
 {% block resources %}
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/rubrics/rubric_table.css' %}"/>
-    <script>function goBack(){history.go(-1)}</script>
+    <script>function goBack(){history.go(-1);}</script>
 {% endblock %}
 
 {% block pageHeader %}Review Details{% endblock %}
@@ -12,7 +12,7 @@
     {% load rubric_tags %}
     <div class="row">
         <div class="col">
-            <button onclick="goBack()" class="btn h2 btn-secondary"><i class="bi bi-arrow-left"></i> Back</button>
+            <button onclick="goBack()" class="btn h2 btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</button>
         </div>
         <div class="col text-end">
             <h2>Schoology Id: {{ review.schoology_id }}</h2>
@@ -62,15 +62,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
-            <h2>Additional Comments</h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <textarea rows="10" style="resize: none !important;" class="form-control-plaintext"
+        <div class="col w-100">
+            <label for="additional_comments"> Additional Comments </label>
+            <textarea id="additional_comments" rows="10" style="resize: none !important;" class="form-control-plaintext"
                       readonly>{{ review.additional_comments|default:"No comments" }}</textarea>
         </div>
     </div>
-
 {% endblock %}
