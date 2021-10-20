@@ -1,6 +1,15 @@
 name: Tests
 
 on:
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".gitignore"
+      - ".github/**"
+      - "coverage.svg"
+      - "concept/**"   
+    branches: [ master ]
   push:
     paths-ignore:
       - "docs/**"
