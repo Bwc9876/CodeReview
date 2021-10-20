@@ -1,7 +1,7 @@
 <input class="rubric_create_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
        value="{{ widget.value|default_if_none:"[]" }}" {% include "widgets/attrs.html" %}/>
 <div class="overflow-auto">
-    <table class="table table-bordered rubric-editing">
+    <table class="table table-bordered rubric-editing mb-0">
         <thead>
         <tr>
             <th class="cell">Criteria</th>
