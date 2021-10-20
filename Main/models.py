@@ -32,15 +32,15 @@ class Review(BaseModel):
 
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="student")
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviewer", null=True)
-    schoology_id = models.CharField(max_length=10, null=True)
+    schoology_id = models.CharField(max_length=10, null=True, help_text="The ID of the schoology assignment that this review pertains to")
     status = models.CharField(choices=Status.choices, default=Status.OPEN, max_length=1)
-    rubric = models.ForeignKey("Instructor.Rubric", on_delete=models.CASCADE, related_name="source_rubric")
-    additional_comments = models.TextField(blank=True, null=True)
+    rubric = models.ForeignKey("Instructor.Rubric", on_delete=models.CASCADE, related_name="source_rubric", help_text="The rubric the reviewer will use to grade your code")
+    additional_comments = models.TextField(blank=True, null=True, help_text="Any additional comments you have on the code")
     date_created = models.DateTimeField(auto_now_add=True)
     date_completed = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        ordering = ['-date_created']
+        ordering = ['-date_completed', '-date_created']
 
     def __str__(self):
         return f"Review from {str(self.student)}"

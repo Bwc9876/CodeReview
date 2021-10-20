@@ -43,7 +43,7 @@ class CreateReviewForm(ModelForm):
 
 
 class GradeReviewForm(ModelForm):
-    scores = CharField(max_length=200, widget=GradeReviewWidget())
+    scores = CharField(max_length=200, widget=GradeReviewWidget(), help_text="Please fill out each row in the rubric.  If a row does not apply to this specific assignment, select \"N/A\"")
 
     _validation_schema = {
         "type": "array",

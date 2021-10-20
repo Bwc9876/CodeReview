@@ -64,7 +64,7 @@ class FormAlertMixin(FormMixin):
     request = None
 
     success_message: str = "Complete"
-    failure_message: str = "The information you provided was incorrect, please correct the following errors"
+    failure_message: str = "The information you provided was incorrect, please correct the errors described below"
 
     def form_valid(self, form):
         messages.add_message(self.request, messages.SUCCESS, self.success_message)

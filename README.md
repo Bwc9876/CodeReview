@@ -1,6 +1,6 @@
 [![CodeQL](https://github.com/Bwc9876/CodeReview/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Bwc9876/CodeReview/actions/workflows/codeql-analysis.yml)
 [![Tests](https://github.com/Bwc9876/CodeReview/actions/workflows/main.yml/badge.svg)](https://github.com/Bwc9876/CodeReview/actions/workflows/main.yml)
-![Test coverage](https://github.com/Bwc9876/CodeReview/blob/master/coverage.svg)
+[![Test coverage](https://github.com/Bwc9876/CodeReview/blob/master/coverage.svg)](https://github.com/Bwc9876/CodeReview/actions/workflows/main.yml)
 
 # CodeReview
 
@@ -49,6 +49,7 @@ review, the instructor will get a final email with the notes the senior has give
 - [Jquery](https://jquery.com/)
 - [FontAwesome](https://fontawesome.com/)
 - [JsonSchema](https://pypi.org/project/jsonschema/)
+- [DjangoMailer](https://pypi.org/project/django-mailer/)
 
 ## Running
 
@@ -123,7 +124,7 @@ Follow the interactive prompt to create the instructor's account.
 If the password for the instructor's account is lost, the following can be run to reset it
 
 ```sh
-python manage.py changepassword {Instructor's username}
+python manage.py changepassword {Instructors username}
 ```
 
 Then, follow the interactive prompt to reset the password.

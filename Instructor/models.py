@@ -35,7 +35,7 @@ class ScoredRow(BaseModel):
 
 
 class Rubric(BaseModel):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, help_text="The name the students will use to pick a rubric when requesting a review")
     max_score = models.FloatField()
 
     def to_json(self) -> str:
