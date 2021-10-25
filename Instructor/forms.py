@@ -1,3 +1,7 @@
+"""
+    This file defines the forms used in the Instructor app
+"""
+
 from json import JSONDecoder, JSONDecodeError
 
 from django.forms import ModelForm, TextInput
@@ -9,15 +13,37 @@ from . import models
 
 
 class CreateRubricWidget(TextInput):
+    """
+        This widget is used to create a rubric
+
+        :cvar template_name: The html file used to represent this widget
+        :cvar input_type: The type to use on the <input> element
+    """
+
     template_name = "widgets/rubric_create.html"
     input_type = 'hidden'
 
     class Media:
+        """
+            This internal class defines what resources the widget needs
+
+            :cvar css: The CSS this widget will use
+            :cvar js: The JavaScript this widget will use
+        """
+
         css = {'all': ('css/rubrics/rubric_table.css',)}
         js = ('js/rubrics/rubric-create-widget.js',)
 
 
 class RubricForm(ModelForm):
+    """
+        This Form is used in the creation of a Rubric
+
+        :cvar rubric: This field will take a JSON representation of our Rubric
+        :cvar _validation_schema: This dictionary defines what the Rubric JSON should look like
+        :ivar _json_validator: We use this object to validate inputted JSON against our schema
+    """
+
     rubric = CharField(widget=CreateRubricWidget, help_text="This rubric will be used by reviewers to grade code")
     _validation_schema = {
         "type": "array",
@@ -55,10 +81,22 @@ class RubricForm(ModelForm):
     }
 
     class Meta:
+        """
+            This internal class defines data about the form itself
+
+            :cvar model: The model django will auto-create certain form fields from
+            :cvar fields: The fields to use in the form
+        """
+
         model = models.Rubric
         fields = ['name']
 
     def __init__(self, *args, **kwargs):
+        """
+            This function is run on creation of the form
+            It loads the Rubric into JSON and then sets up the schema
+        """
+
         instance: models.Rubric = kwargs.get("instance", None)
         initial: dict = kwargs.get("initial", {})
         if instance is not None:
@@ -74,6 +112,16 @@ class RubricForm(ModelForm):
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True) -> models.Rubric:
+        """
+            This function is run to save the Rubric to the database
+            It loads the JSON, and creates the needed `RubricRow` and `RubricCell` objects to represent the Rubric
+
+            :param commit: Whether to actually save the new Rubric to the database
+            :type commit: bool
+            :return: The new rubric
+            :rtype: models.Rubric
+        """
+
         new_rubric: models.Rubric = super().save(commit=False)
         new_rubric.max_score = 0
         new_rubric.save()
@@ -123,6 +171,15 @@ class RubricForm(ModelForm):
 
     @staticmethod
     def explain_json_error(error: ValidationError) -> str:
+        """
+            In the event of an error when parsing the JSON for the rubric, this function will exaplin what is wrong
+
+            :param error: The ValidationError that occured
+            :type error: ValidationError
+            :return: An explanation on what is wrong with the JSON
+            :rtype: str
+        """
+
         if len(error.relative_path) > 0:
             row_num = error.relative_path[0] + 1
             location = f"in row {row_num}"
@@ -156,6 +213,14 @@ class RubricForm(ModelForm):
             return "Unknown Error"
 
     def clean(self) -> dict:
+        """
+            This function is run to validate the entered data in the form.
+            It ensures that the JSON is valid. If it isn't valid, it explains the error
+
+            :return: The cleaned data of the form
+            :rtype: dict
+        """
+
         super().clean()
         raw_json: str = self.cleaned_data.get("rubric")
 

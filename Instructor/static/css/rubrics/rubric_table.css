@@ -1,4 +1,4 @@
-/*!* Use to render rubric tables *!*/
+/*!* This file describes styles for Rubrics *!*/
 
 .rubric-graded td.selected, .rubric-grading td.selected {
     background-color: #edffdd !important;
