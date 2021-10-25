@@ -1,5 +1,5 @@
 /**
- * This file is used when creating or editting a rubric
+ * This file is used when creating or editing a rubric
  */
 
 let table = undefined;

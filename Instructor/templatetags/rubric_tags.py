@@ -39,6 +39,20 @@ def get_cells(row: RubricRow) -> QuerySet:
     return RubricCell.objects.filter(parent_row=row)
 
 
+@register.filter(name='colspan')
+def get_colspan(rubric: Rubric) -> int:
+    """
+        This filter gets the colspan needed to represent a Rubric as a table
+        :param rubric: The rubric to check
+        :type rubric: Rubric
+        :returns: The colspan needed for the "scores" th element in the table
+        :rtype: int
+    """
+
+    return max([RubricCell.objects.filter(parent_row=row).count()
+                for row in RubricRow.objects.filter(parent_rubric=rubric)])
+
+
 @register.filter(name='is_score')
 def is_score(cell: RubricCell, review: Review):
     """

@@ -148,7 +148,7 @@ class RubricListView(LoginRequiredMixin, IsSuperUserMixin, ListView):
     """
         This View lists the Rubric in the database
 
-        :cvar template_name: The tempalte to render and pass to the user
+        :cvar template_name: The template to render and pass to the user
         :cvar model: The model django will list and show to the user
         :cvar context_object_name: The name of the list that is passed to the template as context
     """
@@ -184,7 +184,7 @@ class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAl
         :cvar success_url: The url to go to if the edit was successful
         :cvar template_name: The template to render and return to the user
         :cvar form_name: The name of the form to display as the Page Header
-        :cvar success_message: The message that will appear as an alert when the editting is done
+        :cvar success_message: The message that will appear as an alert when the editing is done
     """
 
     form_class = forms.RubricForm

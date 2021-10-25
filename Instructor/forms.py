@@ -172,9 +172,9 @@ class RubricForm(ModelForm):
     @staticmethod
     def explain_json_error(error: ValidationError) -> str:
         """
-            In the event of an error when parsing the JSON for the rubric, this function will exaplin what is wrong
+            In the event of an error when parsing the JSON for the rubric, this function will explain what is wrong
 
-            :param error: The ValidationError that occured
+            :param error: The ValidationError that occurred
             :type error: ValidationError
             :return: An explanation on what is wrong with the JSON
             :rtype: str
