@@ -37,8 +37,8 @@ review, the instructor will get a final email with the notes the senior has give
 - DB_NAME: The name for the DB we'll use
 - DB_PASS: The password for the DB we'll use
 - LDAP_URL: The URL of the ActiveDirectory Server we want to use for auth
-- LDAP_USER: The username of the LDAP admin we want to log in as
-- LDAP_PASS: The password of the LDAP admin we want to log in as
+- LDAP_DOMAIN: The domain to use when logging users in
+- LDAP_BASE_CONTEXT: The base context to use when searching for users
 
 ### Services Used
 
