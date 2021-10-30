@@ -15,85 +15,65 @@
 
 {% block mainContent %}
     {# TODO: Add the ability to sync this user list with ActiveDirectory #}
-    <div class="row mb-5">
-        <div class="col">
-            <button type="button" class="btn btn-outline-secondary back-button d-inline"><i class="bi bi-arrow-left"></i> Back</button>
+    <form method="post" class="session-form form-main">
+        <input name="sessions" type="hidden" class="session-input"/>
+        {% csrf_token %}
+        <div class="row">
+            <div class="col"><h2>AM Session</h2></div>
+            <div class="col"><h2>PM Session</h2></div>
         </div>
-        <div class="col text-end">
-            <button class="btn btn-outline-secondary d-none" aria-label="Display help text" id="help-button" type="button" data-bs-toggle="collapse" data-bs-target=".field-help" aria-expanded="false" aria-controls="users-helptext">
-                <i class="bi bi-question-circle"></i> <span id="help-label">Show Help</span>
-            </button>
+        <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reviewer</th>
+                    </tr>
+                    </thead>
+                    <tbody class="session AM-session">
+                    {% for user in AM %}
+                        <tr class="">
+                            <th id="{{ user.id }}"><label for="{{ user.id }}-reviewer">{{ user }}</label></th>
+                            <td ><div class="form-switch">
+                                <input id="{{ user.id }}-reviewer" {% if user.is_reviewer %}checked{% endif %}
+                                       type="checkbox" class="form-check-input me-0" name="reviewers"
+                                       value="{{ user.id }}"/></div></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reviewer</th>
+                    </tr>
+                    </thead>
+                    <tbody class="session PM-session">
+                    {% for user in PM %}
+                        <tr>
+                            <th id="{{ user.id }}">{{ user }}</th>
+                            <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
+                                       type="checkbox" class="reviewer-checkbox" name="reviewers"
+                                       value="{{ user.id }}"/></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <form method="post" class="session-form form-main">
-                <input name="sessions" type="hidden" class="session-input"/>
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col"><h2>AM Session</h2></div>
-                    <div class="col"><h2>PM Session</h2></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Reviewer</th>
-                            </tr>
-                            </thead>
-                            <tbody class="session AM-session">
-                            {% for user in AM %}
-                                <tr class="">
-                                    <th id="{{ user.id }}"><label for="{{ user.id }}-reviewer">{{ user }}</label></th>
-                                    <td><div class="form-switch">
-                                        <input id="{{ user.id }}-reviewer" {% if user.is_reviewer %}checked{% endif %}
-                                               type="checkbox" class="form-check-input me-0" name="reviewers"
-                                               value="{{ user.id }}"/></div></td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Reviewer</th>
-                                </tr>
-                            </thead>
-                            <tbody class="session PM-session">
-                                {% for user in PM %}
-                                    <tr>
-                                        <th id="{{ user.id }}">{{ user }}</th>
-                                        <td><div class="form-switch">
-                                            <input id="{{ user.id }}-reviewer" {% if user.is_reviewer %}checked{% endif %}
-                                                   type="checkbox" class="form-check-input me-0" name="reviewers"
-                                                   value="{{ user.id }}"/></div></td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="mb-2 d-flex flex-row">
-                    <div class="collapse text-nowrap ms-2 mt-1 align-middle field-help" id="users-helptext">
-                        Drag users in order to change their session.
-                        Click the toggle switch next to a user to make them a reviewer.
-                    </div>
-                </div>
-                <div class="row my-5">
-                    <div class="col">
-                        <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
-                            <span class="loading spinner-border spinner-border-sm d-none" role="status"
-                                  aria-hidden="true"></span>
-                            <span class="submit-word">Save</span>
-                        </button>
-                    </div>
-                </div>
-            </form>
+        <div class="row my-5">
+            <div class="col">
+                <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
+                    <span class="loading spinner-border spinner-border-sm d-none" role="status"
+                          aria-hidden="true"></span>
+                    <span class="submit-word">Save</span>
+                </button>
+                <button type="button" class="btn mt-2 w-100 btn-outline-secondary back-button">Back</button>
+            </div>
         </div>
-    </div>
+    </form>
 {% endblock %}
