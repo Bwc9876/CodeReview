@@ -56,9 +56,10 @@
                     {% for user in PM %}
                         <tr>
                             <th id="{{ user.id }}">{{ user }}</th>
-                            <td><input aria-labelledby="{{ user.id }}" {% if user.is_reviewer %}checked{% endif %}
-                                       type="checkbox" class="reviewer-checkbox" name="reviewers"
-                                       value="{{ user.id }}"/></td>
+                            <td ><div class="form-switch">
+                                <input id="{{ user.id }}-reviewer" {% if user.is_reviewer %}checked{% endif %}
+                                       type="checkbox" class="form-check-input me-0" name="reviewers"
+                                       value="{{ user.id }}"/></div></td>
                         </tr>
                     {% endfor %}
                     </tbody>
