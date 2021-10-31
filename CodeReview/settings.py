@@ -92,11 +92,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'Users.ldap_auth.LDAPAuthentication',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 AUTH_USER_MODEL = "Users.User"
 
 LOGIN_URL = "/users/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/users/logout-done"
+
+# LDAP AUTH
+
+LDAP_URL = os.getenv('LDAP_URL', "localhost")
+LDAP_DOMAIN = os.getenv('LDAP_DOMAIN', None)
+LDAP_BASE_CONTEXT = os.getenv('LDAP_BASE_CONTEXT', None)
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'

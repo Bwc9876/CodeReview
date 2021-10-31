@@ -1,38 +1,75 @@
-# TODO: Error checking and showing it if we can't connect to ActiveDirectory
+from uuid import UUID
 
-from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM
 from django.conf import settings
-from django.auth.backends import BaseBackend
+from django.contrib import messages
+from django.contrib.auth.backends import BaseBackend
+from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM, Entry
+from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError
 
-from models import User
+from .models import User
+
 
 class LDAPAuthentication(BaseBackend):
-  
-  server = Server(settings.LDAP_URL, get_info=ALL)
-  
-  def create_from_ldap(ldap_user) -> User:
-    new_user = User.objects.create_user(id=ldap_user.uid, username=ldap_user.name, first_name=ldap_user.givenName, last_name=ldap_user.sn, email=ldap_user.mail)
-    new_user.save()
-    return new_user
-  
-  def get_ldap_user(conn, ldap_id):
-    user_obj = ObjectDef('user', conn)
-    reader = Reader(conn, user_obj, f'name={ldap_id},{settings.LDAP_BASE_CONTEXT}')
-    reader.search()
-    if len(reader) == 1:
-      return reader[0]
-    else:
-      return None
-  
-  def authenticate(self, request, username=None, password=None):
-    with Connection(setup_server(), user=f'{settings.LDAP_DOMAIN}\\{username}', password=password, authentication=NTLM) as conn:
-      ldap_id = conn.extend.standard.who_am_i()
-      ldap_user = self.get_ldap_user(conn, ldap_id)
-      if ldap_user is None:
-        return None
-      else:
-        if User.objects.filter(id=ldap_user.uid).exists():
-          return User.objects.get(id=ldap_user.uid)
+    server = Server(settings.LDAP_URL, get_info=ALL)
+
+    @staticmethod
+    def ldap_empty(value) -> str:
+        return value if str(value) != "[]" else ""
+
+    def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
+        django_user.username = ldap_user["msDS-PrincipalName"]
+        django_user.first_name = self.ldap_empty(ldap_user.givenName)
+        django_user.last_name = self.ldap_empty(ldap_user.sn)
+        django_user.email = self.ldap_empty(ldap_user.mail)
+        django_user.save()
+        return django_user
+
+    def create_from_ldap(self, ldap_user: Entry, guid: str) -> User:
+        new_user = User.objects.create_user(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
+                                            first_name=self.ldap_empty(ldap_user.givenName),
+                                            last_name=self.ldap_empty(ldap_user.sn),
+                                            email=self.ldap_empty(ldap_user.mail))
+        new_user.save()
+        return new_user
+
+    def get_ldap_user(self, conn: Connection, username: str) -> Entry:
+        user_obj = ObjectDef('user', conn)
+        reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
+        reader.search()
+        results = reader.match("msDS-PrincipalName", username)
+        if len(results) == 1:
+            return results[0]
         else:
-          return self.create_from_ldap(ldap_user)
-    
+            return None
+
+    def authenticate(self, request, username: str = None, password: str = None) -> User:
+        try:
+            conn = Connection(self.server, user=f'{settings.LDAP_DOMAIN}\\{username}', password=password,
+                              authentication=NTLM)
+            success = conn.bind()
+            if success:
+                ldap_id = conn.extend.standard.who_am_i()[2:]
+                ldap_user = self.get_ldap_user(conn, ldap_id)
+                guid = str(ldap_user["objectGUID"])
+                if ldap_user is None:
+                    return None
+                else:
+                    if User.objects.filter(id=UUID(guid)).exists():
+                        return self.update_from_ldap(ldap_user, User.objects.get(id=UUID(guid)))
+                    else:
+                        return self.create_from_ldap(ldap_user, guid)
+            else:
+                return None
+        except LDAPBindError:
+            return None
+        except LDAPSocketOpenError:
+            if not settings.DEBUG:
+                messages.add_message(request, messages.ERROR,
+                                     "There was an error contacting the auth server, please try again later.")
+            return None
+
+    def get_user(self, user_id: str) -> User:
+        try:
+            return User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return None
