@@ -1,5 +1,9 @@
 {% extends 'errors/error_base.html' %}
 
+{% comment %}
+    This page is displayed when a 404 error occurs.  It means the page was not found.
+{% endcomment %}
+
 {% block pageHeader %}404 (Page Not Found){% endblock %}
 
 {% block message %}The requested page could not be found{% endblock %}
