@@ -116,6 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# This option defines what backends we use for authentication
 AUTHENTICATION_BACKENDS = [
     'Users.ldap_auth.LDAPAuthentication',
     'django.contrib.auth.backends.ModelBackend',
