@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from django.conf import settings
@@ -32,7 +33,7 @@ class LDAPAuthentication(BaseBackend):
         new_user.save()
         return new_user
 
-    def get_ldap_user(self, conn: Connection, username: str) -> Entry:
+    def get_ldap_user(self, conn: Connection, username: str) -> Optional[Entry]:
         user_obj = ObjectDef('user', conn)
         reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
         reader.search()
@@ -42,7 +43,7 @@ class LDAPAuthentication(BaseBackend):
         else:
             return None
 
-    def authenticate(self, request, username: str = None, password: str = None) -> User:
+    def authenticate(self, request, username: str = None, password: str = None) -> Optional[User]:
         try:
             conn = Connection(self.server, user=f'{settings.LDAP_DOMAIN}\\{username}', password=password,
                               authentication=NTLM)
@@ -68,7 +69,7 @@ class LDAPAuthentication(BaseBackend):
                                      "There was an error contacting the auth server, please try again later.")
             return None
 
-    def get_user(self, user_id: str) -> User:
+    def get_user(self, user_id: str) -> Optional[User]:
         try:
             return User.objects.get(id=user_id)
         except User.DoesNotExist:
