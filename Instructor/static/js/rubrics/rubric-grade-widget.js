@@ -1,6 +1,14 @@
 'use strict';
 
+/**
+ * This file is used when grading a rubric.
+ */
+
 function update_cell_colors() {
+    /**
+     * This function updates cells that are selected with the CSS class of 'selected'.
+     */
+
     $(".rubric-grading td.cell").each(function (index, object) {
         console.log($(object).children("input:checked").length);
         $(object).toggleClass("selected", $(object).children("label").children("input:checked").length > 0)
@@ -8,6 +16,10 @@ function update_cell_colors() {
 }
 
 function get_scores() {
+    /**
+     * This function gets the scores from the table.
+     */
+
     let scores = [];
     $(".rubric-grading .criteria input:checked").each(function (index, object) {
         scores.push(parseFloat($(object).val()));
@@ -16,14 +28,26 @@ function get_scores() {
 }
 
 function update_scores_input(scores) {
+    /**
+     * This function updates the 'scores' field with the proper JSON.
+     */
+
     $(".rubric_grade_input").val(`[${scores.join(',')}]`);
 }
 
 function get_max(row_index) {
+    /**
+     * This function gets the max score of a row given its index.
+     */
+
     return parseFloat($(`.criteria#grade-row-${row_index} .max-score-val`).text());
 }
 
 function update_total_score(scores) {
+    /**
+     * This function updates the label that displays the total score.
+     */
+
     const report = $("#grade_report");
     let report_lst = []
     let total = 0;
@@ -39,6 +63,10 @@ function update_total_score(scores) {
 }
 
 function score_button_callback() {
+    /**
+     * This function is run when a button within a cell is clicked, it updates the cell colors, totals, and JSON.
+     */
+
     let scores = get_scores();
     update_cell_colors();
     update_scores_input(scores);
@@ -46,16 +74,29 @@ function score_button_callback() {
 }
 
 function score_cell_callback(event) {
+    /**
+     * This function is run when a cell is clicked, it clicks the button within the cell.
+     * This is for the sake of convenience as clicking a small button in the cell can get annoying.
+     */
+
     $(event.target).children('label').children(".score-select").click();
 }
 
-function loadCallback() {
+$(document).ready(function() {
+
+    /**
+     * This function runs when the document has been loaded successfully,
+     * It sets up callbacks.
+     */
+
     $(".score-select").click(score_button_callback);
     $(".cell").click(score_cell_callback);
     $(".score-select:checked").each((index, object) => {
+        /**
+         * This function clicks buttons that are checked so that way colors and totals are updated.
+         */
+
         $(object).click();
     });
-}
-
-$(document).ready(loadCallback);
+});
 

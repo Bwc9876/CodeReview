@@ -1,5 +1,9 @@
 {% extends base_template %}
 
+{% comment %}
+    This file is used as a base for deleting something
+{% endcomment %}
+
 {% block resources %}
     {% load static %}
     <script defer src="{% static "js/form.js" %}"></script>
@@ -14,11 +18,11 @@
             <form method="post" class="form-main">
                 {% csrf_token %}
                 <h2 class="mb-5">Are you sure you want to {% block deleteVerb %}
-                    delete{% endblock %} {{ objectString }}?</h2>
+                    delete {# This block can be overriden to change what verb to use in the confirmation message #}{% endblock %} {{ objectString }}?</h2>
                 <button class="btn mt-2 w-100 btn-outline-danger submit-button" type="submit">
                     <span class="loading spinner-border spinner-border-sm d-none" role="status"
                           aria-hidden="true"></span>
-                    <span class="submit-word">{% block submitVerb %}Delete{% endblock %}</span>
+                    <span class="submit-word">{% block submitVerb %}Delete {# This block can be overriden to change what verb appears in the submit button #}{% endblock %}</span>
                 </button>
                 <button type="button" class="btn mt-2 w-100 btn-outline-secondary back-button">Back</button>
             </form>
