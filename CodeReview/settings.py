@@ -105,8 +105,11 @@ LOGOUT_REDIRECT_URL = "/users/logout-done"
 
 # LDAP AUTH
 
+# This setting denotes what url to use to access the LDAP server
 LDAP_URL = os.getenv('LDAP_URL', "localhost")
+# This setting tells ldap what NetBIOS domain name to use when logging in a user
 LDAP_DOMAIN = os.getenv('LDAP_DOMAIN', None)
+# This setting tells ldap what base search context to use when searching for a user
 LDAP_BASE_CONTEXT = os.getenv('LDAP_BASE_CONTEXT', None)
 
 if DEBUG:

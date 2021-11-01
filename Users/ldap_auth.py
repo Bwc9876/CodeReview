@@ -11,13 +11,39 @@ from .models import User
 
 
 class LDAPAuthentication(BaseBackend):
+    """
+        This authentication backend will login the user to ldap and then create a User in the database
+        with the same info.
+
+        :cvar server: The server we're connecting to with LDAP (Must be an ActiveDirectory Server)
+    """
+
     server = Server(settings.LDAP_URL, get_info=ALL)
 
     @staticmethod
     def ldap_empty(value) -> str:
+        """
+            This function will return an empty string if the given Entry's attribute is empty
+
+            :param value: The value to check
+            :returns: The attribute as either an empty string or the attribute
+            :rtype: str
+        """
+
         return value if str(value) != "[]" else ""
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
+        """
+            This function takes an ldap user and a django user and syncs their data
+
+            :param ldap_user: The ldap user to sync from
+            :type ldap_user: Entry
+            :param django_user: The django user to sync to
+            :type django_user: User
+            :returns: The updated django user
+            :rtype: User
+        """
+
         django_user.username = ldap_user["msDS-PrincipalName"]
         django_user.first_name = self.ldap_empty(ldap_user.givenName)
         django_user.last_name = self.ldap_empty(ldap_user.sn)
@@ -26,6 +52,17 @@ class LDAPAuthentication(BaseBackend):
         return django_user
 
     def create_from_ldap(self, ldap_user: Entry, guid: str) -> User:
+        """
+            This function creates a django user from an ldap user
+
+            :param ldap_user: The user to read from
+            :type ldap_user: Entry
+            :param guid: The objectGUID of the user
+            :type guid: str
+            :returns: The new django user
+            :rtype: User
+        """
+
         new_user = User.objects.create_user(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
                                             first_name=self.ldap_empty(ldap_user.givenName),
                                             last_name=self.ldap_empty(ldap_user.sn),
@@ -34,6 +71,17 @@ class LDAPAuthentication(BaseBackend):
         return new_user
 
     def get_ldap_user(self, conn: Connection, username: str) -> Optional[Entry]:
+        """
+            This function gets an ldap user from the ldap server
+
+            :param conn: The connection for the server
+            :type conn: Connection
+            :param username: The username (MsDs-principalName) to check for
+            :type username: str
+            :returns: The user that matches the username, if any
+            :rtype: User
+        """
+
         user_obj = ObjectDef('user', conn)
         reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
         reader.search()
@@ -44,6 +92,16 @@ class LDAPAuthentication(BaseBackend):
             return None
 
     def authenticate(self, request, username: str = None, password: str = None) -> Optional[User]:
+        """
+            This is the function that django uses to authenticate a user
+
+            :param request: The request that we're trying to authenticate
+            :param username: The username we're authenticating with
+            :param password: The password we're authenticating with
+            :returns: the user we wish to authenticate with the request, if any
+            :rtype: User
+        """
+
         try:
             conn = Connection(self.server, user=f'{settings.LDAP_DOMAIN}\\{username}', password=password,
                               authentication=NTLM)
@@ -70,6 +128,15 @@ class LDAPAuthentication(BaseBackend):
             return None
 
     def get_user(self, user_id: str) -> Optional[User]:
+        """
+            This function gets a user given their id
+
+            :param user_id: The id of the user
+            :type user_id: str
+            :returns: The User that has the id, if any
+            :rtype: User
+        """
+
         try:
             return User.objects.get(id=user_id)
         except User.DoesNotExist:
