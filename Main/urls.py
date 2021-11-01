@@ -1,13 +1,14 @@
-from django.urls import path
+"""
+    This file defines the main section's urls
+"""
+
 from django.conf import settings
+from django.urls import path
 
 from . import views
 
-home = [
+urlpatterns = [
     path('', views.HomeView.as_view(), name="home"),
-]
-
-reviews = [
     path('review/create/', views.ReviewCreateView.as_view(), name="review-create"),
     path('review/edit/<uuid:pk>/', views.ReviewEditView.as_view(), name="review-edit"),
     path('review/cancel/<uuid:pk>/', views.ReviewCancelView.as_view(), name="review-cancel"),
@@ -19,7 +20,6 @@ reviews = [
     path('review/completed/', views.ReviewCompleteListView.as_view(), name="review-complete")
 ]
 
-urlpatterns = home + reviews
-
+# If we're in debug, provide URLs to test error pages
 if settings.DEBUG:
     urlpatterns.append(path('error/', views.TestError.as_view(), name='test-error'))
