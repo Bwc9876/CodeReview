@@ -1,7 +1,15 @@
+/**
+ * This file is used when creating or editing a rubric
+ */
+
 let table = undefined;
 let add_row = undefined;
 
 function convert_from_json(src_json) {
+    /**
+     * This function loads JSON and shows it on the table
+     * This is used when loading a non-empty Rubric for editing
+     */
 
     add_row.click();
 
@@ -36,6 +44,9 @@ function convert_from_json(src_json) {
 }
 
 function convert_to_json() {
+    /**
+     * This function converts the table into JSON to send to the backend
+     */
 
     let new_rubric = [];
 
@@ -68,18 +79,30 @@ function convert_to_json() {
 }
 
 function delete_row_callback(event) {
+    /**
+     * This function is run when the "Delete" button is clicked on a row
+     *  It deletes the row.
+     */
 
     $(event.target).parents("tr").remove();
 
 }
 
 function delete_cell_callback(event) {
+    /**
+     * This function is run when the "Delete" button is clicked on a cell
+     *  It deletes the cell
+     */
 
     $(event.target).parents("td").remove();
 
 }
 
 function add_row_callback() {
+    /**
+     * This function is run to add a row to the table, it loads HTML from the template div
+     */
+
     let new_row = $("<tr>");
     new_row.addClass("r_row");
     new_row.html($("#templates #row-template").html());
@@ -91,6 +114,10 @@ function add_row_callback() {
 }
 
 function add_cell_callback(event) {
+    /**
+     * This function is used to add a cell to a row, it loads HTML from the template div
+     */
+
     let new_cell = $("<td>");
     new_cell.addClass("cell");
     new_cell.addClass("data-cell");
@@ -101,6 +128,10 @@ function add_cell_callback(event) {
 }
 
 function submit_callback() {
+    /**
+     * This function is run when the form is submitted.
+     * It ensures that the JSON is sent to the backend.
+     */
 
     $(".rubric_create_input").val(convert_to_json());
 
@@ -108,6 +139,10 @@ function submit_callback() {
 
 
 $(document).ready(() => {
+    /**
+     * This function is run when the document has been loaded successfully.
+     * It sets up some variables and callbacks.
+     */
 
     table = $(".rubric-editing tbody");
     add_row = $(".add-row-button");

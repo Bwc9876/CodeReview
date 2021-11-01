@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 
+{% comment %}
+    This file is used as the home screen
+    If the user is a reviewer, we show their requested, assigned, completed, and available reviews
+    If the user is not a reviewer, we just show their requested and completed reviews.
+{% endcomment %}
+
 {% block resources %}
     {% load static %}
     <link rel="stylesheet" href="{% static "css/reviews/review-table.css" %}"/>

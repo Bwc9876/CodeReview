@@ -1,3 +1,7 @@
+"""
+    This file defines tags related to forms to use in templates
+"""
+
 from django import template
 from django.forms import BoundField
 
@@ -6,6 +10,17 @@ register = template.Library()
 
 @register.filter(name="setup_field")
 def setup_field(field: BoundField, classes: str) -> BoundField:
+    """
+        This filter sets up a field with proper css classes
+
+        :param field: The field to set up
+        :type field: BoundField
+        :param classes: Classes to add to the field's <input> element
+        :type classes: str
+        :returns: The field as html with the added classes
+        :rtype: str
+    """
+
     validation_class = ""
 
     if field.errors:

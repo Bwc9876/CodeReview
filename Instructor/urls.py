@@ -1,3 +1,7 @@
+"""
+    This file defines the instructor section's urls
+"""
+
 from django.urls import path
 
 from . import views
