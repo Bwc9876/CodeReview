@@ -1,5 +1,9 @@
 {% extends 'errors/error_base.html' %}
 
+{% comment %}
+    This page is displayed when a 403 error occurs.  It means the user lacks permissions to access the page
+{% endcomment %}
+
 {% block pageHeader %}403 (Permission Denied){% endblock %}
 
 {% block message %}You do not have sufficient permissions to view this page.{% endblock %}

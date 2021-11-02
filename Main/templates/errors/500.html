@@ -1,5 +1,9 @@
 {% extends 'errors/error_base.html' %}
 
+{% comment %}
+    This page is displayed when a 500 error occurs.  It means the server had an error.
+{% endcomment %}
+
 {% block pageHeader %}500 (Internal Server Error){% endblock %}
 
 {% block message %}The server encountered an error while processing your request.{% endblock %}

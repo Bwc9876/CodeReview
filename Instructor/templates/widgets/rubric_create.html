@@ -1,3 +1,7 @@
+{% comment %}
+    This field widget is used when creating or editting a Rubric
+{% endcomment %}
+
 <input class="rubric_create_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
        value="{{ widget.value|default_if_none:"[]" }}" {% include "widgets/attrs.html" %}/>
 <div class="overflow-auto">
@@ -8,9 +12,7 @@
             <th class="cell" colspan="500">Score</th>
         </tr>
         </thead>
-        <tbody>
-        {# This will be filled in through JS #}
-        </tbody>
+        <tbody>{# This will be filled in through JS #}</tbody>
         <tfoot>
         <tr>
             <td colspan="500">
@@ -20,6 +22,8 @@
         </tfoot>
     </table>
 </div>
+
+{# This div is used in JS as a template for creating rows and cells in the table #}
 <div class="d-none" id="templates">
     <table>
         <tr id="row-template">

@@ -1,5 +1,10 @@
 {% extends "admin_base.html" %}
 
+{% comment %}
+    This page shows the Instructor a list of users that they can drag-and-drop between the AM and PM table.
+    They can also set users as Reviewers or Not Reviewers.
+{% endcomment %}
+
 {% block resources %}
     {% load static %}
     <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>

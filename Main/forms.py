@@ -1,3 +1,7 @@
+"""
+    This file defines the forms used in the Main app
+"""
+
 from json import JSONDecoder, JSONDecodeError
 from typing import List
 
@@ -10,31 +14,78 @@ from . import models
 
 
 class GradeReviewWidget(TextInput):
+    """
+        This widget displays a table the user can click to grade a review
+
+        :cvar template_name: The template to use to render this widget
+        :cvar input_type: The type of the <input> element
+        :cvar rubric: The rubric that the Review is using
+    """
+
     template_name = "widgets/rubric_grade.html"
     input_type = 'hidden'
     rubric = None
 
     class Media:
+        """
+            This internal class specifies additional resources the widget needs
+
+            :cvar css: The CSS to include with the widget
+            :cvar js: The JavaScript to use with the widget
+        """
+
         css = {'all': ('css/rubrics/rubric_table.css',)}
         js = ('js/rubrics/rubric-grade-widget.js',)
 
     def get_context(self, name, value, attrs):
+        """
+            This function defines context to pass when rendering this widget
+
+            :return: The context for the template
+            :rtype: dict
+        """
+
         context = super().get_context(name, value, attrs)
         context['widget']['rubric'] = self.rubric
         return context
 
 
 class CreateReviewForm(ModelForm):
+    """
+        This form is used when requesting/editing a review
+    """
 
     def __init__(self, *args, **kwargs):
+        """
+            This function is run to initialize an instance of the form
+            It sets self.user to the user kwarg
+        """
+
         self.user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
 
     class Meta:
+        """
+            This internal class specifies options for this form
+
+            :cvar; The model this form edits
+            :cvar fields: The fields to include on the form
+        """
+
         model = models.Review
         fields = ['schoology_id', 'rubric']
 
     def save(self, commit=True):
+        """
+            This function is run to save the new Review
+            It sets the review's student to the user that submitted the form
+
+            :param commit: Whether to actually save the new Review
+            :type commit: bool
+            :returns: The new review
+            :rtype: models.Review
+        """
+
         new_review: models.Review = super().save(commit=False)
         new_review.student = self.user
         if commit:
@@ -43,7 +94,17 @@ class CreateReviewForm(ModelForm):
 
 
 class GradeReviewForm(ModelForm):
-    scores = CharField(max_length=200, widget=GradeReviewWidget(), help_text="Please fill out each row in the rubric.  If a row does not apply to this specific assignment, select \"N/A\"")
+    """
+        This form is used to grade Reviews
+
+        :cvar scores: The scores as a JSON string to be encoded into ScoredRow objects
+        :cvar _validation_schema: The schema used to ensure JSON is valid
+        :cvar field_order: The order in which fields will appear in the form
+        :ivar _json_validator: The validator used to ensure JSON is formatted correctly
+    """
+
+    scores = CharField(max_length=200, widget=GradeReviewWidget(),
+                       help_text="Please fill out each row in the rubric.  If a row does not apply to this specific assignment, select \"N/A\"")
 
     _validation_schema = {
         "type": "array",
@@ -54,6 +115,13 @@ class GradeReviewForm(ModelForm):
     }
 
     def __init__(self, *args, **kwargs):
+        """
+            This function is run to initialize a new instance of the form
+            It loads the instance passed as a kwarg
+
+            :raises: ValueError: If a Review object is not passed in kwargs
+        """
+
         instance: models.Review = kwargs.get('instance', None)
         super().__init__(*args, **kwargs)
         if instance:
@@ -67,6 +135,14 @@ class GradeReviewForm(ModelForm):
         self._json_validator = Draft202012Validator(self._validation_schema)
 
     class Meta:
+        """
+            This internal class defines settings for the Form
+
+            :cvar model: The model the form is working with
+            :cvar fields: The fields to use in the form
+            :cvar widgets: The widgets each field will use
+        """
+
         model = models.Review
         fields = ['additional_comments']
         widgets = {
@@ -74,6 +150,16 @@ class GradeReviewForm(ModelForm):
         }
 
     def save(self, commit=True):
+        """
+            This function runs when the Form is saving
+            It reads the scores from JSON and makes ScoredRow objects
+
+            :param commit: Whether to save the changes to the database
+            :type commit: bool
+            :return: The newly graded Review
+            :rtype: models.Review
+        """
+
         new_review: models.Review = super(GradeReviewForm, self).save(commit=False)
         scores_array: List[str] = JSONDecoder().decode(self.cleaned_data.get('scores'))
         for i in range(len(scores_array)):
@@ -89,6 +175,14 @@ class GradeReviewForm(ModelForm):
     field_order = ['scores', 'additional_comments']
 
     def clean(self):
+        """
+            This function is used to validate input data.
+            It ensure the JSON submitted for scores is valid and readable.
+
+            :return: The cleaned input data
+            :rtype: dict
+        """
+
         cleaned_data: dict = super(GradeReviewForm, self).clean()
         scores_json: str = cleaned_data.get('scores')
 

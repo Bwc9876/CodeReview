@@ -1,5 +1,10 @@
 {% extends base_template %}
 
+{% comment %}
+    This file acts as a base for all forms
+    It automatically handles fields, help text, errors, and more
+{% endcomment %}
+
 {% block resources %}
     {% load static %}
     <script defer src="{% static "js/form.js" %}"></script>
@@ -25,6 +30,7 @@
         </div>
     </div>
     {% block errorHandling %}
+        {# This block can be overidden to change how non-field errors are handled #}
         {% if form.non_field_errors %}
             <div class="row mb-2">
                 <div class="col">
@@ -73,7 +79,7 @@
                 <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
                     <span class="loading spinner-border spinner-border-sm d-none" role="status"
                           aria-hidden="true"></span>
-                    <span class="submit-word">{% block submitWord %}Save{% endblock %}</span>
+                    <span class="submit-word">{% block submitWord %}Save {# This block can be overriden to change what word appears in the submit button #}{% endblock %}</span>
                 </button>
             </form>
         </div>

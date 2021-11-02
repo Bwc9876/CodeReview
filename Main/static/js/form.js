@@ -1,4 +1,9 @@
 $(document).ready(function () {
+    /**
+     * This function will run when the document is loaded.
+     * It sets up the "back", "submit", and "show help" buttons.
+     */
+
     let form = $(".form-main");
     let back_button = $(".back-button");
     let help_button = $("#help-button");

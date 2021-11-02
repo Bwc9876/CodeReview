@@ -1,5 +1,9 @@
 {% extends "emails/email_base.html" %}
 
+{% comment %}
+    This email is sent to instructors when a Review is accepted by a reviewer
+{% endcomment %}
+
 {% block title %}Review accepted by {{ review.reviewer }}{% endblock %}
 
 {% block body %}

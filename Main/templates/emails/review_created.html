@@ -1,5 +1,9 @@
 {% extends "emails/email_base.html" %}
 
+{% comment %}
+    This email is sent to reviewers when a review has been requested by a student
+{% endcomment %}
+
 {% block title %}New Review Created by {{ review.student }}{% endblock %}
 
 {% block body %}
