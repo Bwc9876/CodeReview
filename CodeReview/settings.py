@@ -116,6 +116,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# This option defines what backends we use for authentication
+AUTHENTICATION_BACKENDS = [
+    'Users.ldap_auth.LDAPAuthentication',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 # This option defines what Model to use in Auth backend for storing user data
 AUTH_USER_MODEL = "Users.User"
 
@@ -127,6 +133,15 @@ LOGIN_REDIRECT_URL = "/"
 
 # This option defines what url to go to after logging out
 LOGOUT_REDIRECT_URL = "/users/logout-done"
+
+# LDAP AUTH
+
+# This setting denotes what url to use to access the LDAP server
+LDAP_URL = os.getenv('LDAP_URL', "localhost")
+# This setting tells ldap what NetBIOS domain name to use when logging in a user
+LDAP_DOMAIN = os.getenv('LDAP_DOMAIN', None)
+# This setting tells ldap what base search context to use when searching for a user
+LDAP_BASE_CONTEXT = os.getenv('LDAP_BASE_CONTEXT', None)
 
 # This next block of code defines how emails will work
 if DEBUG:
