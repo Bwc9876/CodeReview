@@ -1,9 +1,15 @@
 {% extends base_template %}
 
+{% comment %}
+    This file is used to view a completed Review and its grade.
+{% endcomment %}
+
 {% block resources %}
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/rubrics/rubric_table.css' %}"/>
-    <script>function goBack(){history.go(-1);}</script>
+    <script>function goBack() {
+        history.go(-1);
+    }</script>
 {% endblock %}
 
 {% block pageHeader %}Review Details{% endblock %}

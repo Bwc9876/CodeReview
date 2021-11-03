@@ -1,0 +1,26 @@
+{% extends base_template %}
+
+{% comment %}
+    This file is used to show the services used to create this website.
+{% endcomment %}
+
+{% block pageHeader %}Services Used{% endblock %}
+
+{% block mainContent %}
+    {% load common_tags %}
+    <div class="row text-center">
+        <div class="col">
+            <ul class="list-unstyled">
+                <li>{% external_link "https://www.python.org/" "Python" %}</li>
+                <li>{% external_link "https://www.djangoproject.com/" "Django" %}</li>
+                <li>{% external_link "https://pypi.org/project/ldap3/" "ldap3" %}</li>
+                <li>{% external_link "https://pypi.org/project/jsonschema/" "jsonshcema" %}</li>
+                <li>{% external_link "https://pypi.org/project/django-mailer/" "django-mailer" %}</li>
+                <li>{% external_link "https://getbootstrap.com/" "Bootstrap" %}</li>
+                <li>{% external_link "https://icons.getbootstrap.com/" "Bootstrap Icons" %}</li>
+                <li>{% external_link "https://jquery.com/" "Jquery" %}</li>
+                <li>{% external_link "https://sortablejs.github.io/Sortable/" "Sortable.js" %}</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

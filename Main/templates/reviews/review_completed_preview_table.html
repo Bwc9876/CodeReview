@@ -1,5 +1,9 @@
 {% extends "reviews/review_table.html" %}
 
+{% comment %}
+    This file is used to override review_table.html to display a "View All" link
+{% endcomment %}
+
 {% block tableFooter %}
     {% if not hide_view_all %}
         <tr>

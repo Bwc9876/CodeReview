@@ -4,6 +4,7 @@
 
 from django import template
 from django.contrib import messages
+from django.template.defaultfilters import safe
 
 register = template.Library()
 
@@ -89,3 +90,20 @@ def get_icon_class(message_level):
     """
 
     return f'bi bi-{icon_classes.get(message_level, "info-circle")}'
+
+
+@register.simple_tag(name="external_link")
+def external_link(href: str, display_text: str, classes: str = "") -> str:
+    """
+        This tag will render an <a> element that will open in a new tab and be marked as external
+
+        :param href: The href of the link
+        :type href: str
+        :param display_text: The test to display in the <a> element
+        :type display_text: str
+        :param classes: Classes to add to the <a> element
+        :type classes: str
+        :returns: An <a> element in html that when clicked will open in a new tab
+        :rtype: str
+    """
+    return safe(f'<a href="{href}" class="{classes}" target="_blank", rel="noopener">{display_text}</a>')
