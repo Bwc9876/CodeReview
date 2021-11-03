@@ -103,6 +103,7 @@ class RubricDeleteTest(RubricActionTest):
         self.assertEqual('errors/403.html', bad_client.get(self.url).template_name[0])
         self.assertNotEqual('errors/403.html', self.client.get(self.url).template_name[0])
 
+    # noinspection PyTypeChecker
     def test_delete(self):
         self.client.post(self.url)
 
