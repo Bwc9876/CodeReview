@@ -166,9 +166,9 @@ USE_I18N = False
 USE_L10N = False
 USE_TZ = False
 
-# These options define urls for static and media urls
+# These options define urls for static urls
 STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+STATIC_ROOT = os.getenv("STATIC_DIR", "collected-static")
 
 # This option defines which field to use automatically for PrimaryKeys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
