@@ -664,3 +664,15 @@ error_403_handler = Error403.as_view()
 
 def error_500_handler(request):
     return Error500.as_view()(request)
+
+
+# About
+
+class CopyrightView(TemplateView):
+    """
+        This view displays the services used to make the website
+
+        :cvar template_name: The template to render
+    """
+
+    template_name = "about/copyright.html"
