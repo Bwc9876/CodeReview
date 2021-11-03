@@ -30,6 +30,7 @@ review, the instructor will get a final email with the notes the senior has give
 - DEV_STAGE: The current stage of development options are: Dev, Prod, and GitHub
 - PRODUCTION_HOST: The host to use in the production environment
 - SECRET_KEY: Key to use in production as the Django secret key
+- STATIC_DIR: A path to the directory to collect static files to
 - EMAIL_HOST: The email server host we're connecting to
 - EMAIL_USER: The username of the email we'll use to send notifications
 - EMAIL_PASS: The password to use for the email
@@ -39,17 +40,6 @@ review, the instructor will get a final email with the notes the senior has give
 - LDAP_URL: The URL of the ActiveDirectory Server we want to use for auth
 - LDAP_DOMAIN: The domain to use when logging users in
 - LDAP_BASE_CONTEXT: The base context to use when searching for users
-
-### Services Used
-
-- [Python](https://www.python.org/)
-- [Django](https://www.djangoproject.com/)
-- [ActiveDirectory](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview)
-- [lapd3](https://pypi.org/project/ldap3/)
-- [Jquery](https://jquery.com/)
-- [FontAwesome](https://fontawesome.com/)
-- [JsonSchema](https://pypi.org/project/jsonschema/)
-- [DjangoMailer](https://pypi.org/project/django-mailer/)
 
 ## Running
 
