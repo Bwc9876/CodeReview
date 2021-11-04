@@ -94,12 +94,19 @@ up your database
 python manage.py migrate
 ```
 
-After this is completed, it's recommended you run [tests](#Tests) to ensure the website will work.  
+Next, you'll need to collect static files to your STATIC_DIR by running
+
+```sh
+python manage.py collectstatic
+```
+Say yes to any prompts django asks you  
+
+After this is completed, it's recommended you run [tests](#Tests) to ensure the website will work.    
 Next, you will need to set up Django with IIS, directions can be
 found [here](https://medium.com/nonstopio/deploy-django-application-on-windows-iis-server-93aee2864c41).  
-In addition, you'll need to set up IIS to pass the app the REMOTE_USER header, directions for this can be
-found [here](https://www.ibm.com/docs/en/cognos-analytics/11.1.0?topic=essbadscc-enabling-single-signon-between-active-directory-server-cognos-components-use-remote-user)
-.  
+  
+Note that you'll also need to setup static file serving from your STATIC_DIR.  
+  
 Now students and reviewers can log in through ActiveDirectory, however, the instructor is not in the ActiveDirectory
 system. To add the instructor, run the following:
 
