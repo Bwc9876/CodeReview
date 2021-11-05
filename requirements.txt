@@ -4,7 +4,7 @@ Django==3.2.9
 django-debug-toolbar==3.2.2
 django-mailer==2.1
 importlib-metadata==4.8.1
-jsonschema==4.1.2
+jsonschema==4.2.0
 ldap3==2.9.1
 lockfile==0.12.2
 mysqlclient==2.0.3
