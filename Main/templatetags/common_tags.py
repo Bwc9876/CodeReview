@@ -106,4 +106,4 @@ def external_link(href: str, display_text: str, classes: str = "") -> str:
         :returns: An <a> element in html that when clicked will open in a new tab
         :rtype: str
     """
-    return safe(f'<a href="{href}" class="{classes}" target="_blank", rel="noopener">{display_text}</a>')
+    return safe(f'<a href="{href}" class="{classes}" target="_blank" rel="noopener">{display_text}</a>')
