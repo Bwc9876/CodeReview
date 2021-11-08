@@ -13,6 +13,7 @@ class User(AbstractUser):
         This model represents a User in the database
 
         :cvar id: A Unique Identifier for the user
+        :cvar student_id: The user's BCTC Id
         :cvar session: The session the student is in (AM or PM)
         :cvar is_reviewer: Whether the student can review code
     """
