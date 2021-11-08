@@ -120,30 +120,11 @@ class UserDesignationTest(TestCase):
         ids = [str(self.users[user].id) for user in user_list]
         return ids
 
-    def make_sessions_json(self, am_list, pm_list):
-        am_ids = [str(self.users[user].id) for user in am_list]
-        pm_ids = [str(self.users[user].id) for user in pm_list]
-        return JSONEncoder().encode({
-            'AM': am_ids,
-            'PM': pm_ids
-        })
-
     def test_designate_reviewer(self) -> None:
         self.clients['super'].post(reverse('user-list'), data={
             'reviewers': self.make_reviewers_list(['reviewer-am', 'student-am']),
-            'sessions': self.make_sessions_json(['reviewer-am', 'student-am'], ['reviewer-pm', 'student-pm'])
         })
         self.assertTrue(User.objects.get(username="reviewer-am").is_reviewer)
         self.assertFalse(User.objects.get(username="reviewer-pm").is_reviewer)
         self.assertTrue(User.objects.get(username="student-am").is_reviewer)
         self.assertFalse(User.objects.get(username="student-pm").is_reviewer)
-
-    def test_switch_sessions(self) -> None:
-        self.clients['super'].post(reverse('user-list'), data={
-            'reviewers': self.make_reviewers_list(['reviewer-am', 'reviewer-pm']),
-            'sessions': self.make_sessions_json(['reviewer-pm', 'student-am'], ['reviewer-am', 'student-pm'])
-        })
-        self.assertEqual(User.objects.get(username='reviewer-am').session, User.Session.PM)
-        self.assertEqual(User.objects.get(username='reviewer-pm').session, User.Session.AM)
-        self.assertEqual(User.objects.get(username='student-am').session, User.Session.AM)
-        self.assertEqual(User.objects.get(username='student-pm').session, User.Session.PM)

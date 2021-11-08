@@ -48,7 +48,7 @@ class AdminHomeView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
 class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
     """
-        This view shows a list of users that the instructor can change from AM to PM and set as reviewers
+        This view shows a list of users that the instructor can set as reviewers
 
         :cvar template_name: The template to render and return to the user
         :cvar http_method_names: The HTTP methods to accept from the client
@@ -57,24 +57,6 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
     template_name = "user_list.html"
     http_method_names = ['get', 'post']
-
-    _schema = {
-        'type': "object",
-        'properties': {
-            'AM': {
-                'type': "array",
-                'items': {
-                    'type': "string"
-                }
-            },
-            'PM': {
-                'type': "array",
-                'items': {
-                    'type': "string"
-                }
-            }
-        }
-    }
 
     def get_queryset(self):
         """
@@ -86,33 +68,6 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
         return User.objects.filter(is_superuser=False)
 
-    def update_sessions(self, sessions_json, objs):
-        """
-            This function sets the Users in objs to their sessions specified in session_json
-
-            :param sessions_json: A JSON representation of which users are in which session
-            :param objs: A list of User objects
-            :type sessions_json: str
-            :type objs: list
-        """
-
-        try:
-            sessions = JSONDecoder().decode(sessions_json)
-            validate(sessions, self._schema)
-            for user_id in sessions['AM']:
-                user = User.objects.get(id=main_models.val_uuid(user_id))
-                objs[objs.index(user)].session = User.Session.AM
-            for user_id in sessions['PM']:
-                user = User.objects.get(id=main_models.val_uuid(user_id))
-                objs[objs.index(user)].session = User.Session.PM
-            self.get_queryset().bulk_update(objs, ['session'], batch_size=10)
-        except User.DoesNotExist:
-            raise Http404('Invalid Data')
-        except JSONDecodeError:
-            raise Http404('Invalid Data')
-        except JsonValidationError:
-            raise Http404('Invalid Data')
-
     def post(self, *args, **kwargs):
         """
             This function defines back-end behaviour when the user uses the POST method.
@@ -123,7 +78,6 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
         for index, user in enumerate(objs):
             objs[index].is_reviewer = str(user.id) in self.request.POST.getlist('reviewers')
         self.get_queryset().bulk_update(objs, ['is_reviewer'], batch_size=10)
-        self.update_sessions(self.request.POST.get("sessions"), objs)
         messages.add_message(self.request, messages.SUCCESS, "Users Updated")
         return redirect("instructor-home")
 
