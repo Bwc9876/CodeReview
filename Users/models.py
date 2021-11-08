@@ -13,6 +13,7 @@ class User(AbstractUser):
         This model represents a User in the database
 
         :cvar id: A Unique Identifier for the user
+        :cvar student_id: The user's BCTC Id
         :cvar session: The session the student is in (AM or PM)
         :cvar is_reviewer: Whether the student can review code
     """
@@ -26,6 +27,7 @@ class User(AbstractUser):
         PM = 'PM', "PM Session"
 
     id = models.UUIDField(primary_key=True, default=uuid4)
+    student_id = models.CharField(blank=True, null=True, max_length=12, unique=True, help_text="Your BCTC student ID")
     session = models.CharField(choices=Session.choices, default=Session.AM, max_length=2)
     is_reviewer = models.BooleanField(default=False)
 
