@@ -1,16 +1,11 @@
 {% extends "admin_base.html" %}
 
 {% comment %}
-    This page shows the Instructor a list of users that they can drag-and-drop between the AM and PM table.
-    They can also set users as Reviewers or Not Reviewers.
+    This page shows the Instructor a list of users that they can set as Reviewers or Non-Reviewers.
 {% endcomment %}
 
 {% block resources %}
     {% load static %}
-    <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script crossorigin="anonymous"
-            src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
-    <script defer src="{% static "js/user-designate.js" %}"></script>
     <script defer src="{% static "js/form.js" %}"></script>
 {% endblock %}
 
@@ -19,7 +14,6 @@
 {% block containerClass %}container{% endblock %}
 
 {% block mainContent %}
-    {# TODO: Add the ability to sync this user list with ActiveDirectory #}
     <div class="row mb-5">
         <div class="col">
             <button type="button" class="btn btn-outline-secondary back-button d-inline"><i class="bi bi-arrow-left"></i> Back</button>
@@ -85,7 +79,6 @@
                 </div>
                 <div class="mb-2 d-flex flex-row">
                     <div class="collapse text-nowrap ms-2 mt-1 align-middle field-help" id="users-helptext">
-                        Drag users in order to change their session.
                         Click the toggle switch next to a user to make them a reviewer.
                     </div>
                 </div>
