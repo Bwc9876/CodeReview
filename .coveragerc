@@ -13,4 +13,5 @@ omit =
 	*/urls.py
 	*/apps.py
 	Users/views.py
+	Users/ldap_auth.py
 	
