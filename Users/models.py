@@ -26,6 +26,7 @@ class User(AbstractUser):
         PM = 'PM', "PM Session"
 
     id = models.UUIDField(primary_key=True, default=uuid4)
+    student_id = models.CharField(blank=True, null=True, max_length=12, unique=True, help_text="Your BCTC student ID")
     session = models.CharField(choices=Session.choices, default=Session.AM, max_length=2)
     is_reviewer = models.BooleanField(default=False)
 

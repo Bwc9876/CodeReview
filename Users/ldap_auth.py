@@ -32,6 +32,23 @@ class LDAPAuthentication(BaseBackend):
 
         return value if str(value) != "[]" else ""
 
+    @staticmethod
+    def get_session_from_ldap(ldap_user: Entry) -> str:
+        """
+            This function takes an ldap user and gets their session
+
+            :param ldap_user: The user to get the session of
+            :type ldap_user: Entry
+            :returns: A string ("AM" or "PM") that denotes the user's session
+            :rtype: str
+        """
+
+        try:
+            session_raw = str(ldap_user['distinguishedName']).split(',')[1].split('=')[1]
+            return session_raw if session_raw == "AM" or session_raw == "PM" else "AM"
+        except IndexError:
+            return "AM"
+
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
             This function takes an ldap user and a django user and syncs their data
@@ -48,6 +65,7 @@ class LDAPAuthentication(BaseBackend):
         django_user.first_name = self.ldap_empty(ldap_user.givenName)
         django_user.last_name = self.ldap_empty(ldap_user.sn)
         django_user.email = self.ldap_empty(ldap_user.mail)
+        django_user.session = self.get_session_from_ldap(ldap_user)
         django_user.save()
         return django_user
 
@@ -66,7 +84,9 @@ class LDAPAuthentication(BaseBackend):
         new_user = User.objects.create_user(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
                                             first_name=self.ldap_empty(ldap_user.givenName),
                                             last_name=self.ldap_empty(ldap_user.sn),
-                                            email=self.ldap_empty(ldap_user.mail))
+                                            email=self.ldap_empty(ldap_user.mail),
+                                            session=self.get_session_from_ldap(ldap_user))
+        new_user.set_unusable_password()
         new_user.save()
         return new_user
 

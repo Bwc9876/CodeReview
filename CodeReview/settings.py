@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Main.middleware.UserSetupCheckMiddleware'
 ]
 
 # This option defines what urls.py file to use for urls
@@ -148,13 +149,14 @@ if DEBUG:
     # If we're debugging, we never actually send any emails, we just save what they would be as text files
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = 'debug-emails'
+    EMAIL_DOMAIN = "example.com"
 else:
     # If we're not debugging, we use django-mailer to send emails
     EMAIL_BACKEND = "mailer.backend.DbBackend"
     EMAIL_HOST = os.getenv("EMAIL_HOST", "")
     EMAIL_HOST_USER = os.getenv("EMAIL_USER", "")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS", "")
-
+    EMAIL_DOMAIN = os.getenv("EMAIL_DOMAIN", "")
 # This option defines what language code django will send to browsers when talking with a browser
 LANGUAGE_CODE = 'en-us'
 
