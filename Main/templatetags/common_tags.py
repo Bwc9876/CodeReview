@@ -10,7 +10,7 @@ register = template.Library()
 
 
 @register.filter(name="make_spaces")
-def make_spaces(in_string):
+def make_spaces(in_string: str) -> str:
     """
         This filter takes a string an replaces all dashes and underscores with spaces
 
@@ -31,7 +31,7 @@ link_types = {
 
 
 @register.filter(name="link_class")
-def get_link_class(action_name):
+def get_link_class(action_name: str) -> str:
     """
         This filter gets what link class to use based off the action that it performs
 
@@ -54,7 +54,7 @@ level_classes = {
 
 
 @register.filter(name="alert_class")
-def get_alert_class(message_level):
+def get_alert_class(message_level: str) -> str:
     """
         This filter gets an alert class for the specified message type
 
@@ -78,7 +78,7 @@ icon_classes = {
 
 
 @register.filter(name="icon_class")
-def get_icon_class(message_level):
+def get_icon_class(message_level: str) -> str:
     """
         This filter gets an alert icon for the specified message type
 
@@ -106,4 +106,4 @@ def external_link(href: str, display_text: str, classes: str = "") -> str:
         :returns: An <a> element in html that when clicked will open in a new tab
         :rtype: str
     """
-    return safe(f'<a href="{href}" class="{classes}" target="_blank", rel="noopener">{display_text}</a>')
+    return safe(f'<a href="{href}" class="{classes}" target="_blank" rel="noopener">{display_text}</a>')
