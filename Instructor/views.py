@@ -16,10 +16,20 @@ from . import models, forms
 
 
 class UserClearView(LoginRequiredMixin, IsSuperUserMixin, View):
+    """
+        This view is used to cleanup any users that are not in teh ActiveDirectory database.
+
+        :cvar http_method_names: The HTTP methods that this view takes
+    """
 
     http_method_names = ['post']
 
     def post(self, request):
+        """
+            This function is run when on a POST request.
+            It clears out users that are not in the ActiveDirectory database.
+        """
+
         self.request = request
         password = self.request.POST.get("userPassword", None)
         if password is None or password == "":

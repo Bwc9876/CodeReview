@@ -10,7 +10,12 @@ from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError
 
 from .models import User
 
+
 class LDAPAuthException(Exception):
+    """
+        This exception is used to represent an error with authenticating through LDAP
+    """
+
     pass
 
 
@@ -55,8 +60,18 @@ class LDAPAuthentication(BaseBackend):
 
     @staticmethod
     def check_user_is_admin(ldap_user: Entry) -> bool:
+        """
+            This function is used to check if a given ldap user is an administrator
+            (Not implemented yet)
+
+            :param ldap_user: The user to check
+            :type ldap_user: Entry
+            :returns: A boolean indicating if the user is an administrator
+            :rtype: bool
+        """
+
         # TODO: Implement
-        return False
+        return True
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
@@ -99,7 +114,17 @@ class LDAPAuthentication(BaseBackend):
         new_user.save()
         return new_user
 
-    def get_all_users(self, conn: Connection) -> Reader:
+    @staticmethod
+    def get_all_users(conn: Connection) -> Reader:
+        """
+            This function is used to get all users in the ActiveDirectory database
+
+            :param conn: The Connection to use for the query
+            :type conn: Connection
+            :returns: A Reader object that contains all users in the database
+            :rtype: Reader
+        """
+
         user_obj = ObjectDef('user', conn)
         reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
         reader.search()
@@ -176,6 +201,15 @@ class LDAPAuthentication(BaseBackend):
             return None
 
     def delete_old_users(self, username, password):
+        """
+            This function is used to delete any users that are no longer in the ActiveDirectory database.
+
+            :param username: The username to use to login via LDAP
+            :type username: str
+            :param password: The password to use to login via LDAP
+            :type password: str
+        """
+
         conn = Connection(self.server, user=username,
                           password=password, authentication=NTLM)
         try:
