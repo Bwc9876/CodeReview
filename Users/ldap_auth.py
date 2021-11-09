@@ -102,12 +102,13 @@ class LDAPAuthentication(BaseBackend):
             :returns: The new django user
             :rtype: User
         """
-
-        new_user = User.objects.create_user(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
-                                            first_name=self.ldap_empty(ldap_user.givenName),
-                                            last_name=self.ldap_empty(ldap_user.sn),
-                                            email=self.ldap_empty(ldap_user.mail),
-                                            session=self.get_session_from_ldap(ldap_user))
+        create_method = User.objects.create_superuser if self.check_user_is_admin(
+            ldap_user) else User.objects.create_user
+        new_user = create_method(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
+                                 first_name=self.ldap_empty(ldap_user.givenName),
+                                 last_name=self.ldap_empty(ldap_user.sn),
+                                 email=self.ldap_empty(ldap_user.mail),
+                                 session=self.get_session_from_ldap(ldap_user))
         new_user.set_unusable_password()
         new_user.save()
         return new_user
