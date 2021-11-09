@@ -62,7 +62,6 @@ class LDAPAuthentication(BaseBackend):
     def check_user_is_admin(ldap_user: Entry) -> bool:
         """
             This function is used to check if a given ldap user is an administrator
-            (Not implemented yet)
 
             :param ldap_user: The user to check
             :type ldap_user: Entry
@@ -70,8 +69,7 @@ class LDAPAuthentication(BaseBackend):
             :rtype: bool
         """
 
-        # TODO: Implement
-        return True
+        return not ("AM" in str(ldap_user["distinguishedName"]) or "PM" in str(ldap_user["distinguishedName"]))
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
