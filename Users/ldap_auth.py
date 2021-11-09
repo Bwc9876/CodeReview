@@ -176,7 +176,7 @@ class LDAPAuthentication(BaseBackend):
             return None
 
     def delete_old_users(self, username, password):
-        conn = Connection(self.server, user=f"{settings.LDAP_DOMAIN}\\{username}",
+        conn = Connection(self.server, user=username,
                           password=password, authentication=NTLM)
         try:
             if conn.bind():
@@ -188,10 +188,10 @@ class LDAPAuthentication(BaseBackend):
                         if len(ldap_users.match("msDs-principalName", user.username)) == 0:
                             user.delete()
                 else:
-                    raise LDAPAuthException("User is not admin")
+                    raise LDAPAuthException("You lack permissions to perform this action.")
             else:
-                raise LDAPAuthException("Invalid Credentials")
+                raise LDAPAuthException("Login failed, check your password and try again.")
         except LDAPBindError:
-            raise LDAPAuthException("Can't connect to ActiveDirectory")
+            raise LDAPAuthException("Can't connect to ActiveDirectory, please try again later.")
         except LDAPSocketOpenError:
-            raise LDAPAuthException("Can't connect to ActiveDirectory")
+            raise LDAPAuthException("Can't connect to ActiveDirectory, please try again later.")

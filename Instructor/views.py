@@ -2,21 +2,36 @@
     This file defines the back-end code that runs when a user requests a page for the Instructor app
 """
 
-from json import JSONDecoder, JSONDecodeError
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError as JsonValidationError
+from django.views.generic import View, ListView, TemplateView, CreateView, UpdateView, DeleteView
 
 from Main import models as main_models
 from Main.views import IsSuperUserMixin, FormNameMixin, FormAlertMixin, SuccessDeleteMixin
 from Users.models import User
+from Users.ldap_auth import LDAPAuthentication, LDAPAuthException
 from . import models, forms
+
+
+class UserClearView(LoginRequiredMixin, IsSuperUserMixin, View):
+
+    http_method_names = ['post']
+
+    def post(self, request):
+        self.request = request
+        password = self.request.POST.get("userPassword", None)
+        if password is None or password == "":
+            messages.add_message(self.request, messages.ERROR, "Please provide a password")
+            return redirect("user-list")
+        else:
+            try:
+                LDAPAuthentication().delete_old_users(self.request.user.username, password)
+                messages.add_message(self.request, messages.SUCCESS, "Users Cleared Successfully")
+            except LDAPAuthException as error:
+                messages.add_message(self.request, messages.ERROR, error.args[0])
+                return redirect("user-list")
 
 
 class AdminHomeView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
