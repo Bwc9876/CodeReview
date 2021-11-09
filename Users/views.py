@@ -2,17 +2,18 @@
     This file defines the backend code that runs when the user goes to a page
 """
 
-from django.urls import reverse_lazy
-from django.shortcuts import redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
 from django.conf import settings
-from django.views.generic import TemplateView, UpdateView
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from django.db.models import QuerySet
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView, UpdateView
 
-from .models import User
-from .forms import FinishUserForm
 from Main.views import FormNameMixin, FormAlertMixin
+from .forms import FinishUserForm
+from .models import User
 
 
 class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, UpdateView):
@@ -57,6 +58,21 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
             else:
                 return redirect('home')
         return super(CompleteUserSetupView, self).get(request, *args, **kwargs)
+
+
+class UserLoginView(LoginView):
+    template_name = "login.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserLoginView, self).get_context_data(**kwargs)
+        context['hide_back'] = True
+        return context
+
+    def get_success_url(self):
+        if self.request.user.email is None or self.request.user.email == "":
+            return reverse('user-setup', kwargs={'pk': self.request.user.id})
+        else:
+            return super(UserLoginView, self).get_success_url()
 
 
 class LogoutDoneView(TemplateView):
