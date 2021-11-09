@@ -153,11 +153,16 @@ if DEBUG:
 else:
     # If we're not debugging, we use django-mailer to send emails
     EMAIL_BACKEND = "mailer.backend.DbBackend"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
     EMAIL_HOST = os.getenv("EMAIL_HOST", "")
     EMAIL_HOST_USER = os.getenv("EMAIL_USER", "")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS", "")
     EMAIL_DOMAIN = os.getenv("EMAIL_DOMAIN", "")
-# This option defines what language code django will send to browsers when talking with a browser
+    SERVER_EMAIL = EMAIL_HOST_USER
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# This option defines what language code django will send to browsers
 LANGUAGE_CODE = 'en-us'
 
 # This option defines what timezone the server is in
