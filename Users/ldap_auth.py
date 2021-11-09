@@ -4,10 +4,19 @@ from uuid import UUID
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.backends import BaseBackend
+from django.db.models import Q
 from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM, Entry
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError
 
 from .models import User
+
+
+class LDAPAuthException(Exception):
+    """
+        This exception is used to represent an error with authenticating through LDAP
+    """
+
+    pass
 
 
 class LDAPAuthentication(BaseBackend):
@@ -48,6 +57,21 @@ class LDAPAuthentication(BaseBackend):
             return session_raw if session_raw == "AM" or session_raw == "PM" else "AM"
         except IndexError:
             return "AM"
+
+    @staticmethod
+    def check_user_is_admin(ldap_user: Entry) -> bool:
+        """
+            This function is used to check if a given ldap user is an administrator
+            (Not implemented yet)
+
+            :param ldap_user: The user to check
+            :type ldap_user: Entry
+            :returns: A boolean indicating if the user is an administrator
+            :rtype: bool
+        """
+
+        # TODO: Implement
+        return True
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
@@ -90,6 +114,22 @@ class LDAPAuthentication(BaseBackend):
         new_user.save()
         return new_user
 
+    @staticmethod
+    def get_all_users(conn: Connection) -> Reader:
+        """
+            This function is used to get all users in the ActiveDirectory database
+
+            :param conn: The Connection to use for the query
+            :type conn: Connection
+            :returns: A Reader object that contains all users in the database
+            :rtype: Reader
+        """
+
+        user_obj = ObjectDef('user', conn)
+        reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
+        reader.search()
+        return reader
+
     def get_ldap_user(self, conn: Connection, username: str) -> Optional[Entry]:
         """
             This function gets an ldap user from the ldap server
@@ -102,9 +142,7 @@ class LDAPAuthentication(BaseBackend):
             :rtype: User
         """
 
-        user_obj = ObjectDef('user', conn)
-        reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
-        reader.search()
+        reader = self.get_all_users(conn)
         results = reader.match("msDS-PrincipalName", username)
         if len(results) == 1:
             return results[0]
@@ -161,3 +199,33 @@ class LDAPAuthentication(BaseBackend):
             return User.objects.get(id=user_id)
         except User.DoesNotExist:
             return None
+
+    def delete_old_users(self, username, password):
+        """
+            This function is used to delete any users that are no longer in the ActiveDirectory database.
+
+            :param username: The username to use to login via LDAP
+            :type username: str
+            :param password: The password to use to login via LDAP
+            :type password: str
+        """
+
+        conn = Connection(self.server, user=username,
+                          password=password, authentication=NTLM)
+        try:
+            if conn.bind():
+                ldap_user = self.get_ldap_user(conn, conn.extend.standard.who_am_i())
+                if self.check_user_is_admin(ldap_user):
+                    to_check = User.objects.filter(is_superuser=False).filter(Q(password__startswith='!') | Q(password__isnull=True))
+                    ldap_users = self.get_all_users(conn)
+                    for user in to_check:
+                        if len(ldap_users.match("msDs-principalName", user.username)) == 0:
+                            user.delete()
+                else:
+                    raise LDAPAuthException("You lack permissions to perform this action.")
+            else:
+                raise LDAPAuthException("Login failed, check your password and try again.")
+        except LDAPBindError:
+            raise LDAPAuthException("Can't connect to ActiveDirectory, please try again later.")
+        except LDAPSocketOpenError:
+            raise LDAPAuthException("Can't connect to ActiveDirectory, please try again later.")

@@ -7,6 +7,7 @@
 {% block resources %}
     {% load static %}
     <script defer src="{% static "js/form.js" %}"></script>
+    <script defer src="{% static "js/user-list.js" %}"></script>
 {% endblock %}
 
 {% block pageHeader %}Edit Users{% endblock %}
@@ -14,11 +15,44 @@
 {% block containerClass %}container{% endblock %}
 
 {% block mainContent %}
+    <div class="modal fade" id="cleanupModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="cleanupModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cleanupModalLabel">Cleanup Users</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>This will clear any users not found in ActiveDirectory.</p>
+            <p>Please confirm your password to continue</p>
+            <form class="form" id="cleanupForm" method="POST" action="{% url "user-cleanup" %}">
+                {% csrf_token %}
+                <div class="form-floating">
+                    <input id="userPassword" name="userPassword" type="password" class="form-control" placeholder="Password" required/>
+                    <label for="userPassword">Password</label>
+                </div>
+            </form>
+            <p class="my-2">Note this may take some time, please don't leave the page.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button id="cleanupSubmitButton" type="button" class="btn btn-danger">
+                <span id="cleanupSpinner" class="loading spinner-border spinner-border-sm d-none" role="status"
+                                  aria-hidden="true"></span>
+                <span id="cleanupSubmitText">Confirm</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row mb-5">
         <div class="col">
             <button type="button" class="btn btn-outline-secondary back-button d-inline"><i class="bi bi-arrow-left"></i> Back</button>
         </div>
         <div class="col text-end">
+            <button class="btn btn-outline-secondary d-inline" aria-label="Cleanup Users" id="user-cleanup-button" type="button" data-bs-toggle="modal" data-bs-target="#cleanupModal">
+                <i class="bi bi-person-x"></i> <span id="user-cleanup-label">Cleanup Users</span>
+            </button>
             <button class="btn btn-outline-secondary d-none" aria-label="Display help text" id="help-button" type="button" data-bs-toggle="collapse" data-bs-target=".field-help" aria-expanded="false" aria-controls="users-helptext">
                 <i class="bi bi-question-circle"></i> <span id="help-label">Show Help</span>
             </button>
@@ -80,6 +114,7 @@
                 <div class="mb-2 d-flex flex-row">
                     <div class="collapse text-nowrap ms-2 mt-1 align-middle field-help" id="users-helptext">
                         Click the toggle switch next to a user to make them a reviewer.
+                        <br/>Note that a student needs to sign in before they appear on this list.
                     </div>
                 </div>
                 <div class="row my-5">
