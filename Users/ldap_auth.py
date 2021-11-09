@@ -4,10 +4,14 @@ from uuid import UUID
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.backends import BaseBackend
+from django.db.models import Q
 from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM, Entry
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError
 
 from .models import User
+
+class LDAPAuthException(Exception):
+    pass
 
 
 class LDAPAuthentication(BaseBackend):
@@ -48,6 +52,11 @@ class LDAPAuthentication(BaseBackend):
             return session_raw if session_raw == "AM" or session_raw == "PM" else "AM"
         except IndexError:
             return "AM"
+
+    @staticmethod
+    def check_user_is_admin(ldap_user: Entry) -> bool:
+        # TODO: Implement
+        return False
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
@@ -90,6 +99,12 @@ class LDAPAuthentication(BaseBackend):
         new_user.save()
         return new_user
 
+    def get_all_users(self, conn: Connection) -> Reader:
+        user_obj = ObjectDef('user', conn)
+        reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
+        reader.search()
+        return reader
+
     def get_ldap_user(self, conn: Connection, username: str) -> Optional[Entry]:
         """
             This function gets an ldap user from the ldap server
@@ -102,9 +117,7 @@ class LDAPAuthentication(BaseBackend):
             :rtype: User
         """
 
-        user_obj = ObjectDef('user', conn)
-        reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
-        reader.search()
+        reader = self.get_all_users(conn)
         results = reader.match("msDS-PrincipalName", username)
         if len(results) == 1:
             return results[0]
@@ -161,3 +174,24 @@ class LDAPAuthentication(BaseBackend):
             return User.objects.get(id=user_id)
         except User.DoesNotExist:
             return None
+
+    def delete_old_users(self, username, password):
+        conn = Connection(self.server, user=f"{settings.LDAP_DOMAIN}\\{username}",
+                          password=password, authentication=NTLM)
+        try:
+            if conn.bind():
+                ldap_user = self.get_ldap_user(conn, conn.extend.standard.who_am_i())
+                if self.check_user_is_admin(ldap_user):
+                    to_check = User.objects.filter(is_superuser=False).filter(Q(password__startswith='!') | Q(password__isnull=True))
+                    ldap_users = self.get_all_users(conn)
+                    for user in to_check:
+                        if len(ldap_users.match("msDs-principalName", user.username)) == 0:
+                            user.delete()
+                else:
+                    raise LDAPAuthException("User is not admin")
+            else:
+                raise LDAPAuthException("Invalid Credentials")
+        except LDAPBindError:
+            raise LDAPAuthException("Can't connect to ActiveDirectory")
+        except LDAPSocketOpenError:
+            raise LDAPAuthException("Can't connect to ActiveDirectory")
