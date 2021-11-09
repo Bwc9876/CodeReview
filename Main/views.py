@@ -190,10 +190,13 @@ class HomeView(LoginRequiredMixin, TemplateView):
             It redirects the user to the instructor homepage if they're an instructor.
         """
 
-        if self.request.user.is_superuser:
-            return redirect('instructor-home')
+        if self.request.user.email is None:
+            return redirect('user-setup')
         else:
-            return super(HomeView, self).get(*args, **kwargs)
+            if self.request.user.is_superuser:
+                return redirect('instructor-home')
+            else:
+                return super(HomeView, self).get(*args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict:
         """

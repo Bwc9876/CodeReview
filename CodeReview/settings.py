@@ -51,7 +51,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'Main.middleware.UserSetupCheckMiddleware'
 ]
 
 # This option defines what urls.py file to use for urls
@@ -118,10 +117,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # This option defines what backends we use for authentication
-AUTHENTICATION_BACKENDS = [
-    'Users.ldap_auth.LDAPAuthentication',
-    'django.contrib.auth.backends.ModelBackend',
-]
+if DEBUG:
+    AUTHENTICATION_BACKENDS = [
+        'Users.ldap_auth.LDAPAuthentication',
+        'django.contrib.auth.backends.ModelBackend',
+    ]
+else:
+    AUTHENTICATION_BACKENDS = [
+        'Users.ldap_auth.LDAPAuthentication',
+    ]
 
 # This option defines what Model to use in Auth backend for storing user data
 AUTH_USER_MODEL = "Users.User"
