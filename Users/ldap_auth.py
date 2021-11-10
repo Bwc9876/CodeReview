@@ -86,7 +86,6 @@ class LDAPAuthentication(BaseBackend):
         django_user.username = ldap_user["msDS-PrincipalName"]
         django_user.first_name = self.ldap_empty(ldap_user.givenName)
         django_user.last_name = self.ldap_empty(ldap_user.sn)
-        django_user.email = self.ldap_empty(ldap_user.mail)
         django_user.session = self.get_session_from_ldap(ldap_user)
         django_user.save()
         return django_user
@@ -107,7 +106,6 @@ class LDAPAuthentication(BaseBackend):
         new_user = create_method(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
                                  first_name=self.ldap_empty(ldap_user.givenName),
                                  last_name=self.ldap_empty(ldap_user.sn),
-                                 email=self.ldap_empty(ldap_user.mail),
                                  session=self.get_session_from_ldap(ldap_user))
         new_user.set_unusable_password()
         new_user.save()
