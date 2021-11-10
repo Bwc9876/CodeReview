@@ -13,12 +13,13 @@ class EnvLoadTest(TestCase):
         with open('env_test.ps1', 'w+') as file:
             file.writelines([
                 '#This is a comment, it shouldn\'t load\n',
-                '$Env:TEST_VAR=\"Hello, World!\"\n'
+                '$Env:TEST_VAR=\"Hello, World!\"\n',
+                '$Env:EQUAL=\"hi=hi\"\n'
             ])
 
     def test_get(self) -> None:
         results = get_env('env_test.ps1')
-        self.assertDictEqual(results, {'TEST_VAR': "Hello, World!"})
+        self.assertDictEqual(results, {'TEST_VAR': "Hello, World!", 'EQUAL': "hi=hi"})
 
     def test_load(self) -> None:
         load_to_env('env_test.ps1')

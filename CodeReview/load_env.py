@@ -21,7 +21,7 @@ def get_env(filename: str) -> Optional[dict]:
         with open(filename, 'r') as file:
             for raw_line in file.readlines():
                 if raw_line[0] != "#":
-                    line = raw_line[5:].split('=')
+                    line = raw_line[5:].split('=', 1)
                     env[line[0]] = line[1].replace('"', "")[:-1]
         return env
     else:
