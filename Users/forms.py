@@ -34,12 +34,12 @@ class PartialInput(TextInput):
             :type value: str
         """
 
-        value = super(PartialInput, self).format_value(value)
-        if len(self.prefixes) > 0:
-            value = value[len(''.join(self.prefixes)):]
-        if len(self.suffixes) > 0:
-            value = value[:len(''.join(self.suffixes)) * -1]
-        print(value)
+        if value is not None and value != "":
+            value = super(PartialInput, self).format_value(value)
+            if len(self.prefixes) > 0:
+                value = value[len(''.join(self.prefixes)):]
+            if len(self.suffixes) > 0:
+                value = value[:len(''.join(self.suffixes)) * -1]
         return value
 
     def get_context(self, name, value, attrs) -> dict:
