@@ -127,6 +127,12 @@ class HomeListTest(BaseCase):
 
     url = reverse("home")
 
+    def setUp(self) -> None:
+        super(HomeListTest, self).setUp()
+        for user in self.users.values():
+            user.email = f"{user.username}@example.com"
+            user.save()
+
     def assertStatus(self, status_code):
         self.review.status = status_code
         self.review.save()

@@ -190,8 +190,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
             It redirects the user to the instructor homepage if they're an instructor.
         """
 
-        if self.request.user.email is None:
-            return redirect('user-setup')
+        if self.request.user.email is None or self.request.user.email == "":
+            return redirect('user-setup', pk=self.request.user.id)
         else:
             if self.request.user.is_superuser:
                 return redirect('instructor-home')
