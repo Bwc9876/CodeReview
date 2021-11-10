@@ -49,9 +49,13 @@
                 {% csrf_token %}
                 {% for field in form %}
                     <div id="{{ field.label }}_fieldset" class="my-4">
-                        {% if field in form.visible_fields %}
+                        {% if render_no_floating %}
+                                <label id="{{ field.label }}_label" class="mb-3"
+                                       for="{{ field.id_for_label }}">{{ field.label|title }}</label>
+                                {{ field|setup_field:False }}
+                        {% elif field in form.visible_fields %}
                             <div class="form-floating">
-                                {{ field|setup_field:"form-control" }}
+                                {{ field|setup_field:True }}
                                 <label id="{{ field.label }}_label"
                                        for="{{ field.id_for_label }}">{{ field.label|title }}</label>
                             </div>

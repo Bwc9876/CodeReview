@@ -46,6 +46,19 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
 
         return User.objects.filter(id=self.request.user.id)
 
+    def get_context_data(self, **kwargs) -> dict:
+        """
+            This function defines additional data to pass to the template
+            It disables placeholders as they mess up input groups
+
+            :returns: context data to pass to the template
+            :rtype: dict
+        """
+
+        context = super(CompleteUserSetupView, self).get_context_data(**kwargs)
+        context['render_no_floating'] = True
+        return context
+
     def get(self, request, *args, **kwargs):
         """
             This function is run when the user makes a GET request
