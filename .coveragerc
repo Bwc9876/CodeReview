@@ -5,6 +5,7 @@ include =
 	Main/**
 	Users/**
 	Instructor/**
+	CodeReview/load_env.py
 omit = 
 	*/migrations/*
 	*/__pycache__/*
