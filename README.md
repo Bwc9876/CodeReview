@@ -37,7 +37,7 @@ review, the instructor will get a final email with the notes the senior has give
 - EMAIL_DOMAIN: The domain to use when generating student emails
 - EMAIL_ADMIN_DOMAIN: The domain to use when generating instructor emails
 - DB_HOST: The host for the database we'll use (MySQL Type)
-- DB_NAME: The name for the DB we'll use
+- DB_USERNAME: The name for the DB we'll use
 - DB_PASS: The password for the DB we'll use
 - LDAP_URL: The URL of the ActiveDirectory Server we want to use for auth
 - LDAP_DOMAIN: The domain to use when logging users in

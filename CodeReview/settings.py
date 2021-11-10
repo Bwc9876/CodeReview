@@ -79,7 +79,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'CodeReview.wsgi.application'
 
 # This next block of code defines how our database will work and what database system will work
-if STAGE == "GH_TEST":
+if STAGE == "Prod":
+    # In production, we use MySQl as our database backend
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'CodeReview',
+            'USER': os.getenv("DB_USERNAME", ""),
+            'PASSWORD': os.getenv("DB_PASSWORD", ""),
+            'HOST': os.getenv("DB_HOST", "localhost"),
+            'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+        }
+    }
+elif STAGE == "GH_TEST":
     # In GitHub testing, we use Postgre as a database backend
     DATABASES = {
         'default': {
