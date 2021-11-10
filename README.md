@@ -108,25 +108,6 @@ Next, you will need to set up Django with IIS, directions can be
 found [here](https://medium.com/nonstopio/deploy-django-application-on-windows-iis-server-93aee2864c41).  
   
 Note that you'll also need to setup static file serving from your STATIC_DIR.  
-  
-Now students and reviewers can log in through ActiveDirectory, however, the instructor is not in the ActiveDirectory
-system. To add the instructor, run the following:
-
-```sh
-python manage.py createsuperuser
-```
-
-Follow the interactive prompt to create the instructor's account.
-
-#### Changing the instructor's password
-
-If the password for the instructor's account is lost, the following can be run to reset it
-
-```sh
-python manage.py changepassword {Instructors username}
-```
-
-Then, follow the interactive prompt to reset the password.
 
 ### Tests
 
