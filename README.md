@@ -34,7 +34,8 @@ review, the instructor will get a final email with the notes the senior has give
 - EMAIL_HOST: The email server host we're connecting to
 - EMAIL_USER: The username of the email we'll use to send notifications
 - EMAIL_PASS: The password to use for the email
-- EMAIL_DOMAIN: The Domain to use when generating student emails
+- EMAIL_DOMAIN: The domain to use when generating student emails
+- EMAIL_ADMIN_DOMAIN: The domain to use when generating instructor emails
 - DB_HOST: The host for the database we'll use (MySQL Type)
 - DB_NAME: The name for the DB we'll use
 - DB_PASS: The password for the DB we'll use
