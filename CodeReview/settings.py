@@ -154,6 +154,7 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = 'debug-emails'
     EMAIL_DOMAIN = "example.com"
+    EMAIL_ADMIN_DOMAIN = "admin.example.com"
 else:
     # If we're not debugging, we use django-mailer to send emails
     EMAIL_BACKEND = "mailer.backend.DbBackend"
@@ -163,6 +164,7 @@ else:
     EMAIL_HOST_USER = os.getenv("EMAIL_USER", "")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS", "")
     EMAIL_DOMAIN = os.getenv("EMAIL_DOMAIN", "")
+    EMAIL_ADMIN_DOMAIN = os.getenv("EMAIL_ADMIN_DOMAIN", "")
     SERVER_EMAIL = EMAIL_HOST_USER
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
