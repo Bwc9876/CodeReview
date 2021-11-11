@@ -211,8 +211,9 @@ if DEBUG:
         },
         'root': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
+
     }
 else:
     # If we're in production, all messages will go to a local file named "django_log.txt"
@@ -221,7 +222,7 @@ else:
         'disable_existing_loggers': False,
         'handlers': {
             'file': {
-                'level': 'DEBUG',
+                'level': 'WARNING',
                 'class': 'logging.FileHandler',
                 'filename': 'django_logs.txt',
             },
@@ -229,7 +230,7 @@ else:
         'loggers': {
             'django': {
                 'handlers': ['file'],
-                'level': 'DEBUG',
+                'level': 'WARNING',
                 'propagate': True,
             },
         },
