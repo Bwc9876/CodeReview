@@ -1,5 +1,6 @@
 import os
 
+from django.conf import settings
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -62,11 +63,11 @@ class UserSetupTest(TestCase):
 
     def test_admin_edit(self):
         self.admin_c.post(self.get_url(self.admin), {'email': "admin"})
-        self.assertEqual(User.objects.get(id=self.admin.id).email, "admin@admin.example.com")
+        self.assertEqual(User.objects.get(id=self.admin.id).email, f"admin@{settings.EMAIL_ADMIN_DOMAIN}")
 
     def test_user_edit(self):
         self.student_c.post(self.get_url(self.student), {'email': '985'})
-        self.assertEqual(User.objects.get(id=self.student.id).email, "johdoe985@example.com")
+        self.assertEqual(User.objects.get(id=self.student.id).email, f"johdoe985@{settings.EMAIL_DOMAIN}")
 
     def test_student_length_check(self):
         response = self.student_c.post(self.get_url(self.student), {'email': '1'})
