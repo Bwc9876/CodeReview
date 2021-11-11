@@ -5,7 +5,8 @@
 from json import JSONDecoder, JSONDecodeError
 from typing import List
 
-from django.forms import ModelForm, TextInput, Textarea
+from django.db.models import Q
+from django.forms import ModelForm, TextInput, Textarea, ValidationError
 from django.forms.fields import CharField
 from jsonschema.validators import Draft202012Validator
 
@@ -74,6 +75,20 @@ class CreateReviewForm(ModelForm):
 
         model = models.Review
         fields = ['schoology_id', 'rubric']
+
+    def clean(self) -> dict:
+        """
+            This function is run to validate form data.
+            It ensures that a student can only  have two requested reviews at once.
+
+            :returns: The cleaned data of the form
+            :rtype: dict
+        """
+
+        if self.user is not None and models.Review.objects.filter(student=self.user).filter(
+                Q(status=models.Review.Status.OPEN) | Q(status=models.Review.Status.ASSIGNED)).count() >= 2:
+            raise ValidationError("You can only have 2 requested reviews at once.")
+        return super(CreateReviewForm, self).clean()
 
     def save(self, commit=True):
         """

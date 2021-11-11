@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core import mail
 from django.db.models import Q, QuerySet
+from django.forms import Form
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
@@ -138,10 +139,11 @@ class FormAlertMixin(FormMixin):
             :param form: The form that is valid
         """
 
-        messages.add_message(self.request, messages.SUCCESS, self.success_message)
+        if self.success_message is not None:
+            messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return super(FormAlertMixin, self).form_valid(form)
 
-    def form_invalid(self, form):
+    def form_invalid(self, form: Form):
         """
             This function is run when the form is invalid.
             It adds the failure message to the messages framework
@@ -149,7 +151,11 @@ class FormAlertMixin(FormMixin):
             :param form: The form that is invalid
         """
 
-        messages.add_message(self.request, messages.ERROR, self.failure_message)
+        if len(form.non_field_errors()) > 0:
+            for error in form.non_field_errors():
+                messages.add_message(self.request, messages.ERROR, error)
+        else:
+            messages.add_message(self.request, messages.ERROR, self.failure_message)
         return super(FormAlertMixin, self).form_invalid(form)
 
 
@@ -390,22 +396,27 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
             :param request: The request that invoked this method
         """
 
-        target_pk = kwargs.get('pk', '')
-        try:
-            target_object = models.Review.objects.get(id=models.val_uuid(target_pk), status=models.Review.Status.OPEN,
-                                                      student__session=self.request.user.session)
-            target_object.status = models.Review.Status.ASSIGNED
-            target_object.reviewer = request.user
-            target_object.save()
-            send_email("Review accepted by {reviewer}",
-                       "Hello, {target_user}, a review by {student} has been accepted by {reviewer}.",
-                       "emails/review_accepted.html",
-                       target_object,
-                       User.objects.filter(is_superuser=True))
-            messages.add_message(request, messages.SUCCESS, "Review Claimed")
+        if models.Review.objects.filter(reviewer=request.user, status=models.Review.Status.ASSIGNED).count() >= 2:
+            messages.add_message(request, messages.ERROR, "You can only have 2 claimed reviews at once")
             return redirect('home')
-        except models.Review.DoesNotExist:
-            raise Http404()
+        else:
+            target_pk = kwargs.get('pk', '')
+            try:
+                target_object = models.Review.objects.get(id=models.val_uuid(target_pk),
+                                                          status=models.Review.Status.OPEN,
+                                                          student__session=self.request.user.session)
+                target_object.status = models.Review.Status.ASSIGNED
+                target_object.reviewer = request.user
+                target_object.save()
+                send_email("Review accepted by {reviewer}",
+                           "Hello, {target_user}, a review by {student} has been accepted by {reviewer}.",
+                           "emails/review_accepted.html",
+                           target_object,
+                           User.objects.filter(is_superuser=True))
+                messages.add_message(request, messages.SUCCESS, "Review Claimed")
+                return redirect('home')
+            except models.Review.DoesNotExist:
+                raise Http404()
 
 
 class ReviewerAction(LoginRequiredMixin, IsReviewerMixin, View):
