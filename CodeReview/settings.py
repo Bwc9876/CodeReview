@@ -198,6 +198,43 @@ STATIC_ROOT = os.getenv("STATIC_DIR", "collected-static")
 # This option defines which field to use automatically for PrimaryKeys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# This next block of code sets up logging
+if DEBUG:
+    # If we're debugging, all messages should go to the console
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'root': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    }
+else:
+    # If we're in production, all messages will go to a local file named "django_log.txt"
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': 'django_logs.txt',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+        },
+    }
+
 # This next block of code initializes django-debug-toolbar if we're debugging
 if DEBUG:
     # This option defines which IPs the toolbar will display on
