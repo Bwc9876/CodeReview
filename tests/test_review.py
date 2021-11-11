@@ -254,6 +254,13 @@ class ReviewCreateTest(BaseReviewAction):
         except Review.DoesNotExist:
             self.fail("Review Not Created Successfully")
 
+    def test_limit(self) -> None:
+        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
+        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
+        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
+        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
+        self.assertEqual(Review.objects.filter(student=self.student, status=Review.Status.OPEN).count(), 2)
+
 
 class ReviewCancelUnclaimedTest(BaseReviewAction):
     url_name = 'cancel'
@@ -301,6 +308,17 @@ class ReviewClaimTest(BaseReviewAction):
         self.reviewer.save()
         response = self.reviewer_client.post(self.url)
         self.assertEqual(response.status_code, 405)
+
+    def test_limit(self) -> None:
+        self.student2 = User.objects.create_user('student2')
+        self.student2_client = Client()
+        self.student2_client.force_login(self.student2)
+        for x in range(3):
+            target_client = self.student_client if x < 1 else self.student2_client
+            target_client.post(reverse('review-create'), {'schoology_id': f"12.34.{x}", "rubric": self.rubric.id})
+            review = Review.objects.get(schoology_id=f"12.34.{x}")
+            self.reviewer_client.post(reverse('review-claim', kwargs={'pk': review.id}))
+        self.assertEqual(Review.objects.filter(reviewer=self.reviewer, status=Review.Status.ASSIGNED).count(), 2)
 
 
 class ReviewAbandonTest(BaseReviewAction):

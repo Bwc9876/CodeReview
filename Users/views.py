@@ -73,8 +73,10 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
         return super(CompleteUserSetupView, self).get(request, *args, **kwargs)
 
 
-class UserLoginView(LoginView):
+class UserLoginView(FormAlertMixin, LoginView):
     template_name = "login.html"
+
+    success_message = None
 
     def get_context_data(self, **kwargs):
         context = super(UserLoginView, self).get_context_data(**kwargs)
