@@ -1,6 +1,7 @@
 media
 .replit
 .env
+env.ps1
 venv
 .vscode
 __pycache__/
