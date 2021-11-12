@@ -2,7 +2,7 @@
     This file s used to load environment variables from a powershell file
 """
 
-import os
+import os, sys
 from typing import Optional
 
 
@@ -40,3 +40,10 @@ def load_to_env(filename: str) -> None:
     if env is not None:
         for key in env.keys():
             os.environ[key] = env[key]
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        load_to_env(sys.argv[1])
+    else:
+        print("Invalid Arguments, usage: \n", "python load_env.py env_file_path")
