@@ -220,6 +220,15 @@ if not DEBUG:
         },
     }
 
+if DEBUG and os.getenv("SECURITY", "NONE") == "SECURE":
+    # We're running with HTTPS, enable some security features
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_SECONDS = 604800
+    SECURE_SSL_REDIRECT = True
+
 # This next block of code initializes django-debug-toolbar if we're debugging
 if DEBUG:
     # This option defines which IPs the toolbar will display on
