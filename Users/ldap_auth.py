@@ -1,3 +1,7 @@
+"""
+    This file is used to provide authentication via LDAP (ActiveDirectory)
+"""
+
 from typing import Optional
 from uuid import UUID
 
@@ -21,7 +25,7 @@ class LDAPAuthException(Exception):
 
 class LDAPAuthentication(BaseBackend):
     """
-        This authentication backend will login the user to ldap and then create a User in the database
+        This authentication backend will log in the user to ldap and then create a User in the database
         with the same info.
 
         :cvar server: The server we're connecting to with LDAP (Must be an ActiveDirectory Server)
@@ -44,7 +48,7 @@ class LDAPAuthentication(BaseBackend):
     @staticmethod
     def get_session_from_ldap(ldap_user: Entry) -> str:
         """
-            This function takes an ldap user and gets their session
+            This function takes an LDAP user and gets their session
 
             :param ldap_user: The user to get the session of
             :type ldap_user: Entry
@@ -73,7 +77,7 @@ class LDAPAuthentication(BaseBackend):
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
-            This function takes an ldap user and a django user and syncs their data
+            This function takes an LDAP user and a django user and syncs their data
 
             :param ldap_user: The ldap user to sync from
             :type ldap_user: Entry
@@ -92,7 +96,7 @@ class LDAPAuthentication(BaseBackend):
 
     def create_from_ldap(self, ldap_user: Entry, guid: str) -> User:
         """
-            This function creates a django user from an ldap user
+            This function creates a django user from an LDAP user
 
             :param ldap_user: The user to read from
             :type ldap_user: Entry
@@ -129,7 +133,7 @@ class LDAPAuthentication(BaseBackend):
 
     def get_ldap_user(self, conn: Connection, username: str) -> Optional[Entry]:
         """
-            This function gets an ldap user from the ldap server
+            This function gets an LDAP user from the LDAP server
 
             :param conn: The connection for the server
             :type conn: Connection
@@ -201,9 +205,9 @@ class LDAPAuthentication(BaseBackend):
         """
             This function is used to delete any users that are no longer in the ActiveDirectory database.
 
-            :param username: The username to use to login via LDAP
+            :param username: The username to use to log in via LDAP
             :type username: str
-            :param password: The password to use to login via LDAP
+            :param password: The password to use to log in via LDAP
             :type password: str
         """
 
@@ -213,7 +217,8 @@ class LDAPAuthentication(BaseBackend):
             if conn.bind():
                 ldap_user = self.get_ldap_user(conn, conn.extend.standard.who_am_i())
                 if self.check_user_is_admin(ldap_user):
-                    to_check = User.objects.filter(is_superuser=False).filter(Q(password__startswith='!') | Q(password__isnull=True))
+                    to_check = User.objects.filter(is_superuser=False).filter(
+                        Q(password__startswith='!') | Q(password__isnull=True))
                     ldap_users = self.get_all_users(conn)
                     for user in to_check:
                         if len(ldap_users.match("msDs-principalName", user.username)) == 0:

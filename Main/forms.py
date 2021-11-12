@@ -119,7 +119,8 @@ class GradeReviewForm(ModelForm):
     """
 
     scores = CharField(max_length=200, widget=GradeReviewWidget(),
-                       help_text="Please fill out each row in the rubric.  If a row does not apply to this specific assignment, select \"N/A\"")
+                       help_text="Please fill out each row in the rubric."
+                                 "  If a row does not apply to this specific assignment, select \"N/A\"")
 
     _validation_schema = {
         "type": "array",
@@ -192,7 +193,7 @@ class GradeReviewForm(ModelForm):
     def clean(self):
         """
             This function is used to validate input data.
-            It ensure the JSON submitted for scores is valid and readable.
+            It ensures the JSON submitted for scores is valid and readable.
 
             :return: The cleaned input data
             :rtype: dict

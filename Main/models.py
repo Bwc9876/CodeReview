@@ -1,5 +1,5 @@
 """
-    This file defines models that will converted to tables in the database for the Main app
+    This file defines models that will be converted to tables in the database for the Main app
 """
 
 from typing import Optional, Union
@@ -12,7 +12,7 @@ from Users.models import User
 
 def val_uuid(src: Union[str, UUID]) -> Optional[UUID]:
     """
-        This function takes a UUID in either a string or UUID format and ensures it's valid
+        This function takes a UUID in either a string or UUID format and ensures its valid
 
         :param src: The UUID to validate
         :type src: str
@@ -39,7 +39,7 @@ class BaseModel(models.Model):
         """
             This internal class specifies settings for the model
 
-            :cvar abstract: This is a special attribute that tells django not to save this model to the database, and only use it for inheritance
+            :cvar abstract: This is a special attribute that tells django not to save this model to the database
         """
 
         abstract = True
@@ -87,10 +87,13 @@ class Review(BaseModel):
 
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="student")
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviewer", null=True)
-    schoology_id = models.CharField(max_length=10, null=True, help_text="The ID of the schoology assignment that this review pertains to")
+    schoology_id = models.CharField(max_length=10, null=True,
+                                    help_text="The ID of the schoology assignment that this review pertains to")
     status = models.CharField(choices=Status.choices, default=Status.OPEN, max_length=1)
-    rubric = models.ForeignKey("Instructor.Rubric", on_delete=models.CASCADE, related_name="source_rubric", help_text="The rubric the reviewer will use to grade your code")
-    additional_comments = models.TextField(blank=True, null=True, help_text="Any additional comments you have on the code")
+    rubric = models.ForeignKey("Instructor.Rubric", on_delete=models.CASCADE, related_name="source_rubric",
+                               help_text="The rubric the reviewer will use to grade your code")
+    additional_comments = models.TextField(blank=True, null=True,
+                                           help_text="Any additional comments you have on the code")
     date_created = models.DateTimeField(auto_now_add=True)
     date_completed = models.DateTimeField(blank=True, null=True)
 
@@ -105,7 +108,7 @@ class Review(BaseModel):
 
     def __str__(self):
         """
-            This function defines how the model will be casted to a string
+            This function defines how the model will be cast to a string
 
             :returns: The student the Review is from
             :rtype: str

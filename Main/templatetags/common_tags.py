@@ -12,7 +12,7 @@ register = template.Library()
 @register.filter(name="make_spaces")
 def make_spaces(in_string: str) -> str:
     """
-        This filter takes a string an replaces all dashes and underscores with spaces
+        This filter takes a string and replaces all dashes and underscores with spaces
 
         :param in_string: The string to change
         :type in_string: str

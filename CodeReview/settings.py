@@ -20,6 +20,7 @@ DEBUG = STAGE != "Prod"
 
 # This option is used in encryption, if we're debugging, we don't care that people know what it is
 # But, if we're in Production, we'll load the key from the environment
+# noinspection SpellCheckingInspection
 SECRET_KEY = 'django-insecure-1&=3d#^^j*!8)r5y8tuh(t#rp6*(jwbx%90k-ir5c*2j4$s$o%' if DEBUG else os.getenv("SECRET_KEY")
 
 # This option defines what url someone can type in to access this site. If we're debugging, it doesn't matter
@@ -96,7 +97,7 @@ elif STAGE == "GH_TEST":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'github_actions',
+            'NAME': 'GitHub_actions',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
             'HOST': '127.0.0.1',
@@ -104,7 +105,7 @@ elif STAGE == "GH_TEST":
         }
     }
 else:
-    # In development, we use an sqlite3 database file as the database backend
+    # In development, we use an SQLITE3 database file as the database backend
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -229,4 +230,5 @@ if DEBUG:
     # This next block of code tackles a strange issue where windows doesn't set JS mimetypes to 'text/javascript'
     # This causes the browser to incorrectly load the JavaScript
     import mimetypes
+
     mimetypes.add_type("text/javascript", '.js')

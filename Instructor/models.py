@@ -1,5 +1,5 @@
 """
-    This file defines models that will converted to tables in the database for the Instructor app
+    This file defines models that will be converted to tables in the database for the Instructor app
 """
 
 from json import JSONEncoder
@@ -29,7 +29,7 @@ class RubricCell(BaseModel):
             This internal class defines how the model will function in the database
 
             :cvar ordering: We order the cells by their index
-            :cvar unique_together: We dont want two cells at the same position on a row,
+            :cvar unique_together: We don't want two cells at the same position on a row,
              so we make `RubricCell.parent_row` and `RubricCell.index` unique together
         """
 
@@ -44,7 +44,7 @@ class RubricRow(BaseModel):
         :cvar name: The name of the row
         :cvar description: The description of the row
         :cvar max_score: The max score a row can have
-        :cvar parent_rubric: The `Rubric` that this row is inside of
+        :cvar parent_rubric: The `Rubric` that this row is inside
         :cvar index: The position of this row in the rubric
     """
 
@@ -59,7 +59,7 @@ class RubricRow(BaseModel):
             This internal class defines how the model will function in the database
 
             :cvar ordering: Rows should be ordered by their index
-            :cvar unique_together: We dont want two rows at the same position on a rubric,
+            :cvar unique_together: We don't want two rows at the same position on a rubric,
              so we make `RubricRow.parent_rubric` and `RubricRow.index` unique together
         """
 
@@ -89,7 +89,8 @@ class Rubric(BaseModel):
         :cvar max_score: The max possible score that a student can get with this rubric
     """
 
-    name = models.CharField(max_length=20, help_text="The name the students will use to pick a rubric when requesting a review")
+    name = models.CharField(max_length=20,
+                            help_text="The name the students will use to pick a rubric when requesting a review")
     max_score = models.FloatField()
 
     def to_json(self) -> str:
@@ -112,7 +113,7 @@ class Rubric(BaseModel):
 
     def __str__(self) -> str:
         """
-            This function defines how this object is casted to a string
+            This function defines how this object is cast to a string
 
             :returns: The name of the Rubric
             :rtype: str

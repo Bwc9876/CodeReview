@@ -74,16 +74,39 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
 
 
 class UserLoginView(FormAlertMixin, LoginView):
+    """
+        This view is used by the user to log in
+
+        :cvar template_name: The template to render
+        :cvar success_message: The message to display when the user has logged in (don't display one)
+    """
+
     template_name = "login.html"
 
     success_message = None
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
+        """
+            This function defines additional context data to pass to the template
+            It hides the back button
+
+            :returns: Context data to pass to the template
+            :rtype: dict
+        """
+
         context = super(UserLoginView, self).get_context_data(**kwargs)
         context['hide_back'] = True
         return context
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
+        """
+            This function defines the url to go to when the user has logged in
+            If this is the user's first time logging in, ask them for their email
+
+            :returns: The url to go to after logging in
+            :rtype: str
+        """
+
         if self.request.user.email is None or self.request.user.email == "":
             return reverse('user-setup', kwargs={'pk': self.request.user.id})
         else:

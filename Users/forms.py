@@ -135,6 +135,7 @@ class FinishUserForm(ModelForm):
             self.fields['email'].is_admin = True
             self.fields['email'].widget.suffixes = (f'@{settings.EMAIL_ADMIN_DOMAIN}',)
         else:
-            self.fields['email'].widget.prefixes = (self.instance.first_name[:3].lower(), self.instance.last_name[:3].lower())
+            self.fields['email'].widget.prefixes = (self.instance.first_name[:3].lower(),
+                                                    self.instance.last_name[:3].lower())
             self.fields['email'].widget.suffixes = (f'@{settings.EMAIL_DOMAIN}',)
             self.fields['email'].help_text = "Enter the last 3 digits of your student id"
