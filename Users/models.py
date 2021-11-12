@@ -1,5 +1,5 @@
 """
-    This file defines models that will converted to tables in the database for the Users app
+    This file defines models that will be converted to tables in the database for the Users app
 """
 
 from uuid import uuid4
@@ -13,7 +13,7 @@ class User(AbstractUser):
         This model represents a User in the database
 
         :cvar id: A Unique Identifier for the user
-        :cvar student_id: The user's BCTC Id
+        :cvar student_id: The user's BCTC ID
         :cvar session: The session the student is in (AM or PM)
         :cvar is_reviewer: Whether the student can review code
     """
@@ -45,7 +45,7 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         """
-            This function define how this object will be casted to string.
+            This function define how this object will be cast to string.
             If the user has a first and last name, we use those, otherwise, we just use the username
 
             :returns: A string representation of this object

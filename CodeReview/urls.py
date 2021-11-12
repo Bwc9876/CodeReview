@@ -1,5 +1,5 @@
 """
-    This file defines how url map to views and other apps
+    This file defines how urls map to views and other apps
 """
 
 import debug_toolbar

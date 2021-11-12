@@ -51,7 +51,7 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
         message = mail.EmailMultiAlternatives(subject=f'{review.student.session} | {subject}', body=text_content)
         message.attach_alternative(html_content, "text/html")
         message.to = [user.email]
-        message.send(fail_silently=False)
+        message.send()
 
 
 # Mixins
@@ -301,7 +301,7 @@ class ReviewEditView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, UpdateVi
     def get_queryset(self):
         """
             This function defines which Reviews a user can edit
-            It only lets you edit a review in which you are the student and it's not graded
+            It only lets you edit a review in which you are the student, and it's not graded
 
             :return: A QuerySet defining which Reviews can be edited by this user
             :rtype: QuerySet
@@ -474,7 +474,8 @@ class ReviewAbandonView(ReviewerAction):
 
         target_object = self.get_target_review(kwargs.get('pk', ""))
         return render(self.request, 'reviews/review_abandon.html', {'review': target_object,
-                                                                    'objectString': f"review with {target_object.student}"})
+                                                                    'objectString':
+                                                                        f"review with {target_object.student}"})
 
 
 class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, FormNameMixin, FormAlertMixin, UpdateView):

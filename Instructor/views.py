@@ -10,14 +10,14 @@ from django.views.generic import View, ListView, TemplateView, CreateView, Updat
 
 from Main import models as main_models
 from Main.views import IsSuperUserMixin, FormNameMixin, FormAlertMixin, SuccessDeleteMixin
-from Users.models import User
 from Users.ldap_auth import LDAPAuthentication, LDAPAuthException
+from Users.models import User
 from . import models, forms
 
 
 class UserClearView(LoginRequiredMixin, IsSuperUserMixin, View):
     """
-        This view is used to cleanup any users that are not in teh ActiveDirectory database.
+        This view is used to clean up any users that are not in teh ActiveDirectory database.
 
         :cvar http_method_names: The HTTP methods that this view takes
     """
@@ -83,9 +83,11 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
     template_name = "user_list.html"
     http_method_names = ['get', 'post']
 
-    def get_queryset(self):
+    @staticmethod
+    def get_queryset():
         """
-            This defines what objects from the database to list, we don't want Instructors to be listed, so we exclude them
+            This defines what objects from the database to list.
+            We don't want Instructors to be listed, so we exclude them
 
             :returns: A QuerySet with non-instructor user
             :rtype: QuerySet
@@ -172,7 +174,7 @@ class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAl
     success_url = reverse_lazy('rubric-list')
     template_name = 'form_base.html'
     success_message = "Rubric Updated"
-    
+
     def form_valid(self, form):
         """
             This function is run when the form is valid.
@@ -182,11 +184,11 @@ class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAl
             :type form: Form
         """
 
-        self.object = form.save()
-        row_count = self.object.rubricrow_set.count()
-        for review in main_models.Review.objects.filter(rubric=self.object, status=main_models.Review.Status.CLOSED):
+        edited_object = form.save()
+        row_count = edited_object.rubricrow_set.count()
+        for review in main_models.Review.objects.filter(rubric=edited_object, status=main_models.Review.Status.CLOSED):
             if review.scoredrow_set.count() != row_count:
-                for row in self.object.rubricrow_set.all():
+                for row in edited_object.rubricrow_set.all():
                     try:
                         review.scoredrow_set.get(source_row__index=row.index)
                     except models.ScoredRow.DoesNotExist:

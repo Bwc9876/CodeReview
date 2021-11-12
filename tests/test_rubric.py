@@ -53,7 +53,8 @@ class RubricFormTest(TestCase):
         else:
             self.fail("Invalid Rubric Passed Validation!")
 
-    def new_current(self) -> list:
+    @staticmethod
+    def new_current() -> list:
         return JSONDecoder().decode(test_json)
 
     def test_validation(self):
