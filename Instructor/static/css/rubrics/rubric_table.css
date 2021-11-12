@@ -1,7 +1,8 @@
 /*!* This file describes styles for Rubrics *!*/
 
 .rubric-graded td.selected, .rubric-grading td.selected {
-    background-color: #edffdd !important;
+    background-color: var(--bs-teal) !important;
+    filter: grayscale(55%);
 }
 
 .rubric-grading td {
@@ -9,7 +10,7 @@
 }
 
 .rubric-grading td:hover {
-    background-color: #c8eeb7 !important;
+    background-color: var(--bs-teal) !important;
 }
 
 .rubric-editing .cell {
