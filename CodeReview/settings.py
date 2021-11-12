@@ -220,7 +220,7 @@ if not DEBUG:
         },
     }
 
-if DEBUG and os.getenv("SECURITY", "NONE") == "SECURE":
+if STAGE == "Prod" and os.getenv("SECURITY", "NONE") == "SECURE":
     # We're running with HTTPS, enable some security features
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
