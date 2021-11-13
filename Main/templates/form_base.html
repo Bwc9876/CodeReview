@@ -15,16 +15,22 @@
 
 {% block pageHeader %}{{ formName }}{% endblock %}
 
+{% block belowHeader %}<h5 class="text-center">{{ non_field_help_text }}</h5>{% endblock %}
+
 {% block mainContent %}
     {% load form_tags %}
     <div class="row mb-5">
         <div class="col">
-                {% if not hide_back %}
-                    <button type="button" class="btn btn-outline-secondary back-button d-inline"><i class="bi bi-arrow-left"></i> Back</button>
-                {% endif %}
+            {% if not hide_back %}
+                <button type="button" class="btn btn-outline-secondary back-button d-inline"><i
+                        class="bi bi-arrow-left"></i> Back
+                </button>
+            {% endif %}
         </div>
         <div class="col text-end">
-            <button class="btn btn-outline-secondary d-none" aria-label="Display help text" id="help-button" type="button" data-bs-toggle="collapse" data-bs-target=".field-help" aria-expanded="false" aria-controls="{{ field.name }}-helptext">
+            <button class="btn btn-outline-secondary d-none" aria-label="Display help text" id="help-button"
+                    type="button" data-bs-toggle="collapse" data-bs-target=".field-help" aria-expanded="false"
+                    aria-controls="{{ field.name }}-helptext">
                 <i class="bi bi-question-circle"></i> <span id="help-label">Show Help</span>
             </button>
         </div>
@@ -36,9 +42,9 @@
                 {% for field in form %}
                     <div id="{{ field.label }}_fieldset" class="my-4">
                         {% if render_no_floating %}
-                                <label id="{{ field.label }}_label" class="mb-3"
-                                       for="{{ field.id_for_label }}">{{ field.label|title }}</label>
-                                {{ field|setup_field:False }}
+                            <label id="{{ field.label }}_label" class="mb-3"
+                                   for="{{ field.id_for_label }}">{{ field.label|title }}</label>
+                            {{ field|setup_field:False }}
                         {% elif field in form.visible_fields %}
                             <div class="form-floating">
                                 {{ field|setup_field:True }}
@@ -49,11 +55,12 @@
                             {{ field|setup_field:"form-control" }}
                         {% endif %}
                         {% if field.help_text %}
-                                <div class="mb-2 d-flex flex-row">
-                                    <div class="collapse text-nowrap ms-2 mt-1 align-middle field-help" id="{{ field.name }}-helptext">
-                                        {{ field.help_text }}
-                                    </div>
+                            <div class="mb-2 d-flex flex-row">
+                                <div class="collapse text-nowrap ms-2 mt-1 align-middle field-help"
+                                     id="{{ field.name }}-helptext">
+                                    {{ field.help_text }}
                                 </div>
+                            </div>
                         {% endif %}
                         {% if field.errors %}
                             <div style="display: block;" id="{{ field.name }}-feedback" class="invalid-feedback">
@@ -69,7 +76,9 @@
                 <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
                     <span class="loading spinner-border spinner-border-sm d-none" role="status"
                           aria-hidden="true"></span>
-                    <span class="submit-word">{% block submitWord %}Save {# This block can be overriden to change what word appears in the submit button #}{% endblock %}</span>
+                    <span class="submit-word">{% block submitWord %}Save
+                        {# This block can be overriden to change what word appears in the submit button #}
+                    {% endblock %}</span>
                 </button>
             </form>
         </div>

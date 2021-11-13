@@ -57,6 +57,7 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
 
         context = super(CompleteUserSetupView, self).get_context_data(**kwargs)
         context['render_no_floating'] = True
+        context['hide_back'] = self.object.email is None or self.object.email == ""
         return context
 
     def get(self, request, *args, **kwargs):
@@ -88,7 +89,7 @@ class UserLoginView(FormAlertMixin, LoginView):
     def get_context_data(self, **kwargs) -> dict:
         """
             This function defines additional context data to pass to the template
-            It hides the back button
+            It hides the back button and displays some help info
 
             :returns: Context data to pass to the template
             :rtype: dict
@@ -96,6 +97,7 @@ class UserLoginView(FormAlertMixin, LoginView):
 
         context = super(UserLoginView, self).get_context_data(**kwargs)
         context['hide_back'] = True
+        context['non_field_help_text'] = "Use your Windows credentials to log in"
         return context
 
     def get_success_url(self) -> str:
