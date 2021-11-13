@@ -87,7 +87,9 @@ class PartialField(CharField):
             if len(value) < 3 or len(value) > 3:
                 raise ValidationError("Please enter 3 digits")
             try:
-                int(value)
+                converted = int(value)
+                if converted < 100 or converted > 999:
+                    raise ValidationError("Must be between 100-999")
             except ValueError:
                 raise ValidationError("Must be a number")
         return f'{"".join(self.widget.prefixes)}{value}{"".join(self.widget.suffixes)}'

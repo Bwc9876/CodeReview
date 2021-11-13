@@ -79,6 +79,14 @@ class UserSetupTest(TestCase):
         response = self.student_c.post(self.get_url(self.student), {'email': 'abc'})
         self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be a number")
 
+    def test_student_decimal_check(self):
+        response = self.student_c.post(self.get_url(self.student), {'email': '1.1'})
+        self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be a number")
+
+    def test_student_negative_check(self):
+        response = self.student_c.post(self.get_url(self.student), {'email': '-99'})
+        self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be between 100-999")
+
 
 class LogoutTest(TestCase):
 
