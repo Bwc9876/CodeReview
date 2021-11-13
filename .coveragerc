@@ -13,7 +13,5 @@ omit =
 	*/admin.py
 	*/urls.py
 	*/apps.py
-	Users/views.py
-	Users/ldap_auth.py
-	Main/templatetags/form_tags.py
+	Users/ldap_errors.py
 	

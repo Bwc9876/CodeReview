@@ -2,6 +2,7 @@
     This file defines the back-end code that runs when a user requests a page for the Instructor app
 """
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
@@ -10,7 +11,9 @@ from django.views.generic import View, ListView, TemplateView, CreateView, Updat
 
 from Main import models as main_models
 from Main.views import IsSuperUserMixin, FormNameMixin, FormAlertMixin, SuccessDeleteMixin
-from Users.ldap_auth import LDAPAuthentication, LDAPAuthException
+from Users.ldap_auth import LDAPAuthentication
+from Users.ldap_errors import LDAPAuthException
+from Users.ldap_mock import LDAPMockAuthentication
 from Users.models import User
 from . import models, forms
 
@@ -37,8 +40,12 @@ class UserClearView(LoginRequiredMixin, IsSuperUserMixin, View):
             return redirect("user-list")
         else:
             try:
-                LDAPAuthentication().delete_old_users(self.request.user.username, password)
+                backend = LDAPMockAuthentication \
+                    if settings.AUTHENTICATION_BACKENDS[0] == "Users.ldap_mock.LDAPMockAuthentication" \
+                    else LDAPAuthentication
+                backend().delete_old_users(self.request.user.username, password)
                 messages.add_message(self.request, messages.SUCCESS, "Users Cleared Successfully")
+                return redirect("user-list")
             except LDAPAuthException as error:
                 messages.add_message(self.request, messages.ERROR, error.args[0])
                 return redirect("user-list")

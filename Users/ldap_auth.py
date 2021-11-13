@@ -12,28 +12,8 @@ from django.db.models import Q
 from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM, Entry
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError
 
+from .ldap_errors import LDAPConnectionError, LDAPInvalidCredentials, LDAPAuthException
 from .models import User
-
-
-class LDAPAuthException(Exception):
-    """
-        This exception is used to represent an error with authenticating through LDAP
-    """
-
-    pass
-
-
-class LDAPInvalidCredentials(LDAPAuthException):
-    """
-        This exception is used when the credentials provided are invalid
-    """
-    pass
-
-
-class LDAPConnectionError(LDAPAuthException):
-    """
-        This exception is used when we can't contact ActiveDirectory
-    """
 
 
 class LDAPAuthentication(BaseBackend):
@@ -63,7 +43,9 @@ class LDAPAuthentication(BaseBackend):
                 return conn
             else:
                 raise LDAPInvalidCredentials()
-        except (LDAPBindError, LDAPSocketOpenError):
+        except LDAPSocketOpenError:
+            raise LDAPConnectionError()
+        except LDAPBindError:
             raise LDAPConnectionError()
 
     @classmethod
@@ -254,7 +236,7 @@ class LDAPAuthentication(BaseBackend):
 
         try:
             conn = self.get_connection(username, password)
-            ldap_user = self.get_ldap_user(conn, conn.extend.standard.who_am_i())
+            ldap_user = self.get_ldap_user(conn, username)
             if self.check_user_is_admin(ldap_user):
                 to_check = User.objects.filter(is_superuser=False).filter(
                     Q(password__startswith='!') | Q(password__isnull=True))
