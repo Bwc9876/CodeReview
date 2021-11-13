@@ -54,7 +54,7 @@ class ReviewMethodTest(TestCase):
     def create_user_matrix(self) -> None:
         users = {
             'reviewer': User.objects.create_user("reviewer-affiliated", is_reviewer=True),
-            'student': User.objects.create_user("student-affiliated"),
+            'student': User.objects.create_user("student-affiliated", first_name="Test", last_name="Student"),
             'super': User.objects.create_superuser("test-instructor"),
         }
         self.users = users
@@ -80,6 +80,14 @@ class ReviewMethodTest(TestCase):
 
     def test_score_fraction(self):
         self.assertEqual(Review.objects.get(id=self.review.id).score_fraction(), "7.0/12.0")
+
+    def test_score_fraction_not_complete(self):
+        self.review.status = Review.Status.ASSIGNED
+        self.review.save()
+        self.assertIsNone(Review.objects.get(id=self.review.id).score_fraction())
+
+    def test_str(self):
+        self.assertEqual(str(self.review), "Review from Test Student")
 
     def test_get_status_from_str(self):
         self.assertEqual("Open", Review.get_status_from_string('O'))

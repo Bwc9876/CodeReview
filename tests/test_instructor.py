@@ -78,6 +78,15 @@ class HomeViewTest(TestCase):
         response = self.clients['super'].get(reverse('instructor-home'))
         self.assertIn(self.review, response.context.get('am_completed', []))
 
+    def test_completed_overflow(self) -> None:
+        for x in range(5):
+            new_review = Review.objects.create(student=self.users['student'], schoology_id=f"12.34.0{x}",
+                                               reviewer=self.users['reviewer'], status=Review.Status.ASSIGNED,
+                                               rubric=self.rubric)
+            self.clients['reviewer'].post(reverse('review-grade', kwargs={'pk': new_review.id}), {'scores': "[10,2]"})
+        response = self.clients['super'].get(reverse('instructor-home'))
+        self.assertIn("review/completed/?session=AM", str(response.content))
+
     def test_completed_pm(self) -> None:
         self.users['student'].session = User.Session.PM
         self.users['student'].save()

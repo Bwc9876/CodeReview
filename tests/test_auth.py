@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+from django.contrib.messages import get_messages
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -78,9 +81,45 @@ class LDAPAuthTest(TestCase):
         self.assertEqual(new_user.first_name, "")
         self.assertEqual(new_user.last_name, "")
 
+    def test_change(self) -> None:
+        self.client.post(self.url, {'username': "user_pm", 'password': "pm_user_password123"})
+        user_pm = User.objects.get(username="example\\user_pm")
+        user_pm.first_name = "DiffName"
+        user_pm.last_name = "DiffLastName"
+        user_pm.session = User.Session.AM
+        user_pm.save()
+        self.client.post(self.url, {'username': "user_pm", 'password': "pm_user_password123"})
+        updated_user = User.objects.get(username=f"example\\user_pm")
+        self.assertEqual(updated_user.first_name, "PMBob")
+        self.assertEqual(updated_user.last_name, "PMBobberson")
+        self.assertEqual(updated_user.session, User.Session.PM)
+
+    def test_no_user(self) -> None:
+        user = LDAPMockAuthentication().get_user(str(uuid4()))
+        self.assertIsNone(user)
+
+    def test_no_email(self) -> None:
+        response = self.client.post(self.url, {'username': "admin", "password": "admin_password123"})
+        self.assertEqual(response.url, reverse('user-setup',
+                                               kwargs={'pk': User.objects.get(username="example\\admin").id}))
+
+    def test_has_email(self) -> None:
+        self.client.post(self.url, {'username': "admin", "password": "admin_password123"})
+        admin = User.objects.get(username=f"example\\admin")
+        admin.email = "admin@admin.example.com"
+        admin.save()
+        response = self.client.post(self.url, {'username': "admin", "password": "admin_password123"})
+        self.assertEqual(response.url, reverse("home"))
+
     def test_invalid(self) -> None:
         response = self.client.post(self.url, {'username': "invalid_user", 'password': "invalid_password"})
         self.assertEqual(len(response.context.get('form').non_field_errors()), 1)
+
+    @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'], LDAP_URL="bad-server")
+    def test_cant_connect(self) -> None:
+        response = self.client.post(self.url, {'username': "admin", 'password': "admin_password123"})
+        self.assertIn("There was an error contacting the auth server, please try again later.",
+                      [m.message for m in response.context.get('messages', [])])
 
     def tearDown(self) -> None:
         LDAPMockAuthentication.users = []
@@ -90,6 +129,9 @@ class LDAPAuthTest(TestCase):
                    LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example")
 class UserCleanupTest(TestCase):
     url = reverse('user-cleanup')
+
+    def assertMessage(self, response, message):
+        self.assertIn(message, [m.message for m in get_messages(response.wsgi_request)])
 
     def setUp(self) -> None:
         LDAPMockAuthentication.users = {
@@ -112,29 +154,42 @@ class UserCleanupTest(TestCase):
         self.old_user.set_unusable_password()
         self.old_user.save()
         self.student = User.objects.get(username="example\\student")
-        self.client.force_login(User.objects.get(username="example\\admin"))
+        self.admin = User.objects.get(username="example\\admin")
+        self.client.force_login(self.admin)
 
     def test_cleanup_users(self):
-        response = self.client.post(self.url, {'userPassword': "admin_password123"})
-        self.assertRedirects(response, reverse('user-list'))
+        self.client.post(self.url, {'userPassword': "admin_password123"})
         self.assertFalse(User.objects.filter(username="example\\old_user").exists())
         self.assertTrue(User.objects.filter(username="example\\student").exists())
 
     def test_no_password(self):
-        self.client.post(self.url, {'userPassword': ""})
+        response = self.client.post(self.url, {'userPassword': ""})
         self.assertTrue(User.objects.filter(username="example\\old_user").exists())
         self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(response, "Please provide a password")
 
     def test_password_wrong(self):
-        self.client.post(self.url, {'userPassword': "wrong password"})
+        response = self.client.post(self.url, {'userPassword': "wrong password"})
         self.assertTrue(User.objects.filter(username="example\\old_user").exists())
         self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(response, "The password you provided was incorrect, please check it and try again.")
 
     def test_insufficient_perms(self):
+        self.student.is_superuser = True
+        self.student.save()
         self.client.force_login(self.student)
-        self.client.post(self.url, {'userPassword': "student_password123"})
+        response = self.client.post(self.url, {'userPassword': "student_password123"})
         self.assertTrue(User.objects.filter(username="example\\old_user").exists())
         self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(response, "You lack permissions to perform this action.")
+
+    @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'], LDAP_URL="bad-server")
+    def test_cant_connect(self) -> None:
+        self.client.force_login(self.admin)
+        response = self.client.post(self.url, {'userPassword': "admin_password123"})
+        self.assertTrue(User.objects.filter(username="example\\old_user").exists())
+        self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(response, "Can't connect to ActiveDirectory, please try again later.")
 
     def tearDown(self) -> None:
         LDAPMockAuthentication.users = []

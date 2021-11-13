@@ -2,12 +2,9 @@
     This file defines the backend code that runs when the user goes to a page
 """
 
-from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db.models import QuerySet
-from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView, UpdateView
 
@@ -59,19 +56,6 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
         context['render_no_floating'] = True
         context['hide_back'] = self.object.email is None or self.object.email == ""
         return context
-
-    def get(self, request, *args, **kwargs):
-        """
-            This function is run when the user makes a GET request
-            If the user isn't from ActiveDirectory (they're an admin) we don't need to worry about student ids
-        """
-
-        if request.user.has_usable_password():
-            if settings.DEBUG:
-                messages.add_message(request, messages.WARNING, "User isn't from IIS. Ignoring because DEBUG is True")
-            else:
-                return redirect('home')
-        return super(CompleteUserSetupView, self).get(request, *args, **kwargs)
 
 
 class UserLoginView(FormAlertMixin, LoginView):
