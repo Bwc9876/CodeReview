@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.test import TestCase
 
-from Main.templatetags import common_tags
+from Main.models import Review
+from Main.templatetags import common_tags, review_tags
+from tests.test_review import BaseCase
 
 
 class CommonTagsTest(TestCase):
@@ -25,3 +27,10 @@ class CommonTagsTest(TestCase):
         self.assertEqual(common_tags.get_icon_class(messages.INFO), 'bi bi-info-circle')
         self.assertEqual(common_tags.get_icon_class(messages.ERROR), 'bi bi-exclamation-circle')
         self.assertEqual(common_tags.get_icon_class(messages.WARNING), 'bi bi-exclamation-triangle')
+
+
+class TestReviewTags(BaseCase):
+
+    def test_session(self):
+        self.assertIn(self.review, review_tags.get_session(Review.objects.all(), "AM"))
+        self.assertNotIn(self.review, review_tags.get_session(Review.objects.all(), "PM"))

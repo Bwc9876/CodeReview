@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.backends import BaseBackend
 from django.db.models import Q
 from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM, Entry
-from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError
+from ldap3.core.exceptions import LDAPSocketOpenError
 
 from .ldap_errors import LDAPConnectionError, LDAPInvalidCredentials, LDAPAuthException
 from .models import User
@@ -44,8 +44,6 @@ class LDAPAuthentication(BaseBackend):
             else:
                 raise LDAPInvalidCredentials()
         except LDAPSocketOpenError:
-            raise LDAPConnectionError()
-        except LDAPBindError:
             raise LDAPConnectionError()
 
     @classmethod
@@ -85,11 +83,8 @@ class LDAPAuthentication(BaseBackend):
             :rtype: str
         """
 
-        try:
-            session_raw = str(ldap_user['distinguishedName']).split(',')[1].split('=')[1]
-            return session_raw if session_raw == "AM" or session_raw == "PM" else "AM"
-        except IndexError:
-            return "AM"
+        session_raw = str(ldap_user['distinguishedName']).split(',')[1].split('=')[1]
+        return session_raw if session_raw == "AM" or session_raw == "PM" else "AM"
 
     @staticmethod
     def check_user_is_admin(ldap_user: Entry) -> bool:
@@ -134,6 +129,7 @@ class LDAPAuthentication(BaseBackend):
             :returns: The new django user
             :rtype: User
         """
+
         create_method = User.objects.create_superuser if self.check_user_is_admin(
             ldap_user) else User.objects.create_user
         new_user = create_method(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
@@ -174,10 +170,7 @@ class LDAPAuthentication(BaseBackend):
 
         reader = self.get_all_users(conn)
         results = reader.match("msDS-PrincipalName", username)
-        if len(results) == 1:
-            return results[0]
-        else:
-            return None
+        return results[0]
 
     def authenticate(self, request, username: str = None, password: str = None) -> Optional[User]:
         """
@@ -194,13 +187,10 @@ class LDAPAuthentication(BaseBackend):
             conn = self.get_connection(f'{settings.LDAP_DOMAIN}\\{username}', password)
             ldap_user = self.get_ldap_user(conn, f"{settings.LDAP_DOMAIN}\\{username}")
             guid = str(ldap_user["objectGUID"])
-            if ldap_user is None:
-                return None
+            if User.objects.filter(id=UUID(guid)).exists():
+                return self.update_from_ldap(ldap_user, User.objects.get(id=UUID(guid)))
             else:
-                if User.objects.filter(id=UUID(guid)).exists():
-                    return self.update_from_ldap(ldap_user, User.objects.get(id=UUID(guid)))
-                else:
-                    return self.create_from_ldap(ldap_user, guid)
+                return self.create_from_ldap(ldap_user, guid)
         except LDAPInvalidCredentials:
             return None
         except LDAPConnectionError:

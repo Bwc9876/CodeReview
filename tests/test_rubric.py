@@ -46,36 +46,75 @@ class RubricFormTest(TestCase):
         except Rubric.DoesNotExist:
             self.fail("Rubric Not Created")
 
-    def assertBad(self, src_dict, error):
-        form = RubricForm({'name': "Bad Rubric", 'rubric': JSONEncoder().encode(src_dict)})
+
+class RubricValidationTest(TestCase):
+
+    def assertBad(self, error):
+        form = RubricForm({'name': "Bad Rubric", 'rubric': JSONEncoder().encode(self.current)})
         if not form.is_valid():
             self.assertEqual(form.errors.get("rubric")[0], error + ".")
         else:
             self.fail("Invalid Rubric Passed Validation!")
 
-    @staticmethod
-    def new_current() -> list:
-        return JSONDecoder().decode(test_json)
+    def setUp(self) -> None:
+        self.current = JSONDecoder().decode(test_json)
 
-    def test_validation(self):
-        current = []
-        self.assertBad(current, "Please provide at least one row")
-        current = self.new_current()
-        current[0]['name'] = ""
-        self.assertBad(current, "Please enter a name in row 1")
-        current = self.new_current()
-        current[0]['description'] = ""
-        self.assertBad(current, "Please enter a description in row 1")
-        current = self.new_current()
-        current[0]['cells'] = []
-        self.assertBad(current, "Row 1 must have at least one cell")
-        current = self.new_current()
-        current[0]['cells'][0]['score'] = ""
-        self.assertBad(current, "Please enter a number for the score in row 1, cell 1")
-        current = self.new_current()
-        current[0]['cells'][0]['description'] = ""
-        self.assertBad(current, "Please enter a description in row 1, cell 1")
+    def test_bad_json(self):
+        form = RubricForm({'name': "Bad Rubric", 'rubric': "Bad JSON!"})
+        if not form.is_valid():
+            self.assertEqual(form.errors.get("rubric")[0], "Invalid JSON")
+        else:
+            self.fail("Invalid Rubric Passed Validation!")
 
+    def test_bad_structure(self):
+        self.current = {'bad': "bad structure"}
+        self.assertBad("Unknown Error")
+
+    def test_bad_row_structure(self):
+        self.current[0] = {'bad': "bad row structure"}
+        self.assertBad("Unknown error in row 1")
+
+    def test_bad_cell_structure(self):
+        self.current[0]['cells'][0] = {'bad': "bad cell structure"}
+        self.assertBad("Unknown error in row 1, cell 1")
+
+    def test_no_rows(self):
+        self.current = []
+        self.assertBad("Please provide at least one row")
+
+    def test_no_row_name(self):
+        self.current[0]['name'] = ""
+        self.assertBad("Please enter a name in row 1")
+
+    def test_row_name_too_long(self):
+        self.current[0]['name'] = "A" * 1000
+        self.assertBad("name is too long in row 1")
+
+    def test_row_description_too_long(self):
+        self.current[0]['description'] = "A" * 1001
+        self.assertBad("description is too long in row 1")
+
+    def test_no_row_description(self):
+        self.current[0]['description'] = ""
+        self.assertBad("Please enter a description in row 1")
+
+    def test_no_cells(self):
+        self.current[0]['cells'] = []
+        self.assertBad("Row 1 must have at least one cell")
+
+    def test_no_cell_score(self):
+        self.current[0]['cells'][0]['score'] = ""
+        self.assertBad("Please enter a number for the score in row 1, cell 1")
+
+    def test_no_cell_description(self):
+        self.current[0]['cells'][0]['description'] = ""
+        self.assertBad("Please enter a description in row 1, cell 1")
+
+    def test_cell_description_too_long(self):
+        self.current[0]['cells'][0]['description'] = "A" * 1001
+        self.assertBad("Description is too long in row 1, cell 1")
+
+    def test_good(self):
         form = RubricForm({'name': "Good Rubric", 'rubric': test_json})
         self.assertTrue(form.is_valid())
 

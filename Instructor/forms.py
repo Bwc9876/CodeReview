@@ -54,10 +54,12 @@ class RubricForm(ModelForm):
                 "name": {
                     "type": "string",
                     "minLength": 1,
+                    "maxLength": 100
                 },
                 "description": {
                     "type": "string",
                     "minLength": 1,
+                    "maxLength": 1000
                 },
                 "cells": {
                     "type": "array",
@@ -68,15 +70,19 @@ class RubricForm(ModelForm):
                             "score": {
                                 "type": "number",
                                 "minimum": 0,
+                                "maximum": 1000
                             },
                             "description": {
                                 "type": "string",
                                 "minLength": 1,
+                                "maxLength": 1000
                             },
-                        }
+                        },
+                        'required': ['score', 'description']
                     }
                 }
-            }
+            },
+            'required': ['name', 'description', 'cells']
         }
     }
 
@@ -183,21 +189,19 @@ class RubricForm(ModelForm):
         if len(error.relative_path) > 0:
             row_num = error.relative_path[0] + 1
             location = f"in row {row_num}"
-            offending_row_elem = error.relative_path[1]
+            offending_row_elem = error.relative_path[1] if len(error.relative_path) > 1 else None
             if offending_row_elem == "description" or offending_row_elem == "name":
                 if "too short" in error.message:
                     return f"Please enter a {offending_row_elem} {location}"
                 elif "too long" in error.message:
                     return f"{offending_row_elem} is too long {location}"
-                else:
-                    return f"Unknown Error {location}"
             elif offending_row_elem == "cells":
                 if "[] is too short" == error.message:
                     return f"Row {row_num} must have at least one cell"
                 else:
                     cell_num = error.relative_path[2] + 1
                     location += f", cell {cell_num}"
-                    offending_cell_elem = error.relative_path[3]
+                    offending_cell_elem = error.relative_path[3] if len(error.relative_path) >= 4 else None
                     if offending_cell_elem == "score" and "not of type 'number'" in error.message:
                         return f"Please enter a number for the score {location}"
                     elif offending_cell_elem == "description":
@@ -207,6 +211,8 @@ class RubricForm(ModelForm):
                             return f"Description is too long {location}"
                     else:
                         return f"Unknown error {location}"
+            else:
+                return f"Unknown error {location}"
         else:
             if "too short" in error.message:
                 return "Please provide at least one row"

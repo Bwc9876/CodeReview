@@ -5,7 +5,7 @@
 from uuid import uuid4
 
 from django.conf import settings
-from ldap3 import Connection, Server, MOCK_SYNC, OFFLINE_AD_2012_R2
+from ldap3 import Connection, Server, MOCK_SYNC
 
 from .ldap_auth import LDAPAuthentication
 
@@ -16,11 +16,12 @@ class LDAPMockAuthentication(LDAPAuthentication):
         *NEVER* **EVER** USE THIS IN PRODUCTION
     """
 
-    server = Server('fake', get_info=OFFLINE_AD_2012_R2)
+    server = Server.from_definition('fake_server',
+                                    'tests/ldap_test_server/test_info.json', 'tests/ldap_test_server/test_schema.json')
     users = {}
 
-    @staticmethod
-    def construct_dn(username, ou=None):
+    @classmethod
+    def construct_dn(cls, username, ou=None):
         """
             This function constructs a distinguished name for a username
 

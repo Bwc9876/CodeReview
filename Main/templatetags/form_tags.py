@@ -25,9 +25,6 @@ def setup_field(field: BoundField, with_placeholder=True) -> BoundField:
 
     if field.errors:
         validation_class = "is-invalid"
-    else:
-        if field.name in field.form.changed_data and field.form.non_field_errors is None:
-            validation_class = "is-valid"
 
     attrs = {
         'class': f"form-control {validation_class}",
@@ -39,6 +36,4 @@ def setup_field(field: BoundField, with_placeholder=True) -> BoundField:
 
     new_field = field.as_widget(attrs=attrs)
 
-    if field.field.show_hidden_initial:
-        return new_field + field.as_hidden(only_initial=True)
     return new_field

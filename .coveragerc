@@ -6,7 +6,10 @@ include =
 	Users/**
 	Instructor/**
 	CodeReview/load_env.py
-omit = 
+omit =
+    */tests/*
+    tests/**
+    venv/**
 	*/migrations/*
 	*/__pycache__/*
 	*/__init__.py
