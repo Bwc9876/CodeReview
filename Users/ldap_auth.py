@@ -23,6 +23,19 @@ class LDAPAuthException(Exception):
     pass
 
 
+class LDAPInvalidCredentials(LDAPAuthException):
+    """
+        This exception is used when the credentials provided are invalid
+    """
+    pass
+
+
+class LDAPConnectionError(LDAPAuthException):
+    """
+        This exception is used when we can't contact ActiveDirectory
+    """
+
+
 class LDAPAuthentication(BaseBackend):
     """
         This authentication backend will log in the user to ldap and then create a User in the database
@@ -32,6 +45,40 @@ class LDAPAuthentication(BaseBackend):
     """
 
     server = Server(settings.LDAP_URL, get_info=ALL)
+
+    @staticmethod
+    def bind_connection(conn):
+        """
+            This function is used to bind a connection
+
+            :param conn: The Connection to bind
+            :type conn: Connection
+            :returns: The bound connection
+            :rtype: Connection
+        """
+
+        try:
+            success = conn.bind()
+            if success:
+                return conn
+            else:
+                raise LDAPInvalidCredentials()
+        except (LDAPBindError, LDAPSocketOpenError):
+            raise LDAPConnectionError()
+
+    @classmethod
+    def get_connection(cls, username, password):
+        """
+            This function is used to get a Connection object to the server with the given credentials
+
+            :param username: The username to log in with (domain\\username)
+            :type username: str
+            :param password: The password to log in with
+            :type username: str
+        """
+
+        conn = Connection(cls.server, user=username, password=password, authentication=NTLM)
+        return cls.bind_connection(conn)
 
     @staticmethod
     def ldap_empty(value) -> str:
@@ -162,25 +209,19 @@ class LDAPAuthentication(BaseBackend):
         """
 
         try:
-            conn = Connection(self.server, user=f'{settings.LDAP_DOMAIN}\\{username}', password=password,
-                              authentication=NTLM)
-            success = conn.bind()
-            if success:
-                ldap_id = conn.extend.standard.who_am_i()[2:]
-                ldap_user = self.get_ldap_user(conn, ldap_id)
-                guid = str(ldap_user["objectGUID"])
-                if ldap_user is None:
-                    return None
-                else:
-                    if User.objects.filter(id=UUID(guid)).exists():
-                        return self.update_from_ldap(ldap_user, User.objects.get(id=UUID(guid)))
-                    else:
-                        return self.create_from_ldap(ldap_user, guid)
-            else:
+            conn = self.get_connection(f'{settings.LDAP_DOMAIN}\\{username}', password)
+            ldap_user = self.get_ldap_user(conn, f"{settings.LDAP_DOMAIN}\\{username}")
+            guid = str(ldap_user["objectGUID"])
+            if ldap_user is None:
                 return None
-        except LDAPBindError:
+            else:
+                if User.objects.filter(id=UUID(guid)).exists():
+                    return self.update_from_ldap(ldap_user, User.objects.get(id=UUID(guid)))
+                else:
+                    return self.create_from_ldap(ldap_user, guid)
+        except LDAPInvalidCredentials:
             return None
-        except LDAPSocketOpenError:
+        except LDAPConnectionError:
             if not settings.DEBUG:
                 messages.add_message(request, messages.ERROR,
                                      "There was an error contacting the auth server, please try again later.")
@@ -211,23 +252,19 @@ class LDAPAuthentication(BaseBackend):
             :type password: str
         """
 
-        conn = Connection(self.server, user=username,
-                          password=password, authentication=NTLM)
         try:
-            if conn.bind():
-                ldap_user = self.get_ldap_user(conn, conn.extend.standard.who_am_i())
-                if self.check_user_is_admin(ldap_user):
-                    to_check = User.objects.filter(is_superuser=False).filter(
-                        Q(password__startswith='!') | Q(password__isnull=True))
-                    ldap_users = self.get_all_users(conn)
-                    for user in to_check:
-                        if len(ldap_users.match("msDs-principalName", user.username)) == 0:
-                            user.delete()
-                else:
-                    raise LDAPAuthException("You lack permissions to perform this action.")
+            conn = self.get_connection(username, password)
+            ldap_user = self.get_ldap_user(conn, conn.extend.standard.who_am_i())
+            if self.check_user_is_admin(ldap_user):
+                to_check = User.objects.filter(is_superuser=False).filter(
+                    Q(password__startswith='!') | Q(password__isnull=True))
+                ldap_users = self.get_all_users(conn)
+                for user in to_check:
+                    if len(ldap_users.match("msDs-principalName", user.username)) == 0:
+                        user.delete()
             else:
-                raise LDAPAuthException("Login failed, check your password and try again.")
-        except LDAPBindError:
-            raise LDAPAuthException("Can't connect to ActiveDirectory, please try again later.")
-        except LDAPSocketOpenError:
+                raise LDAPAuthException("You lack permissions to perform this action.")
+        except LDAPInvalidCredentials:
+            raise LDAPAuthException("The password you provided was incorrect, please check it and try again.")
+        except LDAPConnectionError:
             raise LDAPAuthException("Can't connect to ActiveDirectory, please try again later.")
