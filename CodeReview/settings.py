@@ -20,7 +20,6 @@ DEBUG = STAGE != "Prod"
 
 # This option is used in encryption, if we're debugging, we don't care that people know what it is
 # But, if we're in Production, we'll load the key from the environment
-# noinspection SpellCheckingInspection
 SECRET_KEY = 'django-insecure-1&=3d#^^j*!8)r5y8tuh(t#rp6*(jwbx%90k-ir5c*2j4$s$o%' if DEBUG else os.getenv("SECRET_KEY")
 
 # This option defines what url someone can type in to access this site. If we're debugging, it doesn't matter
@@ -81,7 +80,7 @@ WSGI_APPLICATION = 'CodeReview.wsgi.application'
 
 # This next block of code defines how our database will work and what database system will work
 if STAGE == "Prod":
-    # In production, we use MySQl as our database backend
+    # In production, we use MySQL as our database backend
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -113,29 +112,15 @@ else:
         }
     }
 
-# This option defines what password validation functions to use
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
 # This option defines what backends we use for authentication
 if DEBUG:
+    # If we're in development, we add django's model backend so that way we can debug
     AUTHENTICATION_BACKENDS = [
         'Users.ldap_auth.LDAPAuthentication',
         'django.contrib.auth.backends.ModelBackend',
     ]
 else:
+    # If we're in production, we only want to allow authentication through LDAP
     AUTHENTICATION_BACKENDS = [
         'Users.ldap_auth.LDAPAuthentication',
     ]
@@ -192,7 +177,7 @@ USE_I18N = False
 USE_L10N = False
 USE_TZ = False
 
-# These options define urls for static urls
+# These options define urls and folders for static files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.getenv("STATIC_DIR", "collected-static")
 
@@ -200,7 +185,7 @@ STATIC_ROOT = os.getenv("STATIC_DIR", "collected-static")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if not DEBUG:
-    # If we're in production, all messages will go to a local file named "django_log.txt"
+    # If we're in production, all messages will go to a local file named "django_logs.txt"
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -211,13 +196,10 @@ if not DEBUG:
                 'filename': 'django_logs.txt',
             },
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-        },
+        'root': {
+            'handlers': ['file'],
+            'level': 'WARNING'
+        }
     }
 
 if STAGE == "Prod" and os.getenv("SECURITY", "NONE") == "SECURE":

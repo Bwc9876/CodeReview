@@ -1,5 +1,5 @@
 """
-    This file s used to load environment variables from a powershell file
+    This file is used to load environment variables from a powershell file
 """
 
 import os

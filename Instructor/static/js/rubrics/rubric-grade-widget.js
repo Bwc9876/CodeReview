@@ -11,7 +11,7 @@ function update_cell_colors() {
 
     $(".rubric-grading td.cell").each(function (index, object) {
         console.log($(object).children("input:checked").length);
-        $(object).toggleClass("selected", $(object).children("label").children("input:checked").length > 0)
+        $(object).toggleClass("selected", $(object).children("label").children("input:checked").length > 0);
     });
 }
 
@@ -49,7 +49,7 @@ function update_total_score(scores) {
      */
 
     const report = $("#grade_report");
-    let report_lst = []
+    let report_lst = [];
     let total = 0;
     let max = 0;
     for (let i = 0; i < scores.length; i++) {
@@ -82,7 +82,7 @@ function score_cell_callback(event) {
     $(event.target).children('label').children(".score-select").click();
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     /**
      * This function runs when the document has been loaded successfully,
