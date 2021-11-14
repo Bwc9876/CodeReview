@@ -6,7 +6,7 @@
         <span class="input-group-text">{{ string }}</span>
     {% endfor %}
     <input name="{{ widget.name }}" id="{{ widget.attrs.id }}"
-       value="{{ widget.value }}" {% include "widgets/attrs.html" %}/>
+           value="{{ widget.value }}" {% include "widgets/attrs.html" %}/>
     {% for string in widget.suffixes %}
         <span class="input-group-text">{{ string }}</span>
     {% endfor %}

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This file is used when creating or editing a rubric
  */
@@ -154,6 +156,6 @@ $(document).ready(() => {
 
     $(".form").submit(submit_callback);
 
-    convert_from_json($(".rubric_create_input").val())
+    convert_from_json($(".rubric_create_input").val());
 
 });

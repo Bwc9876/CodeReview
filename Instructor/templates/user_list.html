@@ -15,45 +15,52 @@
 {% block containerClass %}container{% endblock %}
 
 {% block mainContent %}
-    <div class="modal fade" id="cleanupModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="cleanupModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="cleanupModalLabel">Cleanup Users</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p>This will clear any users not found in ActiveDirectory.</p>
-            <p>Please confirm your password to continue</p>
-            <form class="form" id="cleanupForm" method="POST" action="{% url "user-cleanup" %}">
-                {% csrf_token %}
-                <div class="form-floating">
-                    <input id="userPassword" name="userPassword" type="password" class="form-control" placeholder="Password" required/>
-                    <label for="userPassword">Password</label>
+    <div class="modal fade" id="cleanupModal" data-bs-backdrop="static" tabindex="-1"
+         aria-labelledby="cleanupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cleanupModalLabel">Cleanup Users</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </form>
-            <p class="my-2">Note this may take some time, please don't leave the page.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button id="cleanupSubmitButton" type="button" class="btn btn-danger">
+                <div class="modal-body">
+                    <p>This will clear any users not found in ActiveDirectory.</p>
+                    <p>Please confirm your password to continue</p>
+                    <form class="form" id="cleanupForm" method="POST" action="{% url "user-cleanup" %}">
+                        {% csrf_token %}
+                        <div class="form-floating">
+                            <input id="userPassword" name="userPassword" type="password" class="form-control"
+                                   placeholder="Password" required/>
+                            <label for="userPassword">Password</label>
+                        </div>
+                    </form>
+                    <p class="my-2">Note this may take some time, please don't leave the page.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="cleanupSubmitButton" type="button" class="btn btn-danger">
                 <span id="cleanupSpinner" class="loading spinner-border spinner-border-sm d-none" role="status"
-                                  aria-hidden="true"></span>
-                <span id="cleanupSubmitText">Confirm</span>
-            </button>
-          </div>
+                      aria-hidden="true"></span>
+                        <span id="cleanupSubmitText">Confirm</span>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
     <div class="row mb-5">
         <div class="col">
-            <button type="button" class="btn btn-outline-secondary back-button d-inline"><i class="bi bi-arrow-left"></i> Back</button>
+            <button type="button" class="btn btn-outline-secondary back-button d-inline"><i
+                    class="bi bi-arrow-left"></i> Back
+            </button>
         </div>
         <div class="col text-end">
-            <button class="btn btn-outline-secondary d-inline" aria-label="Cleanup Users" id="user-cleanup-button" type="button" data-bs-toggle="modal" data-bs-target="#cleanupModal">
+            <button class="btn btn-outline-secondary d-inline" aria-label="Cleanup Users" id="user-cleanup-button"
+                    type="button" data-bs-toggle="modal" data-bs-target="#cleanupModal">
                 <i class="bi bi-person-x"></i> <span id="user-cleanup-label">Cleanup Users</span>
             </button>
-            <button class="btn btn-outline-secondary d-none" aria-label="Display help text" id="help-button" type="button" data-bs-toggle="collapse" data-bs-target=".field-help" aria-expanded="false" aria-controls="users-helptext">
+            <button class="btn btn-outline-secondary d-none" aria-label="Display help text" id="help-button"
+                    type="button" data-bs-toggle="collapse" data-bs-target=".field-help" aria-expanded="false"
+                    aria-controls="users-helptext">
                 <i class="bi bi-question-circle"></i> <span id="help-label">Show Help</span>
             </button>
         </div>
@@ -80,10 +87,13 @@
                             {% for user in AM %}
                                 <tr class="">
                                     <th id="{{ user.id }}"><label for="{{ user.id }}-reviewer">{{ user }}</label></th>
-                                    <td><div class="form-switch">
-                                        <input id="{{ user.id }}-reviewer" {% if user.is_reviewer %}checked{% endif %}
-                                               type="checkbox" class="form-check-input me-0" name="reviewers"
-                                               value="{{ user.id }}"/></div></td>
+                                    <td>
+                                        <div class="form-switch">
+                                            <input id="{{ user.id }}-reviewer"
+                                                   {% if user.is_reviewer %}checked{% endif %}
+                                                   type="checkbox" class="form-check-input me-0" name="reviewers"
+                                                   value="{{ user.id }}"/></div>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -92,21 +102,24 @@
                     <div class="col">
                         <table class="table">
                             <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Reviewer</th>
-                                </tr>
+                            <tr>
+                                <th>Name</th>
+                                <th>Reviewer</th>
+                            </tr>
                             </thead>
                             <tbody class="session PM-session">
-                                {% for user in PM %}
-                                    <tr>
-                                        <th id="{{ user.id }}">{{ user }}</th>
-                                        <td><div class="form-switch">
-                                            <input id="{{ user.id }}-reviewer" {% if user.is_reviewer %}checked{% endif %}
+                            {% for user in PM %}
+                                <tr>
+                                    <th id="{{ user.id }}">{{ user }}</th>
+                                    <td>
+                                        <div class="form-switch">
+                                            <input id="{{ user.id }}-reviewer"
+                                                   {% if user.is_reviewer %}checked{% endif %}
                                                    type="checkbox" class="form-check-input me-0" name="reviewers"
-                                                   value="{{ user.id }}"/></div></td>
-                                    </tr>
-                                {% endfor %}
+                                                   value="{{ user.id }}"/></div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>

@@ -1,5 +1,6 @@
 """
     This file exposes the WSGI callable as a module-level variable named 'application'.
+    It acts as the entrypoint of the site, we point the front-end webserver to this file
 """
 
 import os

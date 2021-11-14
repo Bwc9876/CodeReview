@@ -1,4 +1,8 @@
-$(document).ready(function (){
+'use strict';
+
+/* This file is used on all pages */
+
+$(document).ready(function () {
     /**
      * This function will run when the document loads.
      * It sets the title of the page to whatever is in the #pageHeader element.
@@ -7,6 +11,6 @@ $(document).ready(function (){
 
     document.title = `${$("#pageHeader").text()} | CodeReview`;
     if (window.matchMedia(`(prefers-color-scheme: light)`).media === "not all") {
-        $("#light-theme-css").attr('media', "screen")
+        $("#light-theme-css").attr('media', "screen");
     }
 });
