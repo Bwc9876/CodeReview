@@ -55,6 +55,7 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
         context = super(CompleteUserSetupView, self).get_context_data(**kwargs)
         context['render_no_floating'] = True
         context['hide_back'] = self.object.email is None or self.object.email == ""
+        context['non_field_help_text'] = "Please enter your email below for notifications"
         return context
 
 
