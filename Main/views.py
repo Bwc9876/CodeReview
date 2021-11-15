@@ -43,6 +43,7 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
     """
 
     for user in list(query_set):
+        print(review.score_fraction)
         html_content = render_to_string(template_name, {'target_user': user, 'review': review})
         text_content = text_template.format(target_user=str(user), student=str(review.student),
                                             reviewer=str(review.reviewer))
@@ -518,13 +519,13 @@ class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, FormNameMixin, FormAl
 
         self.object.date_completed = datetime.now()
         self.object.save()
+        response = super().form_valid(form)
         send_email("Review completed by {reviewer}",
                    "Hello, {target_user}, the review requested by {student} has been completed by {reviewer}.",
                    "emails/review_completed.html",
                    self.object,
                    User.objects.filter(is_superuser=True))
-        return super().form_valid(form)
-
+        return response
 
 class ReviewDetailView(LoginRequiredMixin, DetailView):
     """
