@@ -43,7 +43,6 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
     """
 
     for user in list(query_set):
-        print(review.score_fraction)
         html_content = render_to_string(template_name, {'target_user': user, 'review': review})
         text_content = text_template.format(target_user=str(user), student=str(review.student),
                                             reviewer=str(review.reviewer))
