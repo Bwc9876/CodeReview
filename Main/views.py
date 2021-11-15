@@ -518,13 +518,13 @@ class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, FormNameMixin, FormAl
 
         self.object.date_completed = datetime.now()
         self.object.save()
+        response = super().form_valid(form)
         send_email("Review completed by {reviewer}",
                    "Hello, {target_user}, the review requested by {student} has been completed by {reviewer}.",
                    "emails/review_completed.html",
                    self.object,
                    User.objects.filter(is_superuser=True))
-        return super().form_valid(form)
-
+        return response
 
 class ReviewDetailView(LoginRequiredMixin, DetailView):
     """
