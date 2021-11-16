@@ -41,8 +41,8 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
         :param query_set: The QuerySet of users to send the email to
         :type query_set: QuerySet
     """
-
-    for user in list(query_set):
+    # TODO: Test email notifications bool
+    for user in list(query_set.filter(receive_notifications=True)):
         html_content = render_to_string(template_name, {'target_user': user, 'review': review})
         text_content = text_template.format(target_user=str(user), student=str(review.student),
                                             reviewer=str(review.reviewer))
