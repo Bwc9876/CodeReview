@@ -85,6 +85,8 @@ class TestEmail(TestCase):
     def test_no_notification(self) -> None:
         self.users['reviewer-affiliated'].receive_notifications = False
         self.users['reviewer-affiliated'].save()
+        self.users['reviewer-not'].receive_notifications = False
+        self.users['reviewer-not'].save()
         self.clients['student-affiliated'].post(reverse("review-create"), {"schoology_id": "12.34.56",
                                                                            "rubric": self.rubric.id})
-        self.assertEqual(1, len(mail.outbox))
+        self.assertEqual(0, len(mail.outbox))

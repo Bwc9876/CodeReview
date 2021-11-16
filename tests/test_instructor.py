@@ -135,3 +135,12 @@ class UserDesignationTest(TestCase):
         self.assertFalse(User.objects.get(username="reviewer-pm").is_reviewer)
         self.assertTrue(User.objects.get(username="student-am").is_reviewer)
         self.assertFalse(User.objects.get(username="student-pm").is_reviewer)
+
+    def test_no_reviewers(self) -> None:
+        self.clients['super'].post(reverse('user-list'), data={
+            'reviewers': [],
+        })
+        self.assertFalse(User.objects.get(username="reviewer-am").is_reviewer)
+        self.assertFalse(User.objects.get(username="reviewer-pm").is_reviewer)
+        self.assertFalse(User.objects.get(username="student-am").is_reviewer)
+        self.assertFalse(User.objects.get(username="student-pm").is_reviewer)

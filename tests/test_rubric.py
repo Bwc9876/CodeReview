@@ -106,6 +106,18 @@ class RubricValidationTest(TestCase):
         self.current[0]['cells'][0]['score'] = ""
         self.assertBad("Please enter a number for the score in row 1, cell 1")
 
+    def test_cell_score_not_numeric(self):
+        self.current[0]['cells'][0]['score'] = "as"
+        self.assertBad("Please enter a number for the score in row 1, cell 1")
+
+    def test_cell_score_negative(self):
+        self.current[0]['cells'][0]['score'] = "-5"
+        self.assertBad("Please enter a number for the score in row 1, cell 1")
+
+    def test_cell_score_big(self):
+        self.current[0]['cells'][0]['score'] = "10000000000000000000000000000000000"
+        self.assertBad("Please enter a number for the score in row 1, cell 1")
+
     def test_no_cell_description(self):
         self.current[0]['cells'][0]['description'] = ""
         self.assertBad("Please enter a description in row 1, cell 1")
