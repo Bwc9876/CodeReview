@@ -42,15 +42,23 @@
                 {% for field in form %}
                     <div id="{{ field.label }}_fieldset" class="my-4">
                         {% if render_no_floating %}
+                            {% if field|is_checkbox %}
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" id="{{ field.label }}_label" for="{{ field.id_for_label }}">
+                                        {{ field.label|title }}</label>
+                                    {{ field|setup_checkbox }}
+                                </div>
+                            {% else %}
                             <label id="{{ field.label }}_label" class="mb-3"
                                    for="{{ field.id_for_label }}">{{ field.label|title }}</label>
                             {{ field|setup_field:False }}
+                            {% endif %}
                         {% elif field in form.visible_fields %}
-                            <div class="form-floating">
-                                {{ field|setup_field:True }}
-                                <label id="{{ field.label }}_label"
-                                       for="{{ field.id_for_label }}">{{ field.label|title }}</label>
-                            </div>
+                                <div class="form-floating">
+                                    {{ field|setup_field:True }}
+                                    <label id="{{ field.label }}_label"
+                                           for="{{ field.id_for_label }}">{{ field.label|title }}</label>
+                                </div>
                         {% else %}
                             {{ field|setup_field:"form-control" }}
                         {% endif %}

@@ -113,7 +113,7 @@ class FinishUserForm(ModelForm):
         """
 
         model = User
-        fields = ['email']
+        fields = ['email', 'receive_notifications']
         help_texts = {
             'email': "The email you'd like notifications to be sent to (should be a BCTC email)"
         }

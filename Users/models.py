@@ -29,6 +29,8 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid4)
     session = models.CharField(choices=Session.choices, default=Session.AM, max_length=2)
     is_reviewer = models.BooleanField(default=False)
+    receive_notifications = models.BooleanField(default=True,
+                                                help_text="Would you like to receive email notifications?")
 
     @staticmethod
     def session_from_str(session_code: str) -> str:
