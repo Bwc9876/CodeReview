@@ -87,5 +87,4 @@ class TestEmail(TestCase):
         self.users['reviewer-affiliated'].save()
         self.clients['student-affiliated'].post(reverse("review-create"), {"schoology_id": "12.34.56",
                                                                            "rubric": self.rubric.id})
-        print(mail.outbox[0].body)
         self.assertEqual(1, len(mail.outbox))
