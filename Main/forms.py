@@ -51,10 +51,12 @@ class GradeReviewWidget(TextInput):
         return context
 
 
-class CreateReviewForm(ModelForm):
+class ReviewForm(ModelForm):
     """
         This form is used when requesting/editing a review
     """
+
+    SCHOOLOGY_ID_ERROR_MESSAGE = "Schoology ID should be in format: XX.XX.XX where X'es are numbers"
 
     def __init__(self, *args, **kwargs):
         """
@@ -62,7 +64,10 @@ class CreateReviewForm(ModelForm):
             It sets self.user to the user kwarg
         """
 
-        self.user = kwargs.pop('user')
+        if 'user' in kwargs.keys():
+            self.user = kwargs.pop('user')
+        else:
+            self.user = None
         super().__init__(*args, **kwargs)
 
     class Meta:
@@ -76,19 +81,30 @@ class CreateReviewForm(ModelForm):
         model = models.Review
         fields = ['schoology_id', 'rubric']
 
-    def clean(self) -> dict:
+    def clean(self):
         """
             This function is run to validate form data.
             It ensures that a student can only  have two requested reviews at once.
-
-            :returns: The cleaned data of the form
-            :rtype: dict
+            It also validates the schoology id.
         """
 
         if self.user is not None and models.Review.objects.filter(student=self.user).filter(
                 Q(status=models.Review.Status.OPEN) | Q(status=models.Review.Status.ASSIGNED)).count() >= 2:
             raise ValidationError("You can only have 2 requested reviews at once.")
-        return super(CreateReviewForm, self).clean()
+
+        super(ReviewForm, self).clean()
+        schoology_id = self.cleaned_data.get('schoology_id', None)
+        if schoology_id is not None:
+            if len(schoology_id) == 8:
+                for index, character in enumerate(schoology_id):
+                    if (index == 2 or index == 5) and character != '.':
+                        self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
+                        break
+                    elif (index != 2 and index != 5) and character not in '1234567890':
+                        self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
+                        break
+            else:
+                self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
 
     def save(self, commit=True):
         """
@@ -101,8 +117,9 @@ class CreateReviewForm(ModelForm):
             :rtype: models.Review
         """
 
-        new_review: models.Review = super().save(commit=False)
-        new_review.student = self.user
+        new_review: models.Review = super(ReviewForm, self).save(commit=False)
+        if self.user is not None:
+            new_review.student = self.user
         if commit:
             new_review.save()
         return new_review
