@@ -247,7 +247,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
     template_name = 'form_base.html'
     success_url = reverse_lazy('home')
     model = models.Review
-    form_class = forms.CreateReviewForm
+    form_class = forms.ReviewForm
     form_name = "Create a Review"
     success_message = "New Review Saved"
 
@@ -287,14 +287,15 @@ class ReviewEditView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, UpdateVi
         :cvar template_name: The name of the template to render
         :cvar success_url: The URL to go to if the edit was successful
         :cvar model: The model to edit an object for
+        :cvar form_class: The class of the form to render
         :cvar form_name: The name to put in the pageHeader block
         :cvar success_message: The message to display when the edit is successful
     """
 
     template_name = 'form_base.html'
     success_url = reverse_lazy('home')
-    fields = ['schoology_id', 'rubric']
     model = models.Review
+    form_class = forms.ReviewForm
     form_name = "Edit Review"
     success_message = "Review Updated"
 
@@ -525,6 +526,7 @@ class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, FormNameMixin, FormAl
                    self.object,
                    User.objects.filter(is_superuser=True))
         return response
+
 
 class ReviewDetailView(LoginRequiredMixin, DetailView):
     """

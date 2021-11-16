@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from Instructor.models import Rubric, ScoredRow
-from Main.forms import GradeReviewForm
+from Main.forms import GradeReviewForm, ReviewForm
 from Main.models import Review
 from Users.models import User
 
@@ -262,6 +262,34 @@ class ReviewCreateTest(BaseReviewAction):
         self.assertEqual(Review.objects.filter(student=self.student, status=Review.Status.OPEN).count(), 2)
 
 
+class ReviewSchoologyIDValidationTest(BaseReviewAction):
+    url_name = 'create'
+    start_review = False
+    start_reviewer = False
+
+    def assertBad(self, test_id):
+        form = ReviewForm({'schoology_id': test_id, 'rubric': str(self.rubric.id)}, user=self.student)
+        self.assertFalse(form.is_valid())
+
+    def test_too_short(self):
+        self.assertBad('12')
+
+    def test_too_long(self):
+        self.assertBad('1234567890')
+
+    def test_no_dots(self):
+        self.assertBad('123456')
+
+    def test_not_dots(self):
+        self.assertBad('12/34/56')
+
+    def test_not_number(self):
+        self.assertBad('as.34.56')
+
+    def test_negative(self):
+        self.assertBad('-5.45.12')
+
+
 class ReviewCancelUnclaimedTest(BaseReviewAction):
     url_name = 'cancel'
     start_review = True
@@ -315,8 +343,8 @@ class ReviewClaimTest(BaseReviewAction):
         self.student2_client.force_login(self.student2)
         for x in range(3):
             target_client = self.student_client if x < 1 else self.student2_client
-            target_client.post(reverse('review-create'), {'schoology_id': f"12.34.{x}", "rubric": self.rubric.id})
-            review = Review.objects.get(schoology_id=f"12.34.{x}")
+            target_client.post(reverse('review-create'), {'schoology_id': f"12.34.0{x}", "rubric": self.rubric.id})
+            review = Review.objects.get(schoology_id=f"12.34.0{x}")
             self.reviewer_client.post(reverse('review-claim', kwargs={'pk': review.id}))
         self.assertEqual(Review.objects.filter(reviewer=self.reviewer, status=Review.Status.ASSIGNED).count(), 2)
 
