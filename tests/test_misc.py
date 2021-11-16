@@ -86,17 +86,3 @@ class UserSetupTest(TestCase):
     def test_student_negative_check(self):
         response = self.student_c.post(self.get_url(self.student), {'email': '-99'})
         self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be between 100-999")
-
-
-class LogoutTest(TestCase):
-
-    def test_logout(self):
-        test_user = User.objects.create_user(username="test-user")
-        client = Client()
-        client.force_login(test_user)
-        response = client.get(reverse('logout'))
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('logout-done'))
-        response = client.get(reverse('home'))
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('login') + f"?next={reverse('home')}")
