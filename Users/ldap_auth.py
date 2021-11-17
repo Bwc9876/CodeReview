@@ -24,10 +24,19 @@ class LDAPAuthentication(BaseBackend):
         :cvar server: The server we're connecting to with LDAP (Must be an ActiveDirectory Server)
     """
 
-    server = Server(settings.LDAP_URL, get_info=ALL)
+    server = None
+
+    @classmethod
+    def setup_server(cls):
+        """
+            This function gets the server to authenticate with
+        """
+
+        if cls.server is None:
+            cls.server = Server(settings.LDAP_URL, get_info=ALL)
 
     @staticmethod
-    def bind_connection(conn):
+    def bind_connection(conn: Connection) -> Connection:
         """
             This function is used to bind a connection
 
@@ -47,7 +56,7 @@ class LDAPAuthentication(BaseBackend):
             raise LDAPConnectionError()
 
     @classmethod
-    def get_connection(cls, username, password):
+    def get_connection(cls, username: str, password: str) -> Connection:
         """
             This function is used to get a Connection object to the server with the given credentials
 
@@ -57,6 +66,7 @@ class LDAPAuthentication(BaseBackend):
             :type username: str
         """
 
+        cls.setup_server()
         conn = Connection(cls.server, user=username, password=password, authentication=NTLM)
         return cls.bind_connection(conn)
 
@@ -214,7 +224,7 @@ class LDAPAuthentication(BaseBackend):
         except User.DoesNotExist:
             return None
 
-    def delete_old_users(self, username, password):
+    def delete_old_users(self, username: str, password: str):
         """
             This function is used to delete any users that are no longer in the ActiveDirectory database.
 
