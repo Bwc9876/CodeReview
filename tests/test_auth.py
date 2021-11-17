@@ -19,7 +19,7 @@ class LogoutTest(TestCase):
 
 
 @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
-                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example")
+                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="example-server")
 class LDAPAuthTest(TestCase):
     url = reverse('login')
 
@@ -115,7 +115,7 @@ class LDAPAuthTest(TestCase):
         response = self.client.post(self.url, {'username': "invalid_user", 'password': "invalid_password"})
         self.assertEqual(len(response.context.get('form').non_field_errors()), 1)
 
-    @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'], LDAP_URL="bad-server")
+    @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'])
     def test_cant_connect(self) -> None:
         response = self.client.post(self.url, {'username': "admin", 'password': "admin_password123"})
         self.assertIn("There was an error contacting the auth server, please try again later.",
@@ -126,7 +126,7 @@ class LDAPAuthTest(TestCase):
 
 
 @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
-                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example")
+                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="example-server")
 class UserCleanupTest(TestCase):
     url = reverse('user-cleanup')
 
@@ -183,7 +183,7 @@ class UserCleanupTest(TestCase):
         self.assertTrue(User.objects.filter(username="example\\student").exists())
         self.assertMessage(response, "You lack permissions to perform this action.")
 
-    @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'], LDAP_URL="bad-server")
+    @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'])
     def test_cant_connect(self) -> None:
         self.client.force_login(self.admin)
         response = self.client.post(self.url, {'userPassword': "admin_password123"})

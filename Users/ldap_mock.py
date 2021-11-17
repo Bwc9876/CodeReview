@@ -1,7 +1,7 @@
 """
     This file provides a fake ldap server to test with
 """
-
+from typing import Optional
 from uuid import uuid4
 
 from django.conf import settings
@@ -16,12 +16,21 @@ class LDAPMockAuthentication(LDAPAuthentication):
         *NEVER* **EVER** USE THIS IN PRODUCTION
     """
 
-    server = Server.from_definition('fake_server',
-                                    'tests/ldap_test_server/test_info.json', 'tests/ldap_test_server/test_schema.json')
+    @classmethod
+    def setup_server(cls):
+        """
+            This function constructs a fake server to connect to
+        """
+
+        if cls.server is None:
+            cls.server = Server.from_definition('fake_server',
+                                                'tests/ldap_test_server/test_info.json',
+                                                'tests/ldap_test_server/test_schema.json')
+
     users = {}
 
     @classmethod
-    def construct_dn(cls, username, ou=None):
+    def construct_dn(cls, username: str, ou: str = None) -> str:
         """
             This function constructs a distinguished name for a username
 
@@ -32,13 +41,14 @@ class LDAPMockAuthentication(LDAPAuthentication):
             :returns: The distinguished name of the user
             :rtype: str
         """
+
         if ou:
             return f'cn={username},ou={ou},{settings.LDAP_BASE_CONTEXT}'
         else:
             return f'cn={username},{settings.LDAP_BASE_CONTEXT}'
 
     @classmethod
-    def extract_ou(cls, username):
+    def extract_ou(cls, username: str) -> Optional[str]:
         """
             This function gets the organizational unit a test user is in from their username
 
@@ -52,7 +62,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
         return user.get('ou')
 
     @classmethod
-    def create_fake_user(cls, conn: Connection, username, password, first, last, ou=None):
+    def create_fake_user(cls, conn: Connection, username: str, password: str, first: str, last: str, ou: str = None):
         """
             This function creates a fake user to use in testing
 
@@ -82,7 +92,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
         })
 
     @classmethod
-    def create_fake_users(cls, conn):
+    def create_fake_users(cls, conn: Connection):
         """
             This function creates a series of fake users from a predefined list
 
@@ -95,7 +105,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
             cls.create_fake_user(conn, username, user['password'], user['first'], user['last'], user['ou'])
 
     @classmethod
-    def get_connection(cls, username, password):
+    def get_connection(cls, username: str, password: str) -> Connection:
         """
             This function overrides the base LDAPAuthentication function to provide a fake connection
             instead of a real one
@@ -104,8 +114,11 @@ class LDAPMockAuthentication(LDAPAuthentication):
             :type username: str
             :param password: The password to log in with
             :type password: str
+            :returns: The connection to use
+            :rtype: Connection
         """
 
+        cls.setup_server()
         username = username.split('\\')[1]
         conn = Connection(cls.server, cls.construct_dn(username, ou=cls.extract_ou(username)), password,
                           client_strategy=MOCK_SYNC)
