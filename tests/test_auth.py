@@ -19,7 +19,7 @@ class LogoutTest(TestCase):
 
 
 @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
-                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="example-server")
+                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="0.0.0.0")
 class LDAPAuthTest(TestCase):
     url = reverse('login')
 
@@ -126,7 +126,7 @@ class LDAPAuthTest(TestCase):
 
 
 @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
-                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="example-server")
+                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="0.0.0.0")
 class UserCleanupTest(TestCase):
     url = reverse('user-cleanup')
 
