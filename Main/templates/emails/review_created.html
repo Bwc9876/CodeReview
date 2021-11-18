@@ -7,7 +7,9 @@
 {% block title %}New Review Created by {{ review.student }}{% endblock %}
 
 {% block body %}
-    <p>We're emailing to let you know that a new review has been created by {{ review.student }}.</p>
-    <p>To claim this review, navigate to the CodeReview site and click the "claim" button to the right of the
+    {% load email_tags %}
+    <p {% p_attrs %}>We're emailing to let you know that a new review has been created by {{ review.student }}.</p>
+    <p {% p_attrs %}>To claim this review, navigate to the CodeReview site and click the "claim" button to the right of
+        the
         review.</p>
 {% endblock %}

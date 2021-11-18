@@ -7,10 +7,14 @@
 {% block title %}Review completed by {{ review.reviewer }}{% endblock %}
 
 {% block body %}
-    <p>We're emailing to let you know that a review by {{ review.student }} has been completed
+    {% load email_tags %}
+    <p {% p_attrs %}>We're emailing to let you know that a review by {{ review.student }} has been completed
         by {{ review.reviewer }}.</p>
-    <p>Score: {{ review.score_fraction }}</p>
-    <p>Comments: {{ review.additional_comments|default:"No Additional Comments" }}</p>
-    <p>For more information, navigate to the Instructor section of the website and click the "view" link to the right of
+    {% separator %}
+    <p {% p_attrs %}>Score: {{ review.score_fraction }}</p>
+    <p {% p_attrs %}>Comments: {{ review.additional_comments|default:"No Additional Comments" }}</p>
+    {% separator %}
+    <p {% p_attrs %}>For more information, navigate to the Instructor section of the website and click the "view" link
+        to the right of
         the review</p>
 {% endblock %}
