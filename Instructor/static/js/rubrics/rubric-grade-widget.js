@@ -10,7 +10,6 @@ function update_cell_colors() {
      */
 
     $(".rubric-grading td.cell").each(function (index, object) {
-        console.log($(object).children("input:checked").length);
         $(object).toggleClass("selected", $(object).children("label").children("input:checked").length > 0);
     });
 }
