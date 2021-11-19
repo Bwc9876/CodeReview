@@ -74,8 +74,6 @@ function convert_to_json() {
 
     });
 
-    console.log(new_rubric);
-
     return JSON.stringify(new_rubric);
 
 }
