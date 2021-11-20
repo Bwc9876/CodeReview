@@ -648,17 +648,17 @@ class Error500(TemplateView):
     template_name = 'errors/500.html'
 
 
-class TestError(View):
+class Error(View):
     """
-        This view is used in development to test error pages
+        This view is used for error pages
         If an error occurs during development, django will show a stacktrace, not an error page
         So, we use this view to see what the error pages will look like
     """
 
     error_dict = {
-        '404': Error404,
-        '403': Error403,
-        '500': Error500
+        404: Error404,
+        403: Error403,
+        500: Error500
     }
 
     http_method_names = ['get']
@@ -669,8 +669,11 @@ class TestError(View):
             It gets the requested error page, defaulting to 404
         """
 
-        error_type = request.GET.get("type", "404")
-        return self.error_dict.get(error_type, Error404).as_view()(request, *args, **kwargs)
+        error_type = kwargs.get('type', None)
+        if error_type not in self.error_dict.keys():
+            raise Http404()
+        else:
+            return self.error_dict.get(error_type, Error404).as_view()(request, *args, **kwargs)
 
 
 # The following block tells django to run these views when an error occurs
@@ -680,6 +683,10 @@ error_403_handler = Error403.as_view()
 
 
 def error_500_handler(request):
+    """
+        This function is run in the event of a 500 error
+    """
+
     return Error500.as_view()(request)
 
 

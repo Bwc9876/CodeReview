@@ -2,7 +2,6 @@
     This file defines the main section's urls
 """
 
-from django.conf import settings
 from django.urls import path
 
 from . import views
@@ -19,8 +18,5 @@ urlpatterns = [
     path('review/view/<uuid:pk>/', views.ReviewDetailView.as_view(), name="review-view"),
     path('review/completed/', views.ReviewCompleteListView.as_view(), name="review-complete"),
     path('copyright/', views.CopyrightView.as_view(), name="copyright"),
+    path('error/<int:type>/', views.Error.as_view(), name='error')
 ]
-
-# If we're in debug, provide URLs to test error pages
-if settings.DEBUG:
-    urlpatterns.append(path('error/', views.TestError.as_view(), name='test-error'))

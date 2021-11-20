@@ -402,6 +402,9 @@ class ReviewGradeTest(BaseReviewAction):
     def test_grade_under_limit(self) -> None:
         self.assertBad("[-50,2]")
 
+    def test_no_instance(self) -> None:
+        self.assertRaises(ValueError, GradeReviewForm)
+
 
 class UpdateReviewScoreOnRubricEditTest(BaseCase):
 

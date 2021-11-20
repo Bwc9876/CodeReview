@@ -1,10 +1,11 @@
 import os
 
 from django.conf import settings
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 
 from CodeReview.load_env import load_to_env, get_env
+from Main.views import error_500_handler
 from Users.models import User
 
 
@@ -86,3 +87,27 @@ class UserSetupTest(TestCase):
     def test_student_negative_check(self):
         response = self.student_c.post(self.get_url(self.student), {'email': '-99'})
         self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be between 100-999")
+
+
+class TestErrors(TestCase):
+
+    def test_404(self):
+        response = self.client.get(reverse("error", kwargs={'type': 404}))
+        self.assertIn("errors/404.html", response.template_name)
+
+    def test_403(self):
+        response = self.client.get(reverse("error", kwargs={'type': 403}))
+        self.assertIn("errors/403.html", response.template_name)
+
+    def test_500(self):
+        response = self.client.get(reverse("error", kwargs={'type': 500}))
+        self.assertIn("errors/500.html", response.template_name)
+
+    def test_500_func(self):
+        request = RequestFactory().get('/error/500')
+        response = error_500_handler(request)
+        self.assertIn("errors/500.html", response.template_name)
+
+    def test_invalid_type(self):
+        response = self.client.get(reverse("error", kwargs={'type': 111}))
+        self.assertIn("errors/404.html", response.template_name)
