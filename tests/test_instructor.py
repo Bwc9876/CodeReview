@@ -57,6 +57,11 @@ class HomeViewTest(TestCase):
                                             student=self.users['student'],
                                             reviewer=self.users['reviewer'])
 
+    def test_redirect(self) -> None:
+        self.clients['super'].post(reverse('user-setup', kwargs={'pk': self.users['super'].id}), {'email': "admin"})
+        response = self.clients['super'].get(reverse('home'))
+        self.assertRedirects(response, reverse('instructor-home'))
+
     def test_ongoing(self) -> None:
         self.review.status = Review.Status.ASSIGNED
         self.review.save()
