@@ -203,6 +203,10 @@ class CompleteListTest(BaseCase):
         self.assertInContext(self.clients['super'], params="?session=AM")
         self.assertNotInContext(self.clients['super'], params="?session=PM")
 
+    def test_bad_session(self):
+        response = self.clients['super'].get(reverse('review-complete'), {'session': "BAD"})
+        self.assertIn("errors/404.html", response.template_name)
+
 
 class BaseReviewAction(TestCase):
     url_name = ''
