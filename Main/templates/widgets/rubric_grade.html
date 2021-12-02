@@ -4,6 +4,9 @@
 {% load rubric_tags %}
 <table class="table table-bordered rubric-grading mb-0">
     <tr>
+        <th class="text-center fs-5" colspan="{{ widget.rubric|colspan|add:2 }}">{{ widget.rubric.name|title }}</th>
+    </tr>
+    <tr>
         <th>Criteria</th>
         <th colspan="{{ widget.rubric|colspan|add:1 }}">Score</th>
     </tr>
