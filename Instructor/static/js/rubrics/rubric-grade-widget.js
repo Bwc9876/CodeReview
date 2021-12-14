@@ -53,8 +53,8 @@ function update_total_score(scores) {
     let max = 0;
     for (let i = 0; i < scores.length; i++) {
         let score = scores[i];
-        total += score === -1 ? 0 : score;
-        max += score === -1 ? 0 : get_max(i);
+        total += score;
+        max += get_max(i);
     }
     report_lst[0] = `Grade: ${total.toFixed(1)}`;
     report_lst[1] = max.toFixed(1);

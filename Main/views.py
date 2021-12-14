@@ -251,6 +251,15 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
     form_name = "Create a Review"
     success_message = "New Review Saved"
 
+    def get_context_data(self, **kwargs):
+        """
+            This function defines additional context data to pass to the template
+        """
+
+        context = super(ReviewCreateView, self).get_context_data(**kwargs)
+        context['render_no_floating'] = True
+        return context
+
     def get_form_kwargs(self):
         """
             This function defines additional kwargs to pass to the form's constructor
