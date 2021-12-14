@@ -384,9 +384,6 @@ class ReviewGradeTest(BaseReviewAction):
     def test_grade(self) -> None:
         self.assertScoresEqual("[5,2]", "7.0/12.0")
 
-    def test_grade_with_na(self) -> None:
-        self.assertScoresEqual("[5,-1]", "5.0/10.0")
-
     def test_grade_not_json(self) -> None:
         self.assertBad("not json")
 

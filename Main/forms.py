@@ -136,14 +136,13 @@ class GradeReviewForm(ModelForm):
     """
 
     scores = CharField(max_length=200, widget=GradeReviewWidget(),
-                       help_text="Please fill out each row in the rubric."
-                                 "  If a row does not apply to this specific assignment, select \"N/A\"")
+                       help_text="Please fill out each row in the rubric.")
 
     _validation_schema = {
         "type": "array",
         "items": {
             "type": "number",
-            "minimum": -1
+            "minimum": 0
         }
     }
 

@@ -90,7 +90,7 @@ class Review(BaseModel):
     schoology_id = models.CharField(max_length=10, null=True,
                                     help_text="The ID of the schoology assignment that this review pertains to")
     status = models.CharField(choices=Status.choices, default=Status.OPEN, max_length=1)
-    rubric = models.ForeignKey("Instructor.Rubric", on_delete=models.CASCADE, related_name="source_rubric",
+    rubric = models.ForeignKey("Instructor.Rubric", related_name="source_rubric", on_delete=models.CASCADE,
                                help_text="The rubric the reviewer will use to grade your code")
     additional_comments = models.TextField(blank=True, null=True,
                                            help_text="Any additional comments you have on the code")
@@ -126,14 +126,9 @@ class Review(BaseModel):
         """
 
         if self.status == Review.Status.CLOSED:
-            my_score = 0
-            max_score = self.rubric.max_score
-            for scoredRow in self.scoredrow_set.all():
-                if scoredRow.score == -1:
-                    max_score -= scoredRow.source_row.max_score
-                else:
-                    my_score += scoredRow.score
-            return f'{my_score}/{max_score}'
+            my_score = self.scoredrow_set.all().aggregate(models.Sum('score'))
+            max_score = self.scoredrow_set.all().aggregate(models.Sum('source_row__max_score'))
+            return f'{my_score["score__sum"]}/{max_score["source_row__max_score__sum"]}'
         else:
             return None
 
