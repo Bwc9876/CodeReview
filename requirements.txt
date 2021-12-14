@@ -1,6 +1,6 @@
 asgiref==3.4.1
 attrs==21.2.0
-Django==3.2.9
+Django==3.2.10
 django-debug-toolbar==3.2.3
 django-mailer==2.1
 importlib-resources==5.4.0
