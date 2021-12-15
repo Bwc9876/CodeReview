@@ -167,15 +167,16 @@ class SuccessDeleteMixin(DeletionMixin):
     """
 
     success_message: str = "Deleted"
+    request = None
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         """
             This function is run when the deletion has been confirmed by the user.
             It adds the success message to the messages framework.
         """
 
-        messages.add_message(request, messages.SUCCESS, self.success_message)
-        return super(SuccessDeleteMixin, self).delete(request, *args, **kwargs)
+        messages.add_message(self.request, messages.SUCCESS, self.success_message)
+        return super(SuccessDeleteMixin, self).delete(self.request)
 
 
 # Home
