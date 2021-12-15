@@ -1,7 +1,7 @@
 asgiref==3.4.1
 attrs==21.2.0
 Django==3.2.10
-django-debug-toolbar==3.2.3
+django-debug-toolbar==3.2.4
 django-mailer==2.1
 importlib-resources==5.4.0
 jsonschema==4.2.1
