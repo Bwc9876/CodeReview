@@ -634,7 +634,20 @@ class ReviewCompleteListView(LoginRequiredMixin, ListView):
 # Errors
 
 
-class Error404(TemplateView):
+class BaseErrorView(TemplateView):
+    """
+        This View acts as a base for other error views
+
+        It adds teh ability to respond to POST requests that way errors still work on forms
+    """
+
+    http_method_names = ['get', 'post']
+
+    def post(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context_data())
+
+
+class Error404(BaseErrorView):
     """
         This view is run in the case of a 404 error
     """
@@ -642,7 +655,7 @@ class Error404(TemplateView):
     template_name = 'errors/404.html'
 
 
-class Error403(TemplateView):
+class Error403(BaseErrorView):
     """
         This view is run in the case of a 403 error
     """
@@ -650,7 +663,7 @@ class Error403(TemplateView):
     template_name = 'errors/403.html'
 
 
-class Error500(TemplateView):
+class Error500(BaseErrorView):
     """
         This view is run in the case of a 500 error
     """
@@ -671,7 +684,7 @@ class Error(View):
         500: Error500
     }
 
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
 
     def get(self, request, *args, **kwargs):
         """
@@ -684,6 +697,14 @@ class Error(View):
             raise Http404()
         else:
             return self.error_dict.get(error_type, Error404).as_view()(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+            This function is run when the view receives a POST request
+            It returns an error page
+        """
+
+        return self.get(request, *args, **kwargs)
 
 
 # The following block tells django to run these views when an error occurs
