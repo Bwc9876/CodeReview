@@ -89,7 +89,7 @@ class ReviewAccessTest(BaseCase):
                         if http_type == "get":
                             self.assertIn(response.template_name[0], ['errors/403.html', 'errors/404.html'])
                         else:
-                            self.assertIn(response.status_code, (403, 404, 405))
+                            self.assertIn(response.templates[0].name, ('errors/404.html', 'errors/403.html'))
                     else:
                         self.fail("Invalid Setup Of Expected")
 
@@ -339,7 +339,7 @@ class ReviewClaimTest(BaseReviewAction):
         self.reviewer.session = User.Session.PM
         self.reviewer.save()
         response = self.reviewer_client.post(self.url)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.templates[0].name, 'errors/404.html')
 
     def test_limit(self) -> None:
         self.student2 = User.objects.create_user('student2')
