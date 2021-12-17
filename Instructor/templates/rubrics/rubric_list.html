@@ -15,6 +15,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Max Score</th>
                     <th scope="col">Edit</th>
+                    <th scope="col">Duplicate</th>
                     <th scope="col">Delete</th>
                 </tr>
                 </thead>
@@ -24,6 +25,12 @@
                         <th scope="row">{{ rubric.name }}</th>
                         <td>{{ rubric.max_score }}</td>
                         <td><a href="{% url "rubric-edit" rubric.id %}">Edit</a></td>
+                        <td>
+                            <form method="POST" action="{% url "rubric-duplicate" rubric.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-link p-0">Duplicate</button>
+                            </form>
+                        </td>
                         <td><a class="link-danger" href="{% url "rubric-delete" rubric.id %}">Delete</a></td>
                     </tr>
                 {% empty %}

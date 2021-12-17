@@ -5,6 +5,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, TemplateView, CreateView, UpdateView, DeleteView
@@ -204,6 +205,39 @@ class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAl
                 review.scoredrow_set.filter(source_row__index__gte=row_count).delete()
 
         return super(RubricEditView, self).form_valid(form)
+
+
+class RubricDupeView(LoginRequiredMixin, IsSuperUserMixin, View):
+    """
+        This view duplicates a given rubric
+
+        :cvar http_method_names: The names of the accepted http methods to use
+    """
+
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        """
+            This method is run when the view receives a POST request
+
+            It duplicates the provided rubric
+        """
+
+        try:
+            target_rubric: models.Rubric = models.Rubric.objects.select_related().get(id=kwargs.get('pk'))
+            self.request = request
+            new_rubric = models.Rubric.objects.create(name=f"Copy of {target_rubric.name}", max_score=target_rubric.max_score)
+            new_rubric.save()
+            for row in target_rubric.rubricrow_set.all():
+                new_row = models.RubricRow.objects.create(name=row.name, description=row.description, max_score=row.max_score, parent_rubric_id=new_rubric.id, index=row.index)
+                new_row.save()
+                for cell in row.rubriccell_set.all():
+                    new_cell = models.RubricCell.objects.create(score=cell.score, description=cell.description, parent_row_id=new_row.id, index=cell.index)
+                    new_cell.save()
+            messages.add_message(request, messages.SUCCESS, "Rubric Duplicated")
+            return redirect('rubric-list')
+        except models.Rubric.DoesNotExist:
+            raise Http404("Rubric Not Found")
 
 
 class RubricDeleteView(LoginRequiredMixin, IsSuperUserMixin, SuccessDeleteMixin, DeleteView):
