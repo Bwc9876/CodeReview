@@ -226,13 +226,22 @@ class RubricDupeView(LoginRequiredMixin, IsSuperUserMixin, View):
         try:
             target_rubric: models.Rubric = models.Rubric.objects.select_related().get(id=kwargs.get('pk'))
             self.request = request
-            new_rubric = models.Rubric.objects.create(name=f"Copy of {target_rubric.name}", max_score=target_rubric.max_score)
+            if len(target_rubric.name) + 10 > 50:
+                new_name = "New Rubric"
+                messages.add_message(request, messages.WARNING,
+                                     "The length of the name is too long; the rubric has been named \"New Rubric\"")
+            else:
+                new_name = f"Copy of {target_rubric.name}"
+            new_rubric = models.Rubric.objects.create(name=new_name, max_score=target_rubric.max_score)
             new_rubric.save()
             for row in target_rubric.rubricrow_set.all():
-                new_row = models.RubricRow.objects.create(name=row.name, description=row.description, max_score=row.max_score, parent_rubric_id=new_rubric.id, index=row.index)
+                new_row = models.RubricRow.objects.create(name=row.name, description=row.description,
+                                                          max_score=row.max_score, parent_rubric_id=new_rubric.id,
+                                                          index=row.index)
                 new_row.save()
                 for cell in row.rubriccell_set.all():
-                    new_cell = models.RubricCell.objects.create(score=cell.score, description=cell.description, parent_row_id=new_row.id, index=cell.index)
+                    new_cell = models.RubricCell.objects.create(score=cell.score, description=cell.description,
+                                                                parent_row_id=new_row.id, index=cell.index)
                     new_cell.save()
             messages.add_message(request, messages.SUCCESS, "Rubric Duplicated")
             return redirect('rubric-list')

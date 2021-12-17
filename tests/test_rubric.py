@@ -238,4 +238,8 @@ class RubricDuplicateTest(TestCase):
         response = self.client.post(reverse('rubric-duplicate', kwargs={'pk': uuid4()}))
         self.assertEqual(response.templates[0].name, 'errors/404.html')
 
-
+    def test_name_long(self):
+        self.source_rubric.name = "A" * 49
+        self.source_rubric.save()
+        self.client.post(reverse('rubric-duplicate', kwargs={'pk': self.source_rubric.id}))
+        self.assertTrue(Rubric.objects.filter(name="New Rubric").exists())
