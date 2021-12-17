@@ -204,6 +204,8 @@ class RubricForm(ModelForm):
                     offending_cell_elem = error.relative_path[3] if len(error.relative_path) >= 4 else None
                     if offending_cell_elem == "score" and "not of type 'number'" in error.message:
                         return f"Please enter a number for the score {location}"
+                    elif offending_cell_elem == "score" and ("max" in error.message or "minimum" in error.message):
+                        return f"The score must be between 0 and 100 {location}"
                     elif offending_cell_elem == "description":
                         if "too short" in error.message:
                             return f"Please enter a description {location}"
