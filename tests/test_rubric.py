@@ -222,7 +222,6 @@ class RubricDuplicateTest(TestCase):
 
     def test_dupe(self) -> None:
         self.client.post(reverse('rubric-duplicate', kwargs={'pk': self.source_rubric.id}))
-        print(Rubric.objects.all())
         new_rubric = Rubric.objects.get(name="Copy of Source Rubric")
         self.assertNotEqual(new_rubric.id, self.source_rubric.id)
         src_row = self.source_rubric.rubricrow_set.get(index=0)
