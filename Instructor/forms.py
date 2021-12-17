@@ -70,7 +70,7 @@ class RubricForm(ModelForm):
                             "score": {
                                 "type": "number",
                                 "minimum": 0,
-                                "maximum": 1000
+                                "maximum": 100
                             },
                             "description": {
                                 "type": "string",

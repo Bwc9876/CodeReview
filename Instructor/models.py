@@ -103,7 +103,7 @@ class Rubric(BaseModel):
 
         new_obj = []
 
-        for row in list(self.rubricrow_set.all()):
+        for row in list(self.rubricrow_set.select_related()):
             new_row = {'name': row.name, 'description': row.description, 'cells': []}
             [new_row['cells'].append({'score': float(cell.score), 'description': cell.description})
              for cell in list(row.rubriccell_set.all())]

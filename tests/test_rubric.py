@@ -1,4 +1,5 @@
 from json import JSONDecoder, JSONEncoder
+from uuid import uuid4
 
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -111,12 +112,12 @@ class RubricValidationTest(TestCase):
         self.assertBad("Please enter a number for the score in row 1, cell 1")
 
     def test_cell_score_negative(self):
-        self.current[0]['cells'][0]['score'] = "-5"
-        self.assertBad("Please enter a number for the score in row 1, cell 1")
+        self.current[0]['cells'][0]['score'] = -5
+        self.assertBad("The score must be between 0 and 100 in row 1, cell 1")
 
     def test_cell_score_big(self):
-        self.current[0]['cells'][0]['score'] = "10000000000000000000000000000000000"
-        self.assertBad("Please enter a number for the score in row 1, cell 1")
+        self.current[0]['cells'][0]['score'] = 101
+        self.assertBad("The score must be between 0 and 100 in row 1, cell 1")
 
     def test_no_cell_description(self):
         self.current[0]['cells'][0]['description'] = ""
@@ -209,3 +210,33 @@ class RubricListTest(TestCase):
     def test_list(self):
         response = self.client.get(self.url)
         self.assertIn(self.rubric, response.context['rubrics'])
+
+
+class RubricDuplicateTest(TestCase):
+
+    def setUp(self) -> None:
+        self.user = User.objects.create_superuser('admin')
+        self.client.force_login(self.user)
+        self.client.post(reverse('rubric-create'), {'name': "Source Rubric", "rubric": test_json})
+        self.source_rubric = Rubric.objects.get(name='Source Rubric')
+
+    def test_dupe(self) -> None:
+        self.client.post(reverse('rubric-duplicate', kwargs={'pk': self.source_rubric.id}))
+        print(Rubric.objects.all())
+        new_rubric = Rubric.objects.get(name="Copy of Source Rubric")
+        self.assertNotEqual(new_rubric.id, self.source_rubric.id)
+        src_row = self.source_rubric.rubricrow_set.get(index=0)
+        new_row = new_rubric.rubricrow_set.get(index=0)
+        self.assertEqual(new_row.name, src_row.name)
+        self.assertNotEqual(new_row.id, src_row.id)
+        src_cell = src_row.rubriccell_set.get(index=0)
+        new_cell = new_row.rubriccell_set.get(index=0)
+        self.assertEqual(src_cell.score, new_cell.score)
+        self.assertNotEqual(src_cell.id, new_cell.id)
+
+    def test_invalid_id(self):
+        self.source_rubric.delete()
+        response = self.client.post(reverse('rubric-duplicate', kwargs={'pk': uuid4()}))
+        self.assertEqual(response.templates[0].name, 'errors/404.html')
+
+
