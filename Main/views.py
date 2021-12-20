@@ -638,7 +638,7 @@ class BaseErrorView(TemplateView):
     """
         This View acts as a base for other error views
 
-        It adds teh ability to respond to POST requests that way errors still work on forms
+        It adds the ability to respond to POST requests so that errors still work on forms
     """
 
     http_method_names = ['get', 'post']
