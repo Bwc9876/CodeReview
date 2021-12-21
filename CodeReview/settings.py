@@ -78,7 +78,7 @@ TEMPLATES = [
 # This option defines what wsgi application to use in development when running the app through runserver
 WSGI_APPLICATION = 'CodeReview.wsgi.application'
 
-# This next block of code defines how our database will work and what database system will work
+# This next block of code defines how our database will work and what database system to use
 if STAGE == "Prod":
     # In production, we use MySQL as our database backend
     DATABASES = {
@@ -164,7 +164,7 @@ else:
     EMAIL_DOMAIN = os.getenv("EMAIL_DOMAIN", "")
     EMAIL_ADMIN_DOMAIN = os.getenv("EMAIL_ADMIN_DOMAIN", "")
     SERVER_EMAIL = EMAIL_HOST_USER
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+    DEFAULT_FROM_EMAIL = os.getenv('EMAIL_ALIAS', EMAIL_HOST_USER)
 
 # This option defines what language code django will send to browsers
 LANGUAGE_CODE = 'en-us'
