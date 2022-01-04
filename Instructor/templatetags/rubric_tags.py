@@ -67,19 +67,3 @@ def is_score(cell: RubricCell, review: Review):
     """
 
     return cell.score == review.scoredrow_set.get(source_row=cell.parent_row).score
-
-
-@register.filter(name="no_score")
-def no_score(row: RubricRow, review: Review):
-    """
-        This filter checks if a row has no score (N/A) selected
-
-        :param row: The row to check the score of
-        :type row: RubricRow
-        :param review: The Review to check the row against
-        :type review: Review
-        :returns: Whether the Row has no score selected
-        :rtype: bool
-    """
-
-    return -1 == review.scoredrow_set.get(source_row=row).score
