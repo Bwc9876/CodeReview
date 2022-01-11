@@ -21,7 +21,7 @@
     {% load form_tags %}
     <div class="row mb-5">
         <div class="col">
-            {% if not hide_back %}
+            {% if hide_back is False %}
                 <button type="button" class="btn btn-outline-secondary back-button d-inline"><i
                         class="bi bi-arrow-left"></i> Back
                 </button>

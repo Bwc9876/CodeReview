@@ -82,7 +82,7 @@ class PartialField(CharField):
             :rtype: str
         """
 
-        if not self.is_admin:
+        if self.is_admin is False:
             value = super(PartialField, self).clean(value)
             if len(value) < 3 or len(value) > 3:
                 raise ValidationError("Please enter 3 digits")
