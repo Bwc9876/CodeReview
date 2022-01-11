@@ -144,7 +144,7 @@ class RubricForm(ModelForm):
                 'parent_rubric': new_rubric,
                 'max_score': 0
             })
-            if not created:
+            if created is False:
                 new_row.name = row.get('name')
                 new_row.description = row.get('description')
                 new_row.max_score = 0
@@ -160,7 +160,7 @@ class RubricForm(ModelForm):
                                                                                      'parent_row': new_row,
                                                                                      'index': cell_index
                                                                                  })
-                if not cell_created:
+                if cell_created is False:
                     new_cell.description = cell.get('description')
                     new_cell.score = score
                 new_cell.save()

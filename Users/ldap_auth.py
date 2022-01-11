@@ -107,7 +107,7 @@ class LDAPAuthentication(BaseBackend):
             :rtype: bool
         """
 
-        return not ("AM" in str(ldap_user["distinguishedName"]) or "PM" in str(ldap_user["distinguishedName"]))
+        return ("AM" in str(ldap_user["distinguishedName"]) or "PM" in str(ldap_user["distinguishedName"])) is False
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
@@ -204,7 +204,7 @@ class LDAPAuthentication(BaseBackend):
         except LDAPInvalidCredentials:
             return None
         except LDAPConnectionError:
-            if not settings.DEBUG:
+            if settings.DEBUG is False:
                 messages.add_message(request, messages.ERROR,
                                      "There was an error contacting the auth server, please try again later.")
             return None
