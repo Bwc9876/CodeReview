@@ -5,7 +5,7 @@
 {% endcomment %}
 
 {% block tableFooter %}
-    {% if hide_view_all is False %}
+    {% if not hide_view_all %}
         <tr>
             <td class="text-center" colspan="{{ colspan }}">
                 <a class="link-primary"
