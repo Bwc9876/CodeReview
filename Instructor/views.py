@@ -113,6 +113,7 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
         for index, user in enumerate(objs):
             objs[index].is_reviewer = str(user.id) in self.request.POST.getlist('reviewers')
         self.get_queryset().bulk_update(objs, ['is_reviewer'], batch_size=10)
+        self.get_queryset().filter(id__in=self.request.POST.getlist("to_delete")).delete()
         messages.add_message(self.request, messages.SUCCESS, "Users Updated")
         return redirect("instructor-home")
 

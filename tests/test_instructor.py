@@ -141,6 +141,20 @@ class UserDesignationTest(TestCase):
         self.assertTrue(User.objects.get(username="student-am").is_reviewer)
         self.assertFalse(User.objects.get(username="student-pm").is_reviewer)
 
+    def test_delete_users(self) -> None:
+        self.clients['super'].post(reverse('user-list'), data={
+            'to_delete': self.make_reviewers_list(['reviewer-am', 'student-am']),
+        })
+        self.assertFalse(User.objects.filter(username="reviewer-am"))
+        self.assertFalse(User.objects.filter(username="student-am"))
+
+    def test_delete_pm(self) -> None:
+        self.clients['super'].post(reverse('user-list'), data={
+            'to_delete': self.make_reviewers_list(['reviewer-pm', 'student-am']),
+        })
+        self.assertFalse(User.objects.filter(username="reviewer-pm"))
+        self.assertFalse(User.objects.filter(username="student-am"))
+
     def test_no_reviewers(self) -> None:
         self.clients['super'].post(reverse('user-list'), data={
             'reviewers': [],

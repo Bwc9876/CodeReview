@@ -81,11 +81,12 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Reviewer</th>
+                                <th>Delete</th>
                             </tr>
                             </thead>
                             <tbody class="session AM-session">
                             {% for user in AM %}
-                                <tr class="">
+                                <tr>
                                     <th id="{{ user.id }}"><label for="{{ user.id }}-reviewer">{{ user }}</label></th>
                                     <td>
                                         <div class="form-switch">
@@ -93,6 +94,10 @@
                                                    {% if user.is_reviewer %}checked{% endif %}
                                                    type="checkbox" class="form-check-input me-0" name="reviewers"
                                                    value="{{ user.id }}"/></div>
+                                    </td>
+                                    <td>
+                                        <input class="form-check-input" type="checkbox" name="to_delete"
+                                               value="{{ user.id }}"/>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -116,7 +121,12 @@
                                             <input id="{{ user.id }}-reviewer"
                                                    {% if user.is_reviewer %}checked{% endif %}
                                                    type="checkbox" class="form-check-input me-0" name="reviewers"
-                                                   value="{{ user.id }}"/></div>
+                                                   value="{{ user.id }}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input class="form-check-input" type="checkbox" name="to_delete"
+                                               value="{{ user.id }}"/>
                                     </td>
                                 </tr>
                             {% endfor %}
