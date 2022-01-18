@@ -21,7 +21,7 @@ from . import models, forms
 
 class UserClearView(LoginRequiredMixin, IsSuperUserMixin, View):
     """
-        This view is used to clean up any users that are not in teh ActiveDirectory database.
+        This view is used to clean up any users that are not in the ActiveDirectory database.
 
         :cvar http_method_names: The HTTP methods that this view takes
     """
@@ -115,7 +115,7 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
         self.get_queryset().bulk_update(objs, ['is_reviewer'], batch_size=10)
         self.get_queryset().filter(id__in=self.request.POST.getlist("to_delete")).delete()
         messages.add_message(self.request, messages.SUCCESS, "Users Updated")
-        return redirect("instructor-home")
+        return redirect("user-list")
 
     def get_context_data(self, **kwargs):
         """
