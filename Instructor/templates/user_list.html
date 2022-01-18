@@ -125,7 +125,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <input type="checkbox" name="to_delete" value="{{ user.id }}"/>
+                                        <input class="form-check-input" type="checkbox" name="to_delete"
+                                               value="{{ user.id }}"/>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -146,11 +147,6 @@
                                   aria-hidden="true"></span>
                             <span class="submit-word">Save</span>
                         </button>
-                        {#                        <button class="btn mt-4 w-100 btn-outline-danger delete-button" type="submit">#}
-                        {#                            <span class="loading spinner-border spinner-border-sm d-none" role="status"#}
-                        {#                                  aria-hidden="true"></span>#}
-                        {#                            <span class="submit-word">Delete Selected Users</span>#}
-                        {#                        </button>#}
                     </div>
                 </div>
             </form>
