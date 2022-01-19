@@ -111,7 +111,7 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
         """
         reviewer_query = Q(id__in=self.request.POST.getlist('reviewers'))
         self.get_queryset().filter(reviewer_query).update(is_reviewer=True)
-        self.get_queryset().fitler(~reviewer_query).update(is_reviewer=False)
+        self.get_queryset().filter(~reviewer_query).update(is_reviewer=False)
         self.get_queryset().filter(id__in=self.request.POST.getlist("to_delete")).delete()
         messages.add_message(self.request, messages.SUCCESS, "Users Updated")
         return redirect("user-list")
