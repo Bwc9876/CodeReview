@@ -177,8 +177,10 @@ class UserDesignationTest(TestCase):
         response = self.clients['super'].post(reverse('user-list'), data={
             'reviewers': ["bad-uuid"], 'to_delete': []
         })
+        self.assertIn("Invalid User IDs", [m.message for m in get_messages(response.wsgi_request)])
 
     def test_delete_invalid_uuid(self) -> None:
         response = self.clients['super'].post(reverse('user-list'), data={
             'reviewers': self.make_reviewers_list(["reviewer-am", "reviewer-pm"]), 'to_delete': ["bad-uuid"]
         })
+        self.assertIn("Invalid User IDs", [m.message for m in get_messages(response.wsgi_request)])
