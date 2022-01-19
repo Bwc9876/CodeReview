@@ -109,12 +109,18 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
             This function defines back-end behaviour when the user uses the POST method.
             It updates sessions and reviewers based off user input.
         """
-        reviewer_query = Q(id__in=self.request.POST.getlist('reviewers'))
-        self.get_queryset().filter(reviewer_query).update(is_reviewer=True)
-        self.get_queryset().filter(~reviewer_query).update(is_reviewer=False)
-        self.get_queryset().filter(id__in=self.request.POST.getlist("to_delete")).delete()
-        messages.add_message(self.request, messages.SUCCESS, "Users Updated")
+        
+        try:
+            reviewer_query = Q(id__in=self.request.POST.getlist('reviewers'))
+            self.get_queryset().filter(reviewer_query).update(is_reviewer=True)
+            self.get_queryset().filter(~reviewer_query).update(is_reviewer=False)
+            self.get_queryset().filter(id__in=self.request.POST.getlist("to_delete")).delete()
+            messages.add_message(self.request, messages.SUCCESS, "Users Updated")
+        except ValueError:
+            messages.add_message(self.request, messages.ERROR, "Invalid User IDs")
         return redirect("user-list")
+
+
 
     def get_context_data(self, **kwargs):
         """
