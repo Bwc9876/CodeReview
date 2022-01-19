@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from django.contrib.messages import get_messages
 from django.test import TestCase, Client
 from django.urls import reverse
 
