@@ -155,12 +155,11 @@ class UserDesignationTest(TestCase):
         })
         self.assertFalse(User.objects.filter(username="reviewer-pm").exists())
         self.assertFalse(User.objects.filter(username="student-am").exists())
-        self.assertTrue(User.objects.filter(username="reviewer-am").exists())
-        
+        self.assertTrue(User.objects.filter(username="reviewer-am").exists())        
 
     def test_no_reviewers(self) -> None:
         self.clients['super'].post(reverse('user-list'), data={
-            'reviewers': [],
+            'reviewers': [], 'to_delete': []
         })
         self.assertFalse(User.objects.get(username="reviewer-am").is_reviewer)
         self.assertFalse(User.objects.get(username="reviewer-pm").is_reviewer)
