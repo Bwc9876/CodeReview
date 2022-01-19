@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+from django.contrib.messages import get_messages
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -165,3 +168,22 @@ class UserDesignationTest(TestCase):
         self.assertFalse(User.objects.get(username="reviewer-pm").is_reviewer)
         self.assertFalse(User.objects.get(username="student-am").is_reviewer)
         self.assertFalse(User.objects.get(username="student-pm").is_reviewer)
+
+    def test_user_doesnt_exist(self) -> None:
+        self.clients['super'].post(reverse('user-list'), data={
+            'reviewers': self.make_reviewers_list(['reviewer-am']) + [uuid4()], 'to_delete': self.make_reviewers_list(['student-am']) + [uuid4()]
+        })
+        self.assertTrue(User.objects.get(username="reviewer-am").is_reviewer)
+        self.assertFalse(User.objects.filter(username="student-am").exists())
+
+    def test_reviewers_invalid_uuid(self) -> None:
+        response = self.clients['super'].post(reverse('user-list'), data={
+            'reviewers': ["bad-uuid"], 'to_delete': []
+        })
+        self.assertIn("Invalid User IDs", [m.message for m in get_messages(response.wsgi_request)])
+
+    def test_delete_invalid_uuid(self) -> None:
+        response = self.clients['super'].post(reverse('user-list'), data={
+            'reviewers': self.make_reviewers_list(["reviewer-am", "reviewer-pm"]), 'to_delete': ["bad-uuid"]
+        })
+        self.assertIn("Invalid User IDs", [m.message for m in get_messages(response.wsgi_request)])

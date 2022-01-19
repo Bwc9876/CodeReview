@@ -5,6 +5,8 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -109,13 +111,17 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
             It updates sessions and reviewers based off user input.
         """
 
-        objs = list(self.get_queryset())
-        for index, user in enumerate(objs):
-            objs[index].is_reviewer = str(user.id) in self.request.POST.getlist('reviewers')
-        self.get_queryset().bulk_update(objs, ['is_reviewer'], batch_size=10)
-        self.get_queryset().filter(id__in=self.request.POST.getlist("to_delete")).delete()
-        messages.add_message(self.request, messages.SUCCESS, "Users Updated")
+        try:
+            reviewer_query = Q(id__in=self.request.POST.getlist('reviewers'))
+            self.get_queryset().filter(reviewer_query).update(is_reviewer=True)
+            self.get_queryset().filter(~reviewer_query).update(is_reviewer=False)
+            self.get_queryset().filter(id__in=self.request.POST.getlist("to_delete")).delete()
+            messages.add_message(self.request, messages.SUCCESS, "Users Updated")
+        except ValidationError:
+            messages.add_message(self.request, messages.ERROR, "Invalid User IDs")
         return redirect("user-list")
+
+
 
     def get_context_data(self, **kwargs):
         """
