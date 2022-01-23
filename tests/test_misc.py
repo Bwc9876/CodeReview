@@ -1,12 +1,13 @@
 import os
 
 from django.conf import settings
-from django.test import TestCase, Client, RequestFactory
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
 from CodeReview.load_env import load_to_env, get_env
 from Main.views import error_500_handler
 from Users.models import User
+from tests.testing_base import BaseCase
 
 
 class EnvLoadTest(TestCase):
@@ -36,57 +37,62 @@ class EnvLoadTest(TestCase):
             os.remove('env_test.ps1')
 
 
-class UserSetupTest(TestCase):
+class UserSetupTest(BaseCase):
 
     @staticmethod
     def get_url(user):
         return reverse('user-setup', kwargs={'pk': user.id})
 
-    def create_users(self):
-        self.admin = User.objects.create_superuser('admin')
-        self.student = User.objects.create_user('student', first_name="John", last_name="Doe")
+    test_users = BaseCase.USER_SINGLE_STUDENT
 
-    def create_clients(self):
-        self.admin_c = Client()
-        self.admin_c.force_login(self.admin)
-        self.student_c = Client()
-        self.student_c.force_login(self.student)
+    test_rubric = False
+    test_review = False
+
+    def assertEmailError(self, response, message):
+        self.assertFormError(response, 'form', 'email', [message])
+
+    def post_setup(self, user, email):
+        return self.post(user, reverse('user-setup', kwargs={'pk': self.users[user].id}), {'email': email})
 
     def setUp(self) -> None:
-        self.create_users()
-        self.create_clients()
+        super(UserSetupTest, self).setUp()
+        self.users['test-user'].email = ""
+        self.set_user_full_name('test-user', "John", "Doe")
+        self.users['test-user'].save()
+        self.users['super'].email = ""
+        self.users['super'].save()
 
     def test_redirects(self):
-        response = self.admin_c.get(reverse('home'))
+        response = self.get('super', reverse('home'))
         self.assertEqual(response.status_code, 302)
-        response = self.student_c.get(reverse('home'))
+        response = self.get('test-user', reverse('home'))
         self.assertEqual(response.status_code, 302)
 
     def test_admin_edit(self):
-        self.admin_c.post(self.get_url(self.admin), {'email': "admin"})
-        self.assertEqual(User.objects.get(id=self.admin.id).email, f"admin@{settings.EMAIL_ADMIN_DOMAIN}")
+        self.post_setup('super', 'admin')
+        self.assertEqual(User.objects.get(id=self.users['super'].id).email, f"admin@{settings.EMAIL_ADMIN_DOMAIN}")
 
     def test_user_edit(self):
-        self.student_c.post(self.get_url(self.student), {'email': '985'})
-        self.assertEqual(User.objects.get(id=self.student.id).email, f"johdoe985@{settings.EMAIL_DOMAIN}")
+        self.post_setup('test-user', '985')
+        self.assertEqual(User.objects.get(id=self.users['test-user'].id).email, f"johdoe985@{settings.EMAIL_DOMAIN}")
 
     def test_student_length_check(self):
-        response = self.student_c.post(self.get_url(self.student), {'email': '1'})
-        self.assertEqual(response.context.get('form').errors.get('email')[0], "Please enter 3 digits")
-        response = self.student_c.post(self.get_url(self.student), {'email': '1111'})
-        self.assertEqual(response.context.get('form').errors.get('email')[0], "Please enter 3 digits")
+        response = self.post_setup('test-user', '1')
+        self.assertEmailError(response, "Please enter 3 digits")
+        response = self.post_setup('test-user', '1111')
+        self.assertEmailError(response, "Please enter 3 digits")
 
     def test_student_numeric_check(self):
-        response = self.student_c.post(self.get_url(self.student), {'email': 'abc'})
-        self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be a number")
+        response = self.post_setup('test-user', 'abc')
+        self.assertEmailError(response, "Must be a number")
 
     def test_student_decimal_check(self):
-        response = self.student_c.post(self.get_url(self.student), {'email': '1.1'})
-        self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be a number")
+        response = self.post_setup('test-user', '1.1')
+        self.assertEmailError(response, "Must be a number")
 
     def test_student_negative_check(self):
-        response = self.student_c.post(self.get_url(self.student), {'email': '-99'})
-        self.assertEqual(response.context.get('form').errors.get('email')[0], "Must be between 100-999")
+        response = self.post_setup('test-user', '-99')
+        self.assertEmailError(response, "Must be between 100-999")
 
 
 class TestErrors(TestCase):
