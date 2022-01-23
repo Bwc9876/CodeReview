@@ -1,46 +1,24 @@
 from json import JSONDecoder, JSONEncoder
 
-from django.test import TestCase, Client
 from django.urls import reverse
 
-from Instructor.models import Rubric, ScoredRow
+from Instructor.models import ScoredRow
 from Main.forms import GradeReviewForm, ReviewForm
 from Main.models import Review
 from Users.models import User
-
-with open("tests/test_rubric.json", 'r') as file:
-    test_json = file.read()
+from tests.testing_base import BaseCase as OldBaseCase, SimpleBaseCase
 
 
-class BaseCase(TestCase):
+class BaseCase(OldBaseCase):
+    test_users = {
+        'reviewer-affiliated': (True, False),
+        'student-affiliated': (False, False),
+        'reviewer-not': (True, False),
+        'student-not': (False, False),
+    }
 
-    def create_user_matrix(self):
-        users = {
-            'reviewer-affiliated': User.objects.create_user("reviewer-affiliated", is_reviewer=True),
-            'student-affiliated': User.objects.create_user("student-affiliated"),
-            'reviewer-not': User.objects.create_user("reviewer-not", is_reviewer=True),
-            'student-not': User.objects.create_user("student-not"),
-            'super': User.objects.create_superuser("test-instructor"),
-        }
-        self.users = users
-
-    def create_client_matrix(self):
-        clients = {}
-        for key in self.users.keys():
-            val = self.users.get(key)
-            new_client = Client()
-            new_client.force_login(val)
-            clients[key] = new_client
-        self.clients = clients
-
-    def setUp(self) -> None:
-        self.create_user_matrix()
-        self.create_client_matrix()
-        self.clients['super'].post(reverse("rubric-create"), {'name': "Test Review Rubric", 'rubric': test_json})
-        self.rubric = Rubric.objects.get(name="Test Review Rubric")
-        self.review = Review.objects.create(rubric=self.rubric, schoology_id="03.04.05",
-                                            student=self.users['student-affiliated'],
-                                            reviewer=self.users['reviewer-affiliated'])
+    test_review_student = 'student-affiliated'
+    test_review_reviewer = 'reviewer-affiliated'
 
 
 class ReviewAccessTest(BaseCase):
@@ -57,13 +35,10 @@ class ReviewAccessTest(BaseCase):
     }
 
     def setUp(self) -> None:
-        super().setUp()
-        self.review.status = Review.Status.ASSIGNED
-        self.review.save()
-        self.clients['reviewer-affiliated'].post(reverse("review-grade", kwargs={'pk': self.review.id}),
-                                                 {'scores': "[10,2]", 'additional_comments': ""})
-        self.review.status = Review.Status.OPEN
-        self.review.save()
+        super(ReviewAccessTest, self).setUp()
+        self.set_test_review_status(Review.Status.ASSIGNED)
+        self.post_test_review('reviewer-affiliated', 'review-grade', {'scores': "[10,2]", 'additional_comments': ""})
+        self.set_test_review_status(Review.Status.OPEN)
 
     def assertResponses(self, expected_key, add_pk=True, http_type='get') -> None:
         target_statuses = self.expected[expected_key]
@@ -73,15 +48,13 @@ class ReviewAccessTest(BaseCase):
             url = reverse(f'review-{expected_key}')
         for index in range(len(target_statuses)):
             target_responses = target_statuses[index]
-            self.review.status = Review.Status.values[index]
-            self.review.save()
+            self.set_test_review_status(Review.Status.values[index])
             for code_index, expected in enumerate(target_responses):
                 if expected != "-":
-                    client = self.clients.get(list(self.clients.keys())[code_index])
                     if http_type == 'get':
-                        response = client.get(url)
+                        response = self.get(list(self.clients.keys())[code_index], url)
                     else:
-                        response = client.post(url)
+                        response = self.post(list(self.clients.keys())[code_index], url)
 
                     if expected == "y":
                         self.assertIn(response.status_code, (200, 302))
@@ -127,18 +100,11 @@ class HomeListTest(BaseCase):
 
     url = reverse("home")
 
-    def setUp(self) -> None:
-        super(HomeListTest, self).setUp()
-        for user in self.users.values():
-            user.email = f"{user.username}@example.com"
-            user.save()
-
     def assertStatus(self, status_code):
-        self.review.status = status_code
-        self.review.save()
+        self.set_test_review_status(status_code)
         for index, group in enumerate(self.expected[status_code]):
             if group != "-":
-                response = self.clients.get(list(self.clients.keys())[index]).get(self.url)
+                response = self.get(list(self.clients.keys())[index], self.url)
                 if group == "none":
                     for not_group in ["open", "assigned", "completed", "active"]:
                         self.assertNotIn(self.review, response.context.get(not_group, []))
@@ -149,9 +115,8 @@ class HomeListTest(BaseCase):
         self.assertStatus('O')
 
     def test_open_different_session(self) -> None:
-        self.users['reviewer-not'].session = User.Session.PM
-        self.users['reviewer-not'].save()
-        response = self.clients['reviewer-not'].get(self.url)
+        self.set_user_session('reviewer-not', User.Session.PM)
+        response = self.get('reviewer-not', self.url)
         self.assertNotIn(self.review, response.context.get("open", []))
 
     def test_assigned(self) -> None:
@@ -165,114 +130,78 @@ class CompleteListTest(BaseCase):
 
     def setUp(self) -> None:
         super(CompleteListTest, self).setUp()
-        self.review.status = Review.Status.ASSIGNED
-        self.review.save()
-        self.clients['reviewer-affiliated'].post(reverse('review-grade', kwargs={'pk': self.review.id}),
-                                                 {'scores': "[10,2]"})
+        self.set_test_review_status(Review.Status.ASSIGNED)
+        self.post_test_review('reviewer-affiliated', 'review-grade', {'scores': "[10,2]"})
 
-    def assertInContext(self, client, params=""):
-        response = client.get(reverse('review-complete') + params)
+    def assertInContext(self, user, params=""):
+        response = self.get(user, reverse('review-complete') + params)
         self.assertIn(self.review, response.context.get("reviews", []))
 
-    def assertNotInContext(self, client, params=""):
-        response = client.get(reverse('review-complete') + params)
+    def assertNotInContext(self, user, params=""):
+        response = self.get(user, reverse('review-complete') + params)
         self.assertNotIn(self.review, response.context.get("reviews", []))
 
     def test_access(self):
-        self.assertInContext(self.clients['student-affiliated'])
-        self.assertInContext(self.clients['reviewer-affiliated'])
-        self.assertNotInContext(self.clients['student-not'])
-        self.assertNotInContext(self.clients['reviewer-not'])
+        self.assertInContext('student-affiliated')
+        self.assertInContext('reviewer-affiliated')
+        self.assertNotInContext('student-not')
+        self.assertNotInContext('reviewer-not')
 
     def test_pagination(self):
-        response = self.clients['student-affiliated'].get(reverse('review-complete'))
+        response = self.get('student-affiliated', reverse('review-complete'))
         self.assertFalse(response.context['page_obj'].has_other_pages())
         for i in range(0, 12):
-            new_review = Review.objects.create(rubric=self.rubric, schoology_id="12.34.56",
-                                               student=self.users['student-affiliated'],
-                                               reviewer=self.users['reviewer-affiliated'],
-                                               status=Review.Status.ASSIGNED)
-            self.clients['reviewer-affiliated'].post(reverse('review-grade', kwargs={'pk': new_review.id}),
-                                                     {'scores': "[10,2]"})
-        response = self.clients['student-affiliated'].get(reverse('review-complete'))
+            new_review = self.make_arb_review('student-affiliated', 'reviewer-affiliated', Review.Status.ASSIGNED,
+                                              '12.34.56')
+            self.post_review('reviewer-affiliated', 'review-grade', new_review.id, {'scores': "[10,2]"})
+        response = self.get('student-affiliated', reverse('review-complete'))
         self.assertTrue(response.context['page_obj'].has_other_pages())
-        response = self.clients['student-affiliated'].get(reverse('review-complete') + "?page=2")
+        response = self.get('student-affiliated', reverse('review-complete') + "?page=2")
         self.assertEqual(response.status_code, 200)
 
     def test_instructor_view(self):
-        self.assertInContext(self.clients['super'], params="?session=AM")
-        self.assertNotInContext(self.clients['super'], params="?session=PM")
+        self.assertInContext('super', params="?session=AM")
+        self.assertNotInContext('super', params="?session=PM")
 
     def test_bad_session(self):
-        response = self.clients['super'].get(reverse('review-complete'), {'session': "BAD"})
+        response = self.get('super', reverse('review-complete'), {'session': "BAD"})
         self.assertIn("errors/404.html", response.template_name)
 
 
-class BaseReviewAction(TestCase):
-    url_name = ''
-    start_reviewer = True
-    start_review = True
+class BaseReviewAction(OldBaseCase):
+    test_users = OldBaseCase.USER_STUDENT_REVIEWER
     start_status = Review.Status.OPEN
 
-    schoology_id = "12.34.56"
-
-    def setUpUsers(self):
-        self.reviewer = User.objects.create_user('reviewer', is_reviewer=True)
-        self.student = User.objects.create_user('student')
-        self.reviewer_client = Client()
-        self.student_client = Client()
-        self.reviewer_client.force_login(self.reviewer)
-        self.student_client.force_login(self.student)
-        self.super = User.objects.create_superuser('admin')
-        self.super_client = Client()
-        self.super_client.force_login(self.super)
-
-    def setUpRubric(self):
-        self.super_client.post(reverse('rubric-create'), {'name': "Test Rubric", 'rubric': test_json})
-        self.rubric = Rubric.objects.get(name="Test Rubric")
-
     def setUp(self) -> None:
-        self.setUpUsers()
-        self.setUpRubric()
-        if self.start_review:
-            self.review = Review.objects.create(schoology_id=self.schoology_id, student=self.student,
-                                                rubric=self.rubric)
-            if self.start_reviewer:
-                self.review.reviewer = self.reviewer
-            self.review.status = self.start_status
-            self.review.save()
-            self.url = reverse(f'review-{self.url_name}', kwargs={'pk': self.review.id})
-        else:
-            self.url = reverse(f'review-{self.url_name}')
+        super(BaseReviewAction, self).setUp()
+        if self.test_review:
+            self.set_test_review_status(self.start_status)
+            self.refresh_test_review()
 
 
 class ReviewCreateTest(BaseReviewAction):
-    url_name = 'create'
-    start_review = False
-    start_reviewer = False
+    test_review = False
 
     def test_create(self) -> None:
-        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
+        self.post('student', reverse('review-create'), {'schoology_id': '12.34.56', "rubric": str(self.rubric.id)})
         try:
-            self.review = Review.objects.get(schoology_id=self.schoology_id)
+            self.review = Review.objects.get(schoology_id='12.34.56')
         except Review.DoesNotExist:
             self.fail("Review Not Created Successfully")
 
     def test_limit(self) -> None:
-        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
-        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
-        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
-        self.student_client.post(self.url, {'schoology_id': self.schoology_id, "rubric": str(self.rubric.id)})
-        self.assertEqual(Review.objects.filter(student=self.student, status=Review.Status.OPEN).count(), 2)
+        url = reverse('review-create')
+        for x in range(4):
+            self.post('student', url, {'schoology_id': "12.34.56", 'rubric': str(self.rubric.id)})
+        self.assertEqual(Review.objects.filter(student=self.users['student'], status=Review.Status.OPEN).count(), 2)
 
 
-class ReviewSchoologyIDValidationTest(BaseReviewAction):
-    url_name = 'create'
-    start_review = False
-    start_reviewer = False
+class ReviewSchoologyIDValidationTest(OldBaseCase):
+    test_users = SimpleBaseCase.USER_SINGLE_STUDENT
+    test_review = False
 
     def assertBad(self, test_id):
-        form = ReviewForm({'schoology_id': test_id, 'rubric': str(self.rubric.id)}, user=self.student)
+        form = ReviewForm({'schoology_id': test_id, 'rubric': str(self.rubric.id)}, user=self.users['test-user'])
         self.assertFalse(form.is_valid())
 
     def test_too_short(self):
@@ -295,87 +224,87 @@ class ReviewSchoologyIDValidationTest(BaseReviewAction):
 
 
 class ReviewCancelUnclaimedTest(BaseReviewAction):
-    url_name = 'cancel'
-    start_review = True
-    start_reviewer = False
+    test_review = True
+
+    test_review_student = 'student'
+    test_review_reviewer = None
 
     def test_cancel(self) -> None:
-        self.student_client.post(self.url)
-        self.assertTrue(Review.objects.filter(schoology_id=self.schoology_id).count() == 0)
+        self.post_test_review('student', 'review-cancel')
+        self.assertTrue(Review.objects.filter(id=self.review.id).count() == 0)
 
 
 class ReviewCancelClaimedTest(ReviewCancelUnclaimedTest):
-    start_reviewer = True
     start_status = Review.Status.ASSIGNED
 
 
 class ReviewEditUnclaimedTest(BaseReviewAction):
-    url_name = 'edit'
-    start_review = True
-    start_reviewer = False
+    test_review = True
+
+    test_review_student = 'student'
+    test_review_reviewer = None
 
     def test_edit(self) -> None:
-        self.student_client.post(self.url, {'schoology_id': "12.34.78", "rubric": self.rubric.id})
+        self.post_test_review('student', 'review-edit', {'schoology_id': "12.34.78", "rubric": self.rubric.id})
         self.assertTrue(Review.objects.filter(schoology_id="12.34.78").count() > 0)
 
 
 class ReviewEditClaimedTest(ReviewEditUnclaimedTest):
-    start_reviewer = True
     start_status = Review.Status.ASSIGNED
+    test_review_reviewer = 'reviewer'
 
 
 class ReviewClaimTest(BaseReviewAction):
-    url_name = 'claim'
-    start_review = True
-    start_reviewer = False
+    test_review = True
+
+    test_review_student = 'student'
+    test_review_reviewer = None
 
     def test_claim(self) -> None:
-        self.reviewer_client.post(self.url)
-        new_review = Review.objects.get(schoology_id=self.schoology_id)
-        self.assertEqual(Review.Status.ASSIGNED, new_review.status)
-        self.assertEqual(self.reviewer, new_review.reviewer)
+        self.post_test_review('reviewer', 'review-claim')
+        self.refresh_test_review()
+        self.assertEqual(Review.Status.ASSIGNED, self.review.status)
+        self.assertEqual(self.users['reviewer'], self.review.reviewer)
 
     def test_claim_different_session(self) -> None:
-        self.reviewer.session = User.Session.PM
-        self.reviewer.save()
-        response = self.reviewer_client.post(self.url)
+        self.set_user_session('reviewer', User.Session.PM)
+        response = self.post_test_review('reviewer', 'review-claim')
         self.assertEqual(response.templates[0].name, 'errors/404.html')
 
     def test_limit(self) -> None:
-        self.student2 = User.objects.create_user('student2')
-        self.student2_client = Client()
-        self.student2_client.force_login(self.student2)
+        self.make_arb_user('student-2', "test-password")
         for x in range(3):
-            target_client = self.student_client if x < 1 else self.student2_client
-            target_client.post(reverse('review-create'), {'schoology_id': f"12.34.0{x}", "rubric": self.rubric.id})
+            target_user = 'student' if x < 1 else 'student-2'
+            self.post(target_user, reverse('review-create'), {'schoology_id': f"12.34.0{x}", "rubric": self.rubric.id})
             review = Review.objects.get(schoology_id=f"12.34.0{x}")
-            self.reviewer_client.post(reverse('review-claim', kwargs={'pk': review.id}))
-        self.assertEqual(Review.objects.filter(reviewer=self.reviewer, status=Review.Status.ASSIGNED).count(), 2)
+            self.post_review('reviewer', 'review-claim', review.id)
+        self.assertEqual(Review.objects.filter(reviewer=self.users['reviewer'], status=Review.Status.ASSIGNED).count(),
+                         2)
 
 
 class ReviewAbandonTest(BaseReviewAction):
-    url_name = 'abandon'
-    start_review = True
-    start_reviewer = True
+    test_review = True
+    test_review_student = 'student'
+    test_review_reviewer = 'reviewer'
     start_status = Review.Status.ASSIGNED
 
     def test_abandon(self) -> None:
-        self.reviewer_client.post(self.url)
-        new_review = Review.objects.get(schoology_id=self.schoology_id)
-        self.assertEqual(Review.Status.OPEN, new_review.status)
-        self.assertIsNone(new_review.reviewer)
+        self.post_test_review('reviewer', 'review-abandon')
+        self.refresh_test_review()
+        self.assertEqual(Review.Status.OPEN, self.review.status)
+        self.assertIsNone(self.review.reviewer)
 
 
 class ReviewGradeTest(BaseReviewAction):
-    url_name = 'grade'
-    start_review = True
-    start_reviewer = True
+    test_review = True
+    test_review_student = 'student'
+    test_review_reviewer = 'reviewer'
     start_status = Review.Status.ASSIGNED
 
     def assertScoresEqual(self, source_str, target_str):
-        self.reviewer_client.post(self.url, {'scores': source_str, "additional_comments": ""})
-        new_review = Review.objects.get(schoology_id=self.schoology_id)
-        self.assertEqual(new_review.score_fraction(), target_str)
+        self.post_test_review('reviewer', 'review-grade', {'scores': source_str, "additional_comments": ""})
+        self.refresh_test_review()
+        self.assertEqual(self.review.score_fraction(), target_str)
 
     def assertBad(self, src_str):
         form = GradeReviewForm({'scores': src_str, "additional_comments": ""}, instance=self.review)
@@ -404,16 +333,18 @@ class ReviewGradeTest(BaseReviewAction):
 
 
 class UpdateReviewScoreOnRubricEditTest(BaseCase):
+    test_users = BaseCase.USER_STUDENT_REVIEWER
+
+    test_review_student = 'student'
+    test_review_reviewer = 'reviewer'
 
     def setUp(self) -> None:
         super(UpdateReviewScoreOnRubricEditTest, self).setUp()
-        self.review.status = Review.Status.ASSIGNED
-        self.review.save()
-        self.clients['reviewer-affiliated'].post(reverse('review-grade', kwargs={'pk': self.review.id}),
-                                                 {'scores': "[10,2]"})
+        self.set_test_review_status(Review.Status.ASSIGNED)
+        self.post_test_review('reviewer', 'review-grade', {'scores': '[10,2]'})
 
     def test_new_rows(self) -> None:
-        new_obj = JSONDecoder().decode(test_json)
+        new_obj = JSONDecoder().decode(self.get_test_rubric_json())
         new_obj.append({
             'name': "New Row",
             'description': "New Row 3",
@@ -428,13 +359,13 @@ class UpdateReviewScoreOnRubricEditTest(BaseCase):
                 }
             ]
         })
-        self.clients['super'].post(reverse('rubric-edit', kwargs={'pk': self.rubric.id}),
-                                   {'name': "Edited Rubric", 'rubric': JSONEncoder().encode(new_obj)})
+        self.post('super', reverse('rubric-edit', kwargs={'pk': self.rubric.id}),
+                  {'name': "Edited Rubric", 'rubric': JSONEncoder().encode(new_obj)})
         self.assertEqual(ScoredRow.objects.filter(parent_review__id=self.review.id).count(), 3)
         self.assertEqual(ScoredRow.objects.get(parent_review=self.review, source_row__index=2).score, -1)
 
     def test_delete_row(self):
-        new_obj: list = JSONDecoder().decode(test_json)
+        new_obj: list = JSONDecoder().decode(self.get_test_rubric_json())
         new_obj.pop(1)
         self.clients['super'].post(reverse('rubric-edit', kwargs={'pk': self.rubric.id}),
                                    {'name': "Edited Rubric", 'rubric': JSONEncoder().encode(new_obj)})

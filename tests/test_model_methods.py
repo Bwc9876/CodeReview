@@ -1,14 +1,11 @@
 from uuid import UUID
 
-from django.test import TestCase, Client
-from django.urls import reverse
+from django.test import TestCase
 
 from Instructor.models import Rubric
 from Main.models import val_uuid, Review
 from Users.models import User
-
-with open("tests/test_rubric.json", 'r') as file:
-    test_json = file.read()
+from tests.testing_base import BaseCase
 
 
 class UserMethodsTest(TestCase):
@@ -24,13 +21,10 @@ class UserMethodsTest(TestCase):
         self.assertEqual(str(test_user), "Test User")
 
 
-class RubricMethodsTest(TestCase):
+class RubricMethodsTest(BaseCase):
+    test_review = False
 
     def test_rubric_str(self):
-        admin = User.objects.create_superuser(username="admin")
-        c = Client()
-        c.force_login(admin)
-        c.post(reverse('rubric-create'), {'name': "Test Rubric", "rubric": test_json})
         self.assertEqual("Test Rubric", str(Rubric.objects.get(name="Test Rubric")))
 
 
@@ -49,42 +43,25 @@ class BaseModelMethodTest(TestCase):
         self.assertEqual(Review.max_length('schoology_id'), 10)
 
 
-class ReviewMethodTest(TestCase):
+class ReviewMethodTest(BaseCase):
+    test_users = BaseCase.USER_STUDENT_REVIEWER
 
-    def create_user_matrix(self) -> None:
-        users = {
-            'reviewer': User.objects.create_user("reviewer-affiliated", is_reviewer=True),
-            'student': User.objects.create_user("student-affiliated", first_name="Test", last_name="Student"),
-            'super': User.objects.create_superuser("test-instructor"),
-        }
-        self.users = users
-
-    def create_client_matrix(self) -> None:
-        clients = {}
-        for key in self.users.keys():
-            val = self.users.get(key)
-            new_client = Client()
-            new_client.force_login(val)
-            clients[key] = new_client
-        self.clients = clients
+    test_review_student = 'student'
+    test_review_reviewer = 'reviewer'
 
     def setUp(self) -> None:
-        self.create_user_matrix()
-        self.create_client_matrix()
-        self.clients['super'].post(reverse("rubric-create"), {'name': "Test Review Rubric", 'rubric': test_json})
-        self.rubric = Rubric.objects.get(name="Test Review Rubric")
-        self.review = Review.objects.create(rubric=self.rubric, schoology_id="03.04.05",
-                                            student=self.users['student'],
-                                            reviewer=self.users['reviewer'], status=Review.Status.ASSIGNED)
-        self.clients['reviewer'].post(reverse('review-grade', kwargs={'pk': self.review.id}), {'scores': "[5,2]"})
+        super(ReviewMethodTest, self).setUp()
+        self.set_test_review_status(Review.Status.ASSIGNED)
+        self.post_test_review('reviewer', 'review-grade', {'scores': "[5,2]"})
+        self.review = Review.objects.get(id=self.review.id)
+        self.set_user_full_name('student', "Test", "Student")
 
     def test_score_fraction(self):
-        self.assertEqual(Review.objects.get(id=self.review.id).score_fraction(), "7.0/12.0")
+        self.assertEqual(self.review.score_fraction(), "7.0/12.0")
 
     def test_score_fraction_not_complete(self):
-        self.review.status = Review.Status.ASSIGNED
-        self.review.save()
-        self.assertIsNone(Review.objects.get(id=self.review.id).score_fraction())
+        self.set_test_review_status(Review.Status.ASSIGNED)
+        self.assertIsNone(self.review.score_fraction())
 
     def test_str(self):
         self.assertEqual(str(self.review), "Review from Test Student")

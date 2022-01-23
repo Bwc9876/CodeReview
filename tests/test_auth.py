@@ -1,29 +1,29 @@
 from uuid import uuid4
 
-from django.contrib.messages import get_messages
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from django.urls import reverse
 
 from Users.ldap_mock import LDAPMockAuthentication
 from Users.models import User
+from tests.testing_base import SimpleBaseCase
 
 
-class LogoutTest(TestCase):
+class LogoutTest(SimpleBaseCase):
+    test_users = SimpleBaseCase.USER_SINGLE_STUDENT
 
     def test_logout(self):
-        test_user = User.objects.create_user(username="test-user")
-        self.client.force_login(test_user)
-        self.client.get(reverse('logout'))
-        response = self.client.get(reverse('home'))
+        self.get("test-user", reverse('logout'))
+        response = self.get("test-user", reverse('home'))
         self.assertRedirects(response, f"{reverse('login')}?next=%2F")
 
 
 @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
                    LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="0.0.0.0")
-class LDAPAuthTest(TestCase):
+class LDAPAuthTest(SimpleBaseCase):
     url = reverse('login')
 
     def setUp(self) -> None:
+        super(LDAPAuthTest, self).setUp()
         LDAPMockAuthentication.users = {
             'admin': {
                 'password': "admin_password123",
@@ -118,8 +118,7 @@ class LDAPAuthTest(TestCase):
     @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'])
     def test_cant_connect(self) -> None:
         response = self.client.post(self.url, {'username': "admin", 'password': "admin_password123"})
-        self.assertIn("There was an error contacting the auth server, please try again later.",
-                      [m.message for m in response.context.get('messages', [])])
+        self.assertMessage(response, "There was an error contacting the auth server, please try again later.")
 
     def tearDown(self) -> None:
         LDAPMockAuthentication.users = []
@@ -127,11 +126,8 @@ class LDAPAuthTest(TestCase):
 
 @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
                    LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="0.0.0.0")
-class UserCleanupTest(TestCase):
+class UserCleanupTest(SimpleBaseCase):
     url = reverse('user-cleanup')
-
-    def assertMessage(self, response, message):
-        self.assertIn(message, [m.message for m in get_messages(response.wsgi_request)])
 
     def setUp(self) -> None:
         LDAPMockAuthentication.users = {
