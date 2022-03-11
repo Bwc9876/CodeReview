@@ -1,7 +1,11 @@
+# Issues
+
+Ask for assignment before you begin working on an issue
+
 # Cloning
-To get started with development, clone the repo:
+To get started with development, fork and clone the repo:
 ```shell
-$ git clone https://github.com/Bwc9876/CodeReview
+$ git clone https://github.com/YourUser/CodeReview
 ```
 Then, create a venv and install all requirements
 ```shell
@@ -27,7 +31,7 @@ We try our best to adhere to PEP:
 - Private Attributes use `_` or `__`
 
 # Testing
-To test change, run:
+To test your changes, run:
 ```shell
 $ python run_tests.py
 ```
@@ -46,6 +50,15 @@ $ coverage report
 ```
 To get a report of code coverage  
 **Code coverage should stay above 95%**
+
+# Pull Requests
+
+Submit a PR explaining your changes in detail. Changes will be checked for
+- Style
+- Functionality
+- Best Practices
+
+If your changes address an issue please use the `resolves` keyword to close it automatically
 
 # Actions
 
