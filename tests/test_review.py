@@ -322,7 +322,7 @@ class ReviewGradeTest(BaseReviewAction):
     def test_grade_none(self) -> None:
         self.assertBad("[]")
 
-    def test_grade_too_much(self) -> None:
+    def test_grade_too_many(self) -> None:
         self.assertBad("[1,1,1,1,1,1]")
 
     def test_grade_under_limit(self) -> None:
