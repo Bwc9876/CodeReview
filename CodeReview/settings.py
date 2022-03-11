@@ -184,7 +184,7 @@ STATIC_ROOT = os.getenv("STATIC_DIR", "collected-static")
 # This option defines which field to use automatically for PrimaryKeys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-if not DEBUG:
+if DEBUG is False:
     # If we're in production, all messages will go to a local file named "django_logs.txt"
     LOGGING = {
         'version': 1,
