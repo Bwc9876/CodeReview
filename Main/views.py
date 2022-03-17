@@ -555,7 +555,7 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self) -> QuerySet:
         """
             This function restricts what Reviews the user can view
-            If they're an admin, they cna view any completed reviews
+            If they're an admin, they can view any completed reviews
             If they're not an admin, they can only view reviews where they are the student or reviewer
 
             :returns: A QuerySet defining which Reviews the user can view:
