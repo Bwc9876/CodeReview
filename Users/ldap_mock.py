@@ -17,7 +17,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
     """
 
     @classmethod
-    def setup_server(cls):
+    def setup_server(cls) -> None:
         """
             This function constructs a fake server to connect to
         """
@@ -62,7 +62,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
         return user.get('ou')
 
     @classmethod
-    def create_fake_user(cls, conn: Connection, username: str, password: str, first: str, last: str, ou: str = None):
+    def create_fake_user(cls, conn: Connection, username: str, password: str, first: str, last: str, ou: str = None) -> None:
         """
             This function creates a fake user to use in testing
 
@@ -92,7 +92,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
         })
 
     @classmethod
-    def create_fake_users(cls, conn: Connection):
+    def create_fake_users(cls, conn: Connection) -> None:
         """
             This function creates a series of fake users from a predefined list
 

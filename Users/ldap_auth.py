@@ -27,7 +27,7 @@ class LDAPAuthentication(BaseBackend):
     server = None
 
     @classmethod
-    def setup_server(cls):
+    def setup_server(cls) -> None:
         """
             This function gets the server to authenticate with
         """
@@ -224,7 +224,7 @@ class LDAPAuthentication(BaseBackend):
         except User.DoesNotExist:
             return None
 
-    def delete_old_users(self, username: str, password: str):
+    def delete_old_users(self, username: str, password: str) -> None:
         """
             This function is used to delete any users that are no longer in the ActiveDirectory database.
 
