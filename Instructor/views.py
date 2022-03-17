@@ -87,7 +87,6 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
         :cvar template_name: The template to render and return to the user
         :cvar http_method_names: The HTTP methods to accept from the client
-        :cvar _schema: We use this dictionary to validate JSON a client has sent us
     """
 
     template_name = "user_list.html"
