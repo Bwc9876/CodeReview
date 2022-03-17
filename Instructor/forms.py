@@ -220,7 +220,7 @@ class RubricForm(ModelForm):
                 return "Please provide at least one row"
             return "Unknown Error"
 
-    def clean(self) -> dict:
+    def clean(self) -> dict[str, object]:
         """
             This function is run to validate the entered data in the form.
             It ensures that the JSON is valid. If it isn't valid, it explains the error
@@ -229,7 +229,7 @@ class RubricForm(ModelForm):
             :rtype: dict
         """
 
-        super().clean()
+        super(ModelForm, self).clean()
         raw_json: str = self.cleaned_data.get("rubric")
 
         if raw_json is not None:

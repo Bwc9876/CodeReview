@@ -6,8 +6,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import Q
-from django.http import Http404
+from django.db.models import Q, QuerySet
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView, TemplateView, CreateView, UpdateView, DeleteView
@@ -30,7 +30,7 @@ class UserClearView(LoginRequiredMixin, IsSuperUserMixin, View):
 
     http_method_names = ['post']
 
-    def post(self, request):
+    def post(self, request) -> HttpResponse:
         """
             This function is run when on a POST request.
             It clears out users that are not in the ActiveDirectory database.
@@ -63,7 +63,7 @@ class AdminHomeView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
     template_name = "admin_home.html"
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function defines additional context to pass to the template in `AdminHomeView.template_name`
 
@@ -87,14 +87,13 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
         :cvar template_name: The template to render and return to the user
         :cvar http_method_names: The HTTP methods to accept from the client
-        :cvar _schema: We use this dictionary to validate JSON a client has sent us
     """
 
     template_name = "user_list.html"
     http_method_names = ['get', 'post']
 
     @staticmethod
-    def get_queryset():
+    def get_queryset() -> QuerySet:
         """
             This defines what objects from the database to list.
             We don't want Instructors to be listed, so we exclude them
@@ -105,7 +104,7 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
         return User.objects.filter(is_superuser=False)
 
-    def post(self, *args, **kwargs):
+    def post(self, *args, **kwargs) -> HttpResponse:
         """
             This function defines back-end behaviour when the user uses the POST method.
             It updates sessions and reviewers based off user input.
@@ -123,7 +122,7 @@ class UserListView(LoginRequiredMixin, IsSuperUserMixin, TemplateView):
 
 
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function gives additional context to pass to the template
 
@@ -190,7 +189,7 @@ class RubricEditView(LoginRequiredMixin, IsSuperUserMixin, FormNameMixin, FormAl
     template_name = 'form_base.html'
     success_message = "Rubric Updated"
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """
             This function is run when the form is valid.
             This handles when an Instructor changes a Rubric that is used in a Review that has been graded.
@@ -223,7 +222,7 @@ class RubricDupeView(LoginRequiredMixin, IsSuperUserMixin, View):
 
     http_method_names = ['post']
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         """
             This method is run when the view receives a POST request
 
@@ -271,7 +270,7 @@ class RubricDeleteView(LoginRequiredMixin, IsSuperUserMixin, SuccessDeleteMixin,
     success_url = reverse_lazy('rubric-list')
     success_message = "Rubric Deleted"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function defines additional data that is passed to the template
 

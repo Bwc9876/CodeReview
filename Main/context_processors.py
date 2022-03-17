@@ -8,7 +8,7 @@ from django.http import HttpRequest
 from Users.models import User
 
 
-def base_context(request: HttpRequest) -> dict:
+def base_context(request: HttpRequest) -> dict[str, object]:
     """
         This context processor gives some basic info to templates.
         'debug' tells the template if we're debugging right now.

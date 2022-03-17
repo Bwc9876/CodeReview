@@ -42,7 +42,7 @@ class PartialInput(TextInput):
                 value = value[:len(''.join(self.suffixes)) * -1]
         return value
 
-    def get_context(self, name, value, attrs) -> dict:
+    def get_context(self, name, value, attrs) -> dict[str,  object]:
         """
             This function defines additional context to pass to the widget's template
 
@@ -71,7 +71,7 @@ class PartialField(CharField):
 
     is_admin = False
 
-    def clean(self, value):
+    def clean(self, value) -> str:
         """
             This function is run to convert the value to a string
             It adds the prefixes and suffixes to the value

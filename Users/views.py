@@ -32,7 +32,7 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
     success_message = "User Setup Complete"
     success_url = reverse_lazy('home')
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         """
             This function defines what users a user can edit the student ids of
             We only want a user to be able to edit their own ids
@@ -43,7 +43,7 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
 
         return User.objects.filter(id=self.request.user.id)
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function defines additional data to pass to the template
             It disables placeholders as they mess up input groups
@@ -71,7 +71,7 @@ class UserLoginView(FormAlertMixin, LoginView):
 
     success_message = None
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function defines additional context data to pass to the template
             It hides the back button and displays some help info

@@ -106,7 +106,7 @@ class Review(BaseModel):
 
         ordering = ['-date_completed', '-date_created']
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
             This function defines how the model will be cast to a string
 
@@ -116,7 +116,7 @@ class Review(BaseModel):
 
         return f"Review from {str(self.student)}"
 
-    def score_fraction(self):
+    def score_fraction(self) -> Optional[str]:
         """
             This function returns the score a student got as a fraction.
             It will only run if the Review is closed
@@ -133,7 +133,7 @@ class Review(BaseModel):
             return None
 
     @staticmethod
-    def get_status_from_string(status):
+    def get_status_from_string(status) -> str:
         """
             This function gets the label for a status based off it's key ("O" would become "Open")
 
