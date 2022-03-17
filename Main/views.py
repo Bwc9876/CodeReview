@@ -67,7 +67,7 @@ class IsSuperUserMixin(UserPassesTestMixin):
 
     request = None
 
-    def test_func(self):
+    def test_func(self) -> bool:
         """
             This is the function run to test the user
 
@@ -85,7 +85,7 @@ class IsReviewerMixin(UserPassesTestMixin):
 
     request = None
 
-    def test_func(self):
+    def test_func(self) -> bool:
         """
             This is the function run to test the user
 
@@ -105,7 +105,7 @@ class FormNameMixin(ContextMixin):
 
     form_name = "Form"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function is run to get additional context data to pass to the template
 
@@ -131,7 +131,7 @@ class FormAlertMixin(FormMixin):
     success_message: str = "Complete"
     failure_message: str = "The information you provided was incorrect, please correct the errors described below"
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """
             This function is run when the form is valid.
             It adds the success message to the messages framework
@@ -143,7 +143,7 @@ class FormAlertMixin(FormMixin):
             messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return super(FormAlertMixin, self).form_valid(form)
 
-    def form_invalid(self, form: Form):
+    def form_invalid(self, form: Form) -> HttpResponse:
         """
             This function is run when the form is invalid.
             It adds the failure message to the messages framework
@@ -169,7 +169,7 @@ class SuccessDeleteMixin(DeletionMixin):
     success_message: str = "Deleted"
     request = None
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """
             This function is run when the deletion has been confirmed by the user.
             It adds the success message to the messages framework.
@@ -191,7 +191,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
     template_name = "home.html"
 
-    def get(self, *args, **kwargs):
+    def get(self, *args, **kwargs) -> HttpResponse:
         """
             This function is run when the user makes a GET request.
             It redirects the user to the instructor homepage if they're an instructor.
@@ -205,7 +205,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
             else:
                 return super(HomeView, self).get(*args, **kwargs)
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function gives additional context data to the template.
             It gives a list of Reviews related to the user.
@@ -252,7 +252,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
     form_name = "Create a Review"
     success_message = "New Review Saved"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function defines additional context data to pass to the template
         """
@@ -261,7 +261,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
         context['render_no_floating'] = True
         return context
 
-    def get_form_kwargs(self):
+    def get_form_kwargs(self) -> dict[str, object]:
         """
             This function defines additional kwargs to pass to the form's constructor
             We give the user object so the Form can save the Review correctly
@@ -274,7 +274,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
         kwargs['user'] = self.request.user
         return kwargs
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """
             This function is run when the form has been submitted and is valid
             It sends an email to all Reviewers telling them about the new Review
@@ -309,7 +309,7 @@ class ReviewEditView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, UpdateVi
     form_name = "Edit Review"
     success_message = "Review Updated"
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         """
             This function defines which Reviews a user can edit
             It only lets you edit a review in which you are the student, and it's not graded
@@ -337,7 +337,7 @@ class ReviewCancelView(LoginRequiredMixin, SuccessDeleteMixin, DeleteView):
     model = models.Review
     success_message = "Review Cancelled"
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function provides additional context data to the template
 
@@ -349,7 +349,7 @@ class ReviewCancelView(LoginRequiredMixin, SuccessDeleteMixin, DeleteView):
         context['objectString'] = f"review with schoology id: {self.object.schoology_id}"
         return context
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySey:
         """
             This function defines what Reviews the user can cancel
             It limits it to the Reviews where the user is the student and Reviews that aren't closed
@@ -377,7 +377,7 @@ class ReviewDeleteView(LoginRequiredMixin, IsSuperUserMixin, SuccessDeleteMixin,
     model = models.Review
     success_message = "Review Deleted"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, object]:
         """
             This function provides additional context data to the template
 
@@ -400,7 +400,7 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
 
     http_method_names = ['post']
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         """
             This function defines what will happen on a POST request
 
@@ -508,7 +508,7 @@ class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, FormNameMixin, FormAl
     form_name = "Grade Review"
     success_message = "Review Graded"
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         """
             This function defines what Reviews can be graded
             It restricts it to Reviews that are assigned and reviews where the user is the reviewer
@@ -519,7 +519,7 @@ class ReviewGradeView(LoginRequiredMixin, IsReviewerMixin, FormNameMixin, FormAl
 
         return models.Review.objects.filter(reviewer=self.request.user, status=models.Review.Status.ASSIGNED)
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """
             This function is run if the form is valid
             It saves the date and time the Review was graded and sends an email to the instructor
@@ -551,7 +551,7 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
     model = models.Review
     context_object_name = 'review'
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         """
             This function restricts what Reviews the user can view
             If they're an admin, they cna view any completed reviews
@@ -562,7 +562,7 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
         """
 
         query = models.Review.objects.filter(status=models.Review.Status.CLOSED)
-        if not self.request.user.is_superuser:
+        if self.request.user.is_superuser is False:
             query = query.filter(Q(student=self.request.user) | Q(reviewer=self.request.user))
         return query
 
@@ -582,7 +582,7 @@ class ReviewCompleteListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     context_object_name = 'reviews'
 
-    def get_session(self):
+    def get_session(self) -> Optional[str]:
         """
             This function gets the session the instructor requested
 
@@ -596,7 +596,7 @@ class ReviewCompleteListView(LoginRequiredMixin, ListView):
         else:
             return None
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs) -> dict[str, object]:
         """
             This function provides additional context data to the template
 
@@ -610,7 +610,7 @@ class ReviewCompleteListView(LoginRequiredMixin, ListView):
             context['opposite_session'] = "PM" if self.get_session() == "AM" else "AM"
         return context
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         """
             This function limits which Reviews are listed
             If the user is an instructor, it shows all completed reviews
@@ -643,7 +643,7 @@ class BaseErrorView(TemplateView):
 
     http_method_names = ['get', 'post']
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         return render(request, self.template_name, self.get_context_data())
 
 
@@ -686,7 +686,7 @@ class Error(View):
 
     http_method_names = ['get', 'post']
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> HttpResponse:
         """
             This function is run when a GET request is received
             It gets the requested error page, defaulting to 404
@@ -698,7 +698,7 @@ class Error(View):
         else:
             return self.error_dict.get(error_type, Error404).as_view()(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         """
             This function is run when the view receives a POST request
             It returns an error page
@@ -713,7 +713,7 @@ error_404_handler = Error404.as_view()
 error_403_handler = Error403.as_view()
 
 
-def error_500_handler(request):
+def error_500_handler(request) -> HttpResponse:
     """
         This function is run in the event of a 500 error
     """

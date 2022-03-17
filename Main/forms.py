@@ -38,7 +38,7 @@ class GradeReviewWidget(TextInput):
         css = {'all': ('css/rubrics/rubric_table.css',)}
         js = ('js/rubrics/rubric-grade-widget.js',)
 
-    def get_context(self, name, value, attrs):
+    def get_context(self, name, value, attrs) -> dict[str, object]:
         """
             This function defines context to pass when rendering this widget
 
@@ -81,7 +81,7 @@ class ReviewForm(ModelForm):
         model = models.Review
         fields = ['schoology_id', 'rubric']
 
-    def clean(self):
+    def clean(self) -> None:
         """
             This function is run to validate form data.
             It ensures that a student can only  have two requested reviews at once.
@@ -106,7 +106,7 @@ class ReviewForm(ModelForm):
             else:
                 self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
 
-    def save(self, commit=True):
+    def save(self, commit=True) -> models.Review:
         """
             This function is run to save the new Review
             It sets the review's student to the user that submitted the form
@@ -181,7 +181,7 @@ class GradeReviewForm(ModelForm):
             'additional_comments': Textarea(attrs={"style": "height: 150px;"})
         }
 
-    def save(self, commit=True):
+    def save(self, commit=True) -> models.Review:
         """
             This function runs when the Form is saving
             It reads the scores from JSON and makes ScoredRow objects
@@ -206,7 +206,7 @@ class GradeReviewForm(ModelForm):
 
     field_order = ['scores', 'additional_comments']
 
-    def clean(self):
+    def clean(self) -> None:
         """
             This function is used to validate input data.
             It ensures the JSON submitted for scores is valid and readable.
@@ -224,5 +224,3 @@ class GradeReviewForm(ModelForm):
                 [self.add_error('scores', f"{error.message}") for error in errors]
             except JSONDecodeError:
                 self.add_error('scores', "Invalid JSON")
-
-        return self.cleaned_data
