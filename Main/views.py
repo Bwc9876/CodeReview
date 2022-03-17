@@ -349,7 +349,7 @@ class ReviewCancelView(LoginRequiredMixin, SuccessDeleteMixin, DeleteView):
         context['objectString'] = f"review with schoology id: {self.object.schoology_id}"
         return context
 
-    def get_queryset(self) -> QuerySey:
+    def get_queryset(self) -> QuerySet:
         """
             This function defines what Reviews the user can cancel
             It limits it to the Reviews where the user is the student and Reviews that aren't closed
