@@ -2,6 +2,8 @@
     This file defines the forms used in the Users app
 """
 
+from re import match
+
 from django.conf import settings
 from django.forms import ModelForm, TextInput, CharField, ValidationError
 
@@ -87,8 +89,7 @@ class PartialField(CharField):
             if len(value) < 3 or len(value) > 3:
                 raise ValidationError("Please enter 3 digits")
             try:
-                converted = int(value)
-                if converted < 100 or converted > 999:
+                if not match(r"\d{3}", value):
                     raise ValidationError("Must be between 100-999")
             except ValueError:
                 raise ValidationError("Must be a number")
