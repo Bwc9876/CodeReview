@@ -23,7 +23,9 @@ Django = "==4.0.3"
 
 [dev-packages]
 django-debug-toolbar = "*"
-coverage = "*"
+coverage = "==6.0.2"
+psycopg2 = "*"
+genbadge = { extras = ["coverage"], version = "*" }
 
 [requires]
 python_version = "3.10"

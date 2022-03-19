@@ -44,11 +44,7 @@ jobs:
       - name: Install dependecies
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
-          command: install
-      - name: Install Github-Specific Dependecies
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-            command: install psycopg2 coverage==6.0.2 genbadge[coverage]
+          command: sync --dev
       - name: Run tests
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
