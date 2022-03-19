@@ -2,8 +2,6 @@
     This file defines how urls map to views and other apps
 """
 
-import debug_toolbar
-
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
@@ -16,6 +14,8 @@ urlpatterns = [
 
 # If we're debugging, we add paths for django's admin system and the debug toolbar
 if settings.DEBUG:
+    import debug_toolbar
+
     urlpatterns.append(path('admin/', admin.site.urls))
     urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))
 
