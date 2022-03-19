@@ -86,7 +86,7 @@ class Review(BaseModel):
         CLOSED = 'C', "Completed"
 
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="student")
-    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviewer", null=True)
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviewer", null=True, blank=True)
     schoology_id = models.CharField(max_length=10, null=True,
                                     help_text="The ID of the schoology assignment that this review pertains to")
     status = models.CharField(choices=Status.choices, default=Status.OPEN, max_length=1)

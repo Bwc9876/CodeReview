@@ -8,10 +8,16 @@
 
 {% block body %}
     {% load email_tags %}
-    <p {% p_attrs %}>We're emailing to let you know that a review by {{ review.student }} has been completed
+    <p {% p_attrs %}>We're emailing to let you know that a review for schoology assignment {{ review.schoology_id }},
+        created by {{ review.student }}, has been completed
         by {{ review.reviewer }}.</p>
     {% separator %}
     <p {% p_attrs %}>Score: {{ review.score_fraction }}</p>
+    <ul>
+        {% for row in review.scoredrow_set.all %}
+            <li>{{ row.source_row.name }}: {{ row.score }}/{{ row.source_row.max_score }}</li>
+        {% endfor %}
+    </ul>
     <p {% p_attrs %}>Comments: {{ review.additional_comments|default:"No Additional Comments" }}</p>
     {% separator %}
     <p {% p_attrs %}>For more information, navigate to the Instructor section of the website and click the "view" link

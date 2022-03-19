@@ -25,18 +25,22 @@ SECRET_KEY = 'django-insecure-1&=3d#^^j*!8)r5y8tuh(t#rp6*(jwbx%90k-ir5c*2j4$s$o%
 ALLOWED_HOSTS = ['*'] if DEBUG else [os.getenv("PRODUCTION_HOST")]
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mailer',
-    'debug_toolbar',
     'Main',
     'Users',
     'Instructor',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += [
+        'django.contrib.admin',
+        'debug_toolbar'
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

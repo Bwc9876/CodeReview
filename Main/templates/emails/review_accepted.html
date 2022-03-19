@@ -8,7 +8,8 @@
 
 {% block body %}
     {% load email_tags %}
-    <p {% p_attrs %}>We're emailing to let you know that the review created by {{ review.student }} has been accepted
+    <p {% p_attrs %}>We're emailing to let you know that the review for schoology assignment {{ review.schoology_id }},
+        created by {{ review.student }}, has been accepted
         by {{ review.reviewer }}.</p>
     <p {% p_attrs %}>Once the review is complete, you can view
         it's grade in the Instructor section of the CodeReview website.</p>
