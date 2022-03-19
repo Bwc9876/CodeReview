@@ -78,25 +78,25 @@ class UserSetupTest(BaseCase):
 
     def test_student_length_check(self):
         response = self.post_setup('test-user', '1')
-        self.assertEmailError(response, "Please enter 3 digits")
+        self.assertEmailError(response, "Must be three digits")
         response = self.post_setup('test-user', '1111')
-        self.assertEmailError(response, "Please enter 3 digits")
+        self.assertEmailError(response, "Must be three digits")
 
     def test_less_100_but_still_0(self):
-        response = self.post_setup('test-user', '025')
+        self.post_setup('test-user', '025')
         self.assertEqual(User.objects.get(id=self.users['test-user'].id).email, f"johdoe025@{settings.EMAIL_DOMAIN}")
 
     def test_student_numeric_check(self):
         response = self.post_setup('test-user', 'abc')
-        self.assertEmailError(response, "Must be between 100-999")
+        self.assertEmailError(response, "Must be three digits")
 
     def test_student_decimal_check(self):
         response = self.post_setup('test-user', '1.1')
-        self.assertEmailError(response, "Must be between 100-999")
+        self.assertEmailError(response, "Must be three digits")
 
     def test_student_negative_check(self):
         response = self.post_setup('test-user', '-99')
-        self.assertEmailError(response, "Must be between 100-999")
+        self.assertEmailError(response, "Must be three digits")
 
 
 class TestErrors(TestCase):

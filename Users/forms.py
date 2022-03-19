@@ -2,7 +2,7 @@
     This file defines the forms used in the Users app
 """
 
-from re import match
+from re import fullmatch
 
 from django.conf import settings
 from django.forms import ModelForm, TextInput, CharField, ValidationError
@@ -44,7 +44,7 @@ class PartialInput(TextInput):
                 value = value[:len(''.join(self.suffixes)) * -1]
         return value
 
-    def get_context(self, name, value, attrs) -> dict[str,  object]:
+    def get_context(self, name, value, attrs) -> dict[str, object]:
         """
             This function defines additional context to pass to the widget's template
 
@@ -66,7 +66,7 @@ class PartialInput(TextInput):
 
 class PartialField(CharField):
     """
-        This field utilizes bootstrap's form groups to auto-fill parts of it.
+        This field utilizes bootstrap's form groups to autofill parts of it.
     """
 
     widget = PartialInput()
@@ -86,13 +86,8 @@ class PartialField(CharField):
 
         if self.is_admin is False:
             value = super(PartialField, self).clean(value)
-            if len(value) < 3 or len(value) > 3:
-                raise ValidationError("Please enter 3 digits")
-            try:
-                if not match(r"\d{3}", value):
-                    raise ValidationError("Must be between 100-999")
-            except ValueError:
-                raise ValidationError("Must be a number")
+            if not fullmatch(r"\d{3}", value):
+                raise ValidationError("Must be three digits")
         return f'{"".join(self.widget.prefixes)}{value}{"".join(self.widget.suffixes)}'
 
 
