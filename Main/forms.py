@@ -3,6 +3,7 @@
 """
 
 from json import JSONDecoder, JSONDecodeError
+from re import fullmatch
 from typing import List
 
 from django.db.models import Q
@@ -94,17 +95,8 @@ class ReviewForm(ModelForm):
 
         super(ReviewForm, self).clean()
         schoology_id = self.cleaned_data.get('schoology_id', None)
-        if schoology_id is not None:
-            if len(schoology_id) == 8:
-                for index, character in enumerate(schoology_id):
-                    if (index == 2 or index == 5) and character != '.':
-                        self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
-                        break
-                    elif (index != 2 and index != 5) and character not in '1234567890':
-                        self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
-                        break
-            else:
-                self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
+        if (schoology_id is not None) and not fullmatch(r"\d{2}\.\d{2}\.\d{2}", schoology_id):
+            self.add_error('schoology_id', self.SCHOOLOGY_ID_ERROR_MESSAGE)
 
     def save(self, commit=True) -> models.Review:
         """
@@ -220,7 +212,12 @@ class GradeReviewForm(ModelForm):
 
         if scores_json:
             try:
-                errors = sorted(self._json_validator.iter_errors(JSONDecoder().decode(scores_json)), key=str)
+                parsed = JSONDecoder().decode(scores_json)
+                errors = sorted(self._json_validator.iter_errors(parsed), key=str)
                 [self.add_error('scores', f"{error.message}") for error in errors]
+                if len(errors) == 0:
+                    for index, row in enumerate(self.rubric.rubricrow_set.all()):
+                        if row.rubriccell_set.filter(score=parsed[index]).exists() is False:
+                            self.add_error('scores', f"Invalid score: {parsed[index]} for row {index + 1}")
             except JSONDecodeError:
                 self.add_error('scores', "Invalid JSON")
