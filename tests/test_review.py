@@ -325,6 +325,15 @@ class ReviewGradeTest(BaseReviewAction):
     def test_grade_too_many(self) -> None:
         self.assertBad("[1,1,1,1,1,1]")
 
+    def test_grade_not_scores(self) -> None:
+        self.assertBad("[15, 2]")
+
+    def test_grade_in_range_but_not_valid(self) -> None:
+        self.assertBad("[4, 2]")
+
+    def test_grade_zeros(self) -> None:
+        self.assertBad("[0, 0]")
+
     def test_grade_under_limit(self) -> None:
         self.assertBad("[-50,2]")
 
