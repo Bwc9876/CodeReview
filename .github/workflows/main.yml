@@ -20,6 +20,11 @@ on:
       - "concept/**"
     branches: [ master ]
 
+env:
+  STAGE: GH_TEST
+  PIPENV_VENV_IN_PROJECT: enabled
+
+
 jobs:
   run_tests:
     name: Run Django Tests
@@ -43,7 +48,16 @@ jobs:
         with:
           python-version: 3.10.0
 
-      - name: Install dependecies
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        id: cache-dependencies
+        with:
+          path: ./.venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv
+
+      - name: Install Dependecies
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
           command: sync --dev
@@ -52,8 +66,6 @@ jobs:
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
           command: run coverage run
-        env:
-          STAGE: GH_TEST
 
       - name: Generate XML
         uses: VaultVulp/action-pipenv@v2.0.1
