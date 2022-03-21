@@ -1,17 +1,17 @@
 # Issues
 
-Ask for assignment before you begin working on an issue
+Ask for assignment **before** you begin working on an issue
 
 # Cloning
-To get started with development, fork and clone the repo:
+
+To get started with development, fork and clone the repo (you'll need [pipenv](https://pypi.org/project/pipenv/)):
 ```shell
 $ git clone https://github.com/YourUser/CodeReview
 ```
 Then, create a venv and install all requirements
 ```shell
-$ python -m venv venv
-$ ./venv/scripts/activate
-$ ./venv/scripts/pip install -r requirements.txt
+$ pipenv install --dev
+$ pipenv shell
 ```
 Now, start the development server
 ```shell
@@ -33,20 +33,16 @@ We try our best to adhere to PEP:
 # Testing
 To test your changes, run:
 ```shell
-$ python run_tests.py
+$ pipenv run python run_tests.py
 ```
 # Coverage
-To get testing coverage, install coverage:
+To get testing coverage, run:
 ```shell
-$ ./venv/scripts/pip install coverage
-```
-And then run:
-```shell
-$ coverage run
+$ pipenv run coverage run
 ```
 Once testing completes run:
 ```shell
-$ coverage report
+$ pipenv run coverage report
 ```
 To get a report of code coverage  
 **Code coverage should stay above 95%**
