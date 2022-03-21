@@ -53,6 +53,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+if DEBUG is False:
+    MIDDLEWARE.pop(3)
+
 ROOT_URLCONF = 'CodeReview.urls'
 
 TEMPLATES = [
