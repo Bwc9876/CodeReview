@@ -20,6 +20,7 @@ sqlparse = "==0.4.2"
 tzdata = "==2022.1"
 zipp = "==3.7.0"
 Django = "==4.0.3"
+wfastcgi = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
