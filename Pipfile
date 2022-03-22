@@ -24,7 +24,7 @@ wfastcgi = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
-coverage = "==6.0.2"
+coverage = "==6.3.2"
 psycopg2 = "*"
 genbadge = { extras = ["coverage"], version = "*" }
 
