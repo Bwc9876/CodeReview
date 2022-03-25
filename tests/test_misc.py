@@ -1,40 +1,10 @@
-import os
-
 from django.conf import settings
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
-from CodeReview.load_env import load_to_env, get_env
 from Main.views import error_500_handler
 from Users.models import User
 from tests.testing_base import BaseCase
-
-
-class EnvLoadTest(TestCase):
-
-    def setUp(self) -> None:
-        with open('env_test.ps1', 'w+') as file:
-            file.writelines([
-                '#This is a comment, it shouldn\'t load\n',
-                '$Env:TEST_VAR=\"Hello, World!\"\n',
-                '$Env:EQUAL=\"hi=hi\"\n'
-            ])
-
-    def test_get(self) -> None:
-        results = get_env('env_test.ps1')
-        self.assertDictEqual(results, {'TEST_VAR': "Hello, World!", 'EQUAL': "hi=hi"})
-
-    def test_load(self) -> None:
-        load_to_env('env_test.ps1')
-        self.assertEqual(os.getenv('TEST_VAR'), "Hello, World!")
-
-    def test_no_file(self) -> None:
-        results = get_env("not_a_file.ps1")
-        self.assertIsNone(results)
-
-    def tearDown(self) -> None:
-        if os.path.exists('env_test.ps1'):
-            os.remove('env_test.ps1')
 
 
 class UserSetupTest(BaseCase):
