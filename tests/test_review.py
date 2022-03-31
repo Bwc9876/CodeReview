@@ -317,7 +317,7 @@ class ReviewGradeTest(BaseReviewAction):
         self.assertBad("not json")
 
     def test_grade_non_numeric(self) -> None:
-        self.assertBad("[not,numeric]")
+        self.assertBad("[\"not\",\"numeric\"]")
 
     def test_grade_none(self) -> None:
         self.assertBad("[]")

@@ -52,7 +52,7 @@ class UserSetupTest(BaseCase):
         response = self.post_setup('test-user', '1111')
         self.assertEmailError(response, "Must be three digits")
 
-    def test_less_100_but_still_0(self):
+    def test_less_than_100_but_still_over_0(self):
         self.post_setup('test-user', '025')
         self.assertEqual(User.objects.get(id=self.users['test-user'].id).email, f"johdoe025@{settings.EMAIL_DOMAIN}")
 
