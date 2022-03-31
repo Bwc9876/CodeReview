@@ -17,6 +17,7 @@ following command:
 
 ```shell
 $ coverage run
+$ coverage report
 ```
 
 # Test Cases
@@ -43,7 +44,7 @@ in [ldap_test_server](ldap_test_server).
 
 #### test_admin_login
 
-Tests to see if an admin user (an instructor) can login.  
+Tests to see if an admin user (an instructor) can log in.  
 Expected result: The admin user is created in the database and the user is redirected to the main page.
 
 #### test_student_am_login
@@ -68,7 +69,7 @@ Expected result: The user is updated in the database.
 
 #### test_no_user
 
-Test to make sure if an invalid id is passed, no user is returned Expected result: No user is returned
+Test to make sure if an invalid id is passed, no user is returned. Expected result: No user is returned
 
 #### test_no_email
 
@@ -124,32 +125,32 @@ Test the email functionality.
 
 #### test_created
 
-Test to make sure an email is sent to reviewers when a code review is requested Expected result: An email is sent to the
-reviewers
+Test to make sure an email is sent to reviewers when a code review is requested. Expected result: An email is sent to
+the reviewers
 
 #### test_claimed
 
-Test to make sure an email is sent to instructors when a code review is claimed Expected result: An email is sent to the
-instructors
+Test to make sure an email is sent to instructors when a code review is claimed. Expected result: An email is sent to
+the instructors
 
 #### test_completed
 
-Test to make sure an email is sent to instructors when a code review is completed Expected result: An email is sent to
+Test to make sure an email is sent to instructors when a code review is completed. Expected result: An email is sent to
 the instructors
 
 #### test_session_checks
 
-Test to make sure an email is only sent to reviewers in the same session as the student Expected result: An email is
+Test to make sure an email is only sent to reviewers in the same session as the student. Expected result: An email is
 sent to the PM reviewers only
 
 #### test_not_self
 
-Test to make sure an email is not sent to the student when a code review is requested Expected result: An email is not
+Test to make sure an email is not sent to the student when a code review is requested. Expected result: An email is not
 sent to the student
 
 #### test_no_notification
 
-Test to make sure an email is not sent to anyone who has opted out of notifications Expected result: An email is not
+Test to make sure an email is not sent to anyone who has opted out of notifications. Expected result: An email is not
 sent to the user who has opted out of notifications
 
 ## [test_instructor.py](test_instructor.py)
@@ -256,7 +257,7 @@ Test to make sure the length of the id the student enters is checked. Expected r
 
 #### test_less_than_100_but_still_over_0
 
-Test to make if a user enters a number less than 100 but still over 0, it passes validation . Expected result: The user
+Test to make if a user enters a number less than 100 but still over 0, it passes validation. Expected result: The user
 is not given an error.
 
 #### test_student_numeric_check
@@ -394,22 +395,22 @@ the review can cancel it.
 
 #### test_delete
 
-Test to make sure only the instructor can delete reviews Expected result: only the instructor can delete reviews
+Test to make sure only the instructor can delete reviews. Expected result: only the instructor can delete reviews
 
 #### test_claim
 
-Test to make sure only reviewers in the same session can claim reviews Expected result: only reviewers in the same
+Test to make sure only reviewers in the same session can claim reviews. Expected result: only reviewers in the same
 session can claim reviews
 
 #### test_abandon
 
-Test to make sure only the reviewer that claimed the review can abandon it Expected result: only the reviewer that
+Test to make sure only the reviewer that claimed the review can abandon it. Expected result: only the reviewer that
 claimed the review can abandon it
 
 #### test_grade
 
-Test to make sure only the reviewer that claimed the review can grade it Expected result: only the reviewer that claimed
-the review can grade it
+Test to make sure only the reviewer that claimed the review can grade it. Expected result: only the reviewer that
+claimed the review can grade it
 
 #### test_view
 
@@ -422,20 +423,20 @@ Test the `HomeList` view.
 
 #### test_open
 
-Test to make sure open reviews are shown Expected result: open reviews are shown
+Test to make sure open reviews are shown. Expected result: open reviews are shown
 
 #### test_open_different_sessions
 
-Test to make sure open reviews aren't shown if they're in different sessions Expected result: open reviews aren't shown
+Test to make sure open reviews aren't shown if they're in different sessions. Expected result: open reviews aren't shown
 if they're in different sessions
 
 #### test_assigned
 
-Test to make sure assigned reviews are shown Expected result: assigned reviews are shown
+Test to make sure assigned reviews are shown. Expected result: assigned reviews are shown
 
 #### test_closed
 
-Test to make sure closed reviews are shown Expected result: closed reviews are shown
+Test to make sure closed reviews are shown. Expected result: closed reviews are shown
 
 ### CompleteListTest
 
@@ -443,16 +444,16 @@ Test the list of completed reviews.
 
 #### test_access
 
-Test to make sure only reviews in this session are shown Expected result: only reviews in this session are shown
+Test to make sure only reviews in this session are shown. Expected result: only reviews in this session are shown
 
 #### test_pagination
 
-Test to make sure pagination works on the completed reviews page Expected result: pagination works on the completed
+Test to make sure pagination works on the completed reviews page. Expected result: pagination works on the completed
 reviews page
 
 #### test_instructor_view
 
-Test to make sure the instructor can change sessions Expected result: the instructor can change sessions
+Test to make sure the instructor can change sessions. Expected result: the instructor can change sessions
 
 #### test_bad_session
 
@@ -513,7 +514,7 @@ Expected result: the review is cancelled
 
 ### ReviewCancelClaimedTest
 
-Test a student's ability to cancela review that has already been claimed.
+Test a student's ability to cancel a review that has already been claimed.
 
 #### test_cancel
 
@@ -559,7 +560,7 @@ Expected result: the user gets an error message
 
 ### ReviewAbandonTest
 
-Test a reiviewers ability to abandon reviews.
+Test a reviewer's ability to abandon reviews.
 
 #### test_abandon
 
@@ -568,7 +569,7 @@ Expected result: the review is abandon
 
 ### ReviewGradeTest
 
-Test a reviewers ability to grade reviews
+Test a reviewer's ability to grade reviews
 
 #### test_grade
 
@@ -616,8 +617,7 @@ Expected result: the user gets an error message
 
 #### test_no_instance
 
-Test to make sure passing no review to GradeReviewForm throws an error
-Expected result: `ValueError` is thrown
+Test to make sure passing no review to GradeReviewForm throws an error. Expected result: `ValueError` is thrown
 
 ### UpdateReviewScoreOnRubricEditTest
 
@@ -640,7 +640,7 @@ Test the rubric functionality
 
 ### RubricFormTest
 
-Test the create/edit rubric forms
+Test the creation/editing of rubric forms
 
 #### test_access
 
@@ -731,8 +731,8 @@ Expected result: the proper CSS classes are returned for the given action type
 
 #### test_get_alert_class
 
-Test to make sure the `test_get_alert_class` tag works.
-Exected result: The proper CSS class is returned for each given alert type
+Test to make sure the `test_get_alert_class` tag works. Expected result: The proper CSS class is returned for each given
+alert type
 
 #### test_get_icon_class
 
