@@ -74,8 +74,7 @@ class UserDesignationTest(BaseCase):
     test_rubric = False
 
     def make_reviewers_list(self, user_list):
-        ids = [str(self.users[user].id) for user in user_list]
-        return ids
+        return [str(self.users[user].id) for user in user_list]
 
     def post_list(self, reviewers=None, delete=None):
         if reviewers is None:
