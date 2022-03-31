@@ -456,5 +456,294 @@ Test to make sure the instructor can change sessions Expected result: the instru
 
 #### test_bad_session
 
-Test to make sure the instructor can't change sessions to a bad session Expected result: the instructor can't change
+Test to make sure the instructor can't change sessions to a bad session. Expected result: the instructor can't change
 sessions to a bad session
+
+### ReviewCreateTest
+
+Test the creating (requesting) reviews
+
+#### test_created
+
+Test to make sure students can request code reviews.
+Expected result: the student can request a code review
+
+#### test_limit
+
+Test to make sure the user can't create more than 2 reviews.
+Expected result: the user gets an error
+
+### ReviewSchoologyIDValidationTest
+
+Test the validation of the schoology id the user enters.
+
+#### test_too_short
+
+Test to make sure an id that is too short is not accepted.
+Expected result: the user gets an error
+
+#### test_too_long
+
+Test to make sure an id that is too long is not accepted.
+Expected result: the user gets an error
+
+#### test_no_dots
+
+Test to make sure an id without any dots (.) is not accepted.
+Expected result: the user gets an error
+
+#### test_not_number
+
+Test to make sure a schoology ID that has non-numeric components is not accepted.
+Expected result: the user gets an error
+
+#### test_negative
+
+Test to make sure if that a schoology id with a negative number in a component is not accepted.
+Expected result: the user gets an error
+
+### ReviewCancelUnclaimedTest
+
+Test a student's ability to cancel a review that hasn't been claimed.
+
+#### test_cancel
+
+Test to make sure the user can cancel the review.
+Expected result: the review is cancelled
+
+### ReviewCancelClaimedTest
+
+Test a student's ability to cancela review that has already been claimed.
+
+#### test_cancel
+
+Test to make sure the user can cancel the review.
+Expected result: the review is cancelled
+
+### ReviewEditUnclaimedTest
+
+Test a student's ability to edit an unclaimed review
+
+#### test_edit
+
+Test to make sure the student can edit a review.
+Expected result: The schoology id of the review is changed
+
+### ReviewEditClaimedTest
+
+Test a student's ability to edit a claimed review
+
+#### test_edit
+
+Test to make sure the student can edit a review.
+Expected result: The schoology id of the review is changed
+
+### ReviewClaimTest
+
+Test the ability for a reviewer to claim reviews.
+
+#### test_claim
+
+Test to make sure a reviewer can claim reviews.
+Expected result: The review is claimed by `reviewer`
+
+#### test_claim_different_session
+
+Test to make sure a reviewer cannot claim a review from a different session.
+Expected result: the user gets a 404 error
+
+#### test_limit
+
+Test to make sure a reviewer cannot claim more than 2 reviews.
+Expected result: the user gets an error message
+
+### ReviewAbandonTest
+
+Test a reiviewers ability to abandon reviews.
+
+#### test_abandon
+
+Test to make sure a reviewer can abandon reviews.
+Expected result: the review is abandon
+
+### ReviewGradeTest
+
+Test a reviewers ability to grade reviews
+
+#### test_grade
+
+Test to make sure a reviewer can grade reviews.
+Expected result: the review is graded with a score of 7/12
+
+#### test_grade_not_json
+
+Test to make sure a grade that is not JSON is denied.
+Expected result: the user gets an error message
+
+#### test_grade_non_numeric
+
+Test to make sure a grade that contains non-numeric elements is denied.
+Expected result: the user gets an error message
+
+#### test_grade_none
+
+Test to make sure a grade with no elements is denied.
+Expected result: the user gets an error message
+
+#### test_grade_too_many
+
+Test to make sure a grade that has more rows than the rubric is denied.
+Expected result: the user gets an error message
+
+#### test_grade_not_scores
+
+Test to make sure a grade that has scores that don't apply to the rubric is denied.
+Expected result: the user gets an error message
+
+#### test_grade_in_range_but_not_valid
+
+Edge case for previous test
+
+#### test_grade_zeroes
+
+Test to make sure a grade with just 0s is denied.
+Expected result: the user gets an error message
+
+#### test_grade_under_limit
+
+Test to make sure negative grades are denied.
+Expected result: the user gets an error message
+
+#### test_no_instance
+
+Test to make sure passing no review to GradeReviewForm throws an error
+Expected result: `ValueError` is thrown
+
+### UpdateReviewScoreOnRubricEditTest
+
+Test behaviour for when the instructor edits a rubric that an already graded review already uses.
+
+#### test_new_rows
+
+Test to make sure when new rows are added, reviews will have those rows marked as 0.
+Expected result: the review's score stays as 12/12
+
+#### test_delete_row
+
+Test to make sure when a row is deleted, reviews will have those scores removed.
+Expected result: the score goes down to 10/10
+
+
+## [test_rubric.py](test_rubric.py)
+
+Test the rubric functionality
+
+### RubricFormTest
+
+Test the create/edit rubric forms
+
+#### test_access
+
+Test to make sure students can't access the rubric form.
+Expected result: the user gets a 403 error
+
+#### test_form
+
+Test to make sure the instructor can create a rubric through the form.
+Expected result: a new rubric is created
+
+### RubricValidationTest
+
+All of these tests are self-explanatory, they just check to ensure rubric JSON is valid
+
+### RubricDeleteTest
+
+Test the ability for the instructor to delete rubrics
+
+#### test_delete
+
+Test to make sure a rubric can be deleted.
+Expected result: The rubric no longer exists
+
+#### test_get
+
+Test to make sure a prompt is shown to the user when trying to delete a review.
+Expected result: the user is shown a confirmation prompt
+
+### RubricEditTest
+
+Test the ability for an instructor to edit a rubric
+
+#### test_edit
+
+Test to make sure an instructor can edit a rubric.
+Expected result: The rubric has changed
+
+### RubricListTest
+
+Test the rubric list page
+
+#### test_access
+
+Test to make sure students can't access the rubric list page. Expected result: the student gets a 403 error
+
+#### test_list
+
+Test to make sure all rubrics are shown on the rubric list page.
+Expected result: the test rubric is shown on the list page
+
+### RubricDuplicateTest
+
+Test the instructor's ability to duplicate reviews
+
+#### test_dupe
+
+Test to make sure the rubric is duplicated.
+Expected result: the test rubric is duplicated
+
+#### test_invalid_id
+
+Test to make sure the user is given an error if they pass an ID that does not exist.
+Expected result: the user gets a 404 error
+
+#### test_name_long
+
+Test to make sure a rubric that has a very long name and is duplicated will have a shortened name.
+Expected result: A new rubric called "New Rubric" is created opposed to "Test Rubric Copy"
+
+## [test_tags.py](test_tags.py)
+
+Test template tags
+
+### CommonTagsTest
+
+Test common template tags
+
+#### test_make_spaces
+
+Test to make sure the `make_spaces` template tag works.
+Expected result: "_" and "-" are replaced with a space
+
+#### test_get_link_class
+
+Test to make sure the `test_get_link_class` tag works.
+Expected result: the proper CSS classes are returned for the given action type
+
+#### test_get_alert_class
+
+Test to make sure the `test_get_alert_class` tag works.
+Exected result: The proper CSS class is returned for each given alert type
+
+#### test_get_icon_class
+
+Test to make sure the `test_get_icon_class` tag works.
+Expected result: The proper CSS icon class is returned for each alert type
+
+### TestReviewTags
+
+Test tags specific to reviews
+
+#### test_session
+
+Test to make sure the `get_session` tag works on a given review.
+Expected result: "AM Session" and "PM Session" are returned properly
