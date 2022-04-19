@@ -21,7 +21,7 @@
     </div>
     <div class="row pb-3">
         <div class="col">
-            {% review_table am_active "schoology_id,student,status" %}
+            {% review_table am_active "schoology_id,student,status,view" %}
         </div>
         <div class="col">
             {% review_complete_preview_table am_completed "schoology_id,student,reviewer,view,delete" session="AM" %}
@@ -41,7 +41,7 @@
     </div>
     <div class="row">
         <div class="col">
-            {% review_table pm_active "schoology_id,student,status" %}
+            {% review_table pm_active "schoology_id,student,status,view" %}
         </div>
         <div class="col">
             {% review_complete_preview_table pm_completed "schoology_id,student,reviewer,view,delete" session="PM" %}

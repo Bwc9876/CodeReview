@@ -13,12 +13,12 @@
     <div class="row">
         <div class="col">
             <h2 class="user-select-none">Your Requested Reviews</h2>
-            {% review_table active "schoology_id,status,date_created,edit,cancel" %}
+            {% review_table active "schoology_id,status,date_created,view,edit,cancel" %}
         </div>
         {% if user.is_reviewer %}
             <div class="col">
                 <h2 class="user-select-none">Your Assigned Reviews</h2>
-                {% review_table assigned "schoology_id,student,grade,abandon" %}
+                {% review_table assigned "schoology_id,student,view,grade,abandon" %}
             </div>
         {% endif %}
     </div>
