@@ -562,7 +562,7 @@ class ReviewDetailView(LoginRequiredMixin, DetailView):
             :rtype: QuerySet
         """
 
-        query = models.Review.objects.filter(status=models.Review.Status.CLOSED)
+        query = models.Review.objects.all()
         if self.request.user.is_superuser is False:
             query = query.filter(Q(student=self.request.user) | Q(reviewer=self.request.user))
         return query

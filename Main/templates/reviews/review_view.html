@@ -34,21 +34,27 @@
         </div>
     </div>
     <div class="row mb-3">
-        <div class="col">
-            <h2>Reviewer: {{ review.reviewer }}</h2>
-        </div>
-        <div class="col text-end">
-            <h2>Completed On {{ review.date_completed|date }} at {{ review.date_completed|time }}</h2>
-        </div>
+        {% if review.status != "O" %}
+            <div class="col">
+                <h2>Reviewer: {{ review.reviewer }}</h2>
+            </div>
+        {% endif %}
+        {% if review.status == 'C' %}
+            <div class="col text-end">
+                <h2>Completed On {{ review.date_completed|date }} at {{ review.date_completed|time }}</h2>
+            </div>
+        {% endif %}
     </div>
-    <div class="row text-start">
-        <div class="col">
-            <h2>Grade: {{ review.score_fraction }}</h2>
+    {% if review.status == 'C' %}
+        <div class="row text-start">
+            <div class="col">
+                <h2>Grade: {{ review.score_fraction }}</h2>
+            </div>
         </div>
-    </div>
+    {% endif %}
     <div class="row">
         <div class="col">
-            <table class="table table-bordered rubric rubric-graded">
+            <table class="table table-bordered rubric {% if review.status == 'C' %}rubric-graded{% endif %}">
                 <tr>
                     <th>Criteria</th>
                     <th colspan="{{ review.rubric|colspan|add:1 }}">Score</th>
@@ -57,7 +63,7 @@
                     <tr>
                         <th>{{ row.name }} <br> {{ row.description }}</th>
                         {% for cell in row|cells %}
-                            <td class="cell {% if cell|is_score:review %}selected fw-bolder{% endif %}">{{ cell.score }}
+                            <td class="cell {% if review.status == 'C' and cell|is_score:review %}selected fw-bolder{% endif %}">{{ cell.score }}
                                 <br> {{ cell.description }}</td>
                         {% endfor %}
                     </tr>
@@ -65,11 +71,14 @@
             </table>
         </div>
     </div>
-    <div class="row">
-        <div class="col w-100">
-            <label for="additional_comments"> Additional Comments </label>
-            <textarea id="additional_comments" rows="10" style="resize: none !important;" class="form-control-plaintext"
-                      readonly>{{ review.additional_comments|default:"No comments" }}</textarea>
+    {% if review.status == 'C' %}
+        <div class="row">
+            <div class="col w-100">
+                <label for="additional_comments"> Additional Comments </label>
+                <textarea id="additional_comments" rows="10" style="resize: none !important;"
+                          class="form-control-plaintext"
+                          readonly>{{ review.additional_comments|default:"No comments" }}</textarea>
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

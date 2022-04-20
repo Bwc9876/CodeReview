@@ -31,7 +31,7 @@ class ReviewAccessTest(BaseCase):
         'claim': ("-nynn", "nnnnn", "nnnnn"),
         'abandon': ("nnnnn", "ynnnn", "nnnnn"),
         'grade': ("nnnnn", "ynnnn", "nnnnn"),
-        'view': ("nnnnn", "nnnnn", "yynny")
+        'view': ("-ynny", "yynny", "yynny")
     }
 
     def setUp(self) -> None:
