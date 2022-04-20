@@ -724,6 +724,14 @@ def error_500_handler(request) -> HttpResponse:
 
 # About
 
+class SecretView(TemplateView):
+    """
+        Shhhhhhh
+    """
+
+    template_name = "about/secret.html"
+
+
 class CopyrightView(TemplateView):
     """
         This view displays the services used to make the website
