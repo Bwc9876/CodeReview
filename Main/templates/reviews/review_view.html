@@ -54,7 +54,7 @@
     {% endif %}
     <div class="row">
         <div class="col">
-            <table class="table table-bordered rubric rubric-graded">
+            <table class="table table-bordered rubric {% if review.status == 'C' %}rubric-graded{% endif %}">
                 <tr>
                     <th>Criteria</th>
                     <th colspan="{{ review.rubric|colspan|add:1 }}">Score</th>
