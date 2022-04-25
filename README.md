@@ -23,5 +23,4 @@ review, the instructor will get a final email with the notes the senior has give
 
 ## Help
 
-For information on setting up and using the app, go to
-the [wiki](https://github.com/Bwc9876/menagerie/blob/master/CONTRIBUTING.md)
+For information on setting up and using the app, go to the [wiki](https://github.com/Bwc9876/CodeReview/wiki)
