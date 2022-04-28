@@ -734,8 +734,8 @@ class LeaderboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs) -> dict[str, object]:
         context = super().get_context_data(*args, **kwargs)
-        context['reviewees_dataset'] = User.objects.exclude(is_superuser=True, reviews_done_as_reviewee=0).order_by('-reviews_done_as_reviewee')
-        context['reviewers_dataset'] = User.objects.exclude(is_superuser=True, reviews_done_as_reviewer=0).order_by('-reviews_done_as_reviewer')
+        context['reviewees_dataset'] = User.objects.exclude(is_superuser=True).exclude(reviews_done_as_reviewee=0).order_by('-reviews_done_as_reviewee')
+        context['reviewers_dataset'] = User.objects.exclude(is_superuser=True).exclude(reviews_done_as_reviewer=0).order_by('-reviews_done_as_reviewer')
         return context
 
 
