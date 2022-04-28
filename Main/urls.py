@@ -17,6 +17,7 @@ urlpatterns = [
     path('review/grade/<uuid:pk>/', views.ReviewGradeView.as_view(), name="review-grade"),
     path('review/view/<uuid:pk>/', views.ReviewDetailView.as_view(), name="review-view"),
     path('review/completed/', views.ReviewCompleteListView.as_view(), name="review-complete"),
+    path('secret/', views.SecretView.as_view(), name='secret'),
     path('copyright/', views.CopyrightView.as_view(), name="copyright"),
     path('error/<int:type>/', views.Error.as_view(), name='error')
 ]
