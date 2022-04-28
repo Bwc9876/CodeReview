@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <table class="col-6">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Count</th>    
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in reviewees_dataset %}
+                <tr>
+                    <th scope="row">{{ student }}</th>
+                    <td>{{ student.reviews_completed_as_reviewee }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td>No Students!</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <table class="col-6">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Count</th>    
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in reviewees_dataset %}
+                <tr>
+                    <th scope="row">{{ student }}</th>
+                    <td>{{ student.reviews_completed_as_reviewee }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td>No Students!</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
