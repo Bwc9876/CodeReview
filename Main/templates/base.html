@@ -49,6 +49,7 @@
                 <a class="nav-link" href="{% url "home" %}">Home</a>
                 {% block nav %}
                     <a class="nav-link" href="{% url "review-create" %}">New Review</a>
+                    <a class="nav-link" href="{% url "leaderboard" %}">Leaderboard</a>
                 {% endblock %}
             </div>
             {% if user.is_authenticated %}
