@@ -730,6 +730,7 @@ def error_500_handler(request) -> HttpResponse:
 class LeaderboardView(LoginRequiredMixin, TemplateView):
 
     http_methods = ['get']
+    template_name = 'reviews/leaderboard.html'
 
     def get_context_data(self, *args, **kwargs) -> dict[str, object]:
         context = super().get_context_data(*args, **kwargs)
