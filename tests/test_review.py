@@ -312,6 +312,10 @@ class ReviewGradeTest(BaseReviewAction):
 
     def test_grade(self) -> None:
         self.assertScoresEqual("[5,2]", "7.0/12.0")
+        self.assertEqual(User.objects.get(pk=self.users['student'].id).reviews_done_as_reviewee, 1)
+        self.assertEqual(User.objects.get(pk=self.users['student'].id).reviews_done_as_reviewer, 0)
+        self.assertEqual(User.objects.get(pk=self.users['reviewer'].id).reviews_done_as_reviewer, 1)
+        self.assertEqual(User.objects.get(pk=self.users['reviewer'].id).reviews_done_as_reviewee, 0)
 
     def test_grade_not_json(self) -> None:
         self.assertBad("not json")
@@ -379,3 +383,23 @@ class UpdateReviewScoreOnRubricEditTest(BaseCase):
         self.clients['super'].post(reverse('rubric-edit', kwargs={'pk': self.rubric.id}),
                                    {'name': "Edited Rubric", 'rubric': JSONEncoder().encode(new_obj)})
         self.assertEqual(ScoredRow.objects.filter(parent_review__id=self.review.id).count(), 1)
+
+
+class LeaderBoardTest(BaseCase):
+    test_users = BaseCase.USER_STUDENT_REVIEWER
+
+    test_review_student = 'student'
+    test_review_reviewer = 'reviewer'
+
+    def setUp(self) -> None:
+        super(LeaderBoardTest, self).setUp()
+        self.set_test_review_status(Review.Status.ASSIGNED)
+        self.post_test_review(self.test_review_reviewer, 'review-grade', {'scores': "[10, 2]"})
+
+    def test_order_correct(self) -> None:
+        response = self.get('student', reverse('leaderboard'))
+        ctx = response.context
+        self.assertEqual(len(ctx['reviewers_dataset']), 1)
+        self.assertEqual(len(ctx['reviewees_dataset']), 2)
+        self.assertEqual(ctx['reviewees_dataset'][0].id, self.users['student'].id)
+        self.assertEqual(ctx['reviewers_dataset'][0].id, self.users['reviewer'].id)

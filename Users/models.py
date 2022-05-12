@@ -30,6 +30,8 @@ class User(AbstractUser):
     is_reviewer = models.BooleanField(default=False)
     receive_notifications = models.BooleanField(default=True,
                                                 help_text="Would you like to receive email notifications?")
+    reviews_done_as_reviewee = models.IntegerField(default=0)
+    reviews_done_as_reviewer = models.IntegerField(default=0)
 
     @staticmethod
     def session_from_str(session_code: str) -> str:

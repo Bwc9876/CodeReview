@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block pageHeader %}Leaderboard{% endblock %}
+
+{% block containerClass %}container{% endblock %}
+
+{% block mainContent %}
+    <div class="row">
+        <div class="col">
+            <h2 class="text-center">Reviews Completed As Reviewee</h2>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for student in reviewees_dataset %}
+                    <tr>
+                        <th scope="row">{{ student }}</th>
+                        <td>{{ student.reviews_done_as_reviewee }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td class="text-center" colspan="2">No Students!</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <h2 class="text-center">Reviews Completed As Reviewer</h2>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for student in reviewers_dataset %}
+                    <tr>
+                        <th scope="row">{{ student }}</th>
+                        <td>{{ student.reviews_done_as_reviewer }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td class="text-center" colspan="2">No Students!</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+

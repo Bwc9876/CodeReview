@@ -8,6 +8,7 @@ from . import views
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name="home"),
+    path('leaderboard/', views.LeaderboardView.as_view(), name='leaderboard'),
     path('review/create/', views.ReviewCreateView.as_view(), name="review-create"),
     path('review/edit/<uuid:pk>/', views.ReviewEditView.as_view(), name="review-edit"),
     path('review/cancel/<uuid:pk>/', views.ReviewCancelView.as_view(), name="review-cancel"),
