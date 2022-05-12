@@ -1,5 +1,6 @@
 media
 .replit
+replit.nix
 .env
 env.ps1
 venv

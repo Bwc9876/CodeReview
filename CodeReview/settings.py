@@ -23,6 +23,8 @@ SECRET_KEY = 'django-insecure-1&=3d#^^j*!8)r5y8tuh(t#rp6*(jwbx%90k-ir5c*2j4$s$o%
 # This option defines what url someone can type in to access this site. If we're debugging, it doesn't matter
 # But, in production we want to only let a specific url be used, so we load it from the environment
 ALLOWED_HOSTS = ['*'] if DEBUG else [os.getenv("PRODUCTION_HOST")]
+if os.getenv('CSRF_TRUSTED_ORIGINS', None) is not None:
+  CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", '').split(';')
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -189,7 +191,7 @@ if DEBUG is False:
         }
     }
 
-if STAGE == "Prod" and os.getenv("SECURITY", "NONE") == "SECURE":
+if os.getenv("SECURITY", "NONE") == "SECURE":
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_PRELOAD = True
