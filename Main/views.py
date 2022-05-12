@@ -725,17 +725,18 @@ def error_500_handler(request) -> HttpResponse:
 
     return Error500.as_view()(request)
 
+
 # Leaderboard
 
 class LeaderboardView(LoginRequiredMixin, TemplateView):
-
     http_methods = ['get']
     template_name = 'reviews/leaderboard.html'
 
     def get_context_data(self, *args, **kwargs) -> dict[str, object]:
         context = super().get_context_data(*args, **kwargs)
-        context['reviewees_dataset'] = User.objects.exclude(is_superuser=True).exclude(reviews_done_as_reviewee=0).order_by('-reviews_done_as_reviewee')
-        context['reviewers_dataset'] = User.objects.exclude(is_superuser=True).exclude(reviews_done_as_reviewer=0).order_by('-reviews_done_as_reviewer')
+        context['reviewees_dataset'] = User.objects.exclude(is_superuser=True).order_by('-reviews_done_as_reviewee')
+        context['reviewers_dataset'] = User.objects.exclude(is_superuser=True).filter(is_reviewer=True).order_by(
+            '-reviews_done_as_reviewer')
         return context
 
 
