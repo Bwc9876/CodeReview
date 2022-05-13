@@ -25,7 +25,7 @@ python-dotenv = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
-coverage = "==6.3.2"
+coverage = "==6.3.3"
 psycopg2 = "*"
 genbadge = { extras = ["coverage"], version = "*" }
 
