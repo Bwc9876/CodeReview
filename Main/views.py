@@ -646,10 +646,19 @@ class BaseErrorView(TemplateView):
         It adds the ability to respond to POST requests so that errors still work on forms
     """
 
+    code = 404
+
     http_method_names = ['get', 'post']
 
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        response = super().get(request, *args, **kwargs)
+        response.status_code = self.code
+        return response
+
     def post(self, request, *args, **kwargs) -> HttpResponse:
-        return render(request, self.template_name, self.get_context_data())
+        response = render(request, self.template_name, self.get_context_data())
+        response.status_code = self.code
+        return response
 
 
 class Error404(BaseErrorView):
@@ -657,6 +666,7 @@ class Error404(BaseErrorView):
         This view is run in the case of a 404 error
     """
 
+    code = 404
     template_name = 'errors/404.html'
 
 
@@ -665,6 +675,7 @@ class Error403(BaseErrorView):
         This view is run in the case of a 403 error
     """
 
+    code = 403
     template_name = 'errors/403.html'
 
 
@@ -673,6 +684,7 @@ class Error500(BaseErrorView):
         This view is run in the case of a 500 error
     """
 
+    code = 500
     template_name = 'errors/500.html'
 
 
@@ -718,6 +730,11 @@ error_404_handler = Error404.as_view()
 error_403_handler = Error403.as_view()
 
 
+# noinspection PyUnusedLocal
+def csrf_failure_view(request, reason=''):
+    return Error403.as_view()(request)
+
+
 def error_500_handler(request) -> HttpResponse:
     """
         This function is run in the event of a 500 error
@@ -733,7 +750,7 @@ class LeaderboardView(LoginRequiredMixin, TemplateView):
     template_name = 'reviews/leaderboard.html'
 
     def get_context_data(self, *args, **kwargs) -> dict[str, object]:
-        context = super().get_context_data(*args, **kwargs)
+        context = super().get_context_data(**kwargs)
         context['reviewees_dataset'] = User.objects.exclude(is_superuser=True).order_by('-reviews_done_as_reviewee')
         context['reviewers_dataset'] = User.objects.exclude(is_superuser=True).filter(is_reviewer=True).order_by(
             '-reviews_done_as_reviewer')

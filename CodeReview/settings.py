@@ -57,6 +57,7 @@ MIDDLEWARE = [
 
 if DEBUG is False:
     MIDDLEWARE.pop(3)
+    CSRF_FAILURE_VIEW = 'Main.views.csrf_failure_view'
 
 ROOT_URLCONF = 'CodeReview.urls'
 
