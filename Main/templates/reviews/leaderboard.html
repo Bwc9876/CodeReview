@@ -18,7 +18,8 @@
                 <tbody>
                 {% for student in reviewees_dataset %}
                     <tr>
-                        <th scope="row">{{ student }}</th>
+                        <th scope="row">{% if forloop.first %}<i class="bi bi-trophy me-2"></i>{% endif %}{{ student }}
+                        </th>
                         <td>{{ student.reviews_done_as_reviewee }}</td>
                     </tr>
                 {% empty %}
@@ -41,7 +42,8 @@
                 <tbody>
                 {% for student in reviewers_dataset %}
                     <tr>
-                        <th scope="row">{{ student }}</th>
+                        <th scope="row">{% if forloop.first %}<i class="bi bi-trophy me-2"></i>{% endif %}{{ student }}
+                        </th>
                         <td>{{ student.reviews_done_as_reviewer }}</td>
                     </tr>
                 {% empty %}
