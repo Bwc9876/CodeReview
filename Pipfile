@@ -22,6 +22,7 @@ zipp = "==3.8.0"
 Django = "==4.0.4"
 wfastcgi = "*"
 python-dotenv = "*"
+django-o365mail = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"

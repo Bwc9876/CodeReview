@@ -143,7 +143,6 @@ LDAP_BASE_CONTEXT = os.getenv('LDAP_BASE_CONTEXT', None)
 
 if DEBUG:
     # If we're debugging, we never actually send any emails, we just save what they would be as text files
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = 'debug-emails'
     EMAIL_DOMAIN = "example.com"
     EMAIL_ADMIN_DOMAIN = "admin.example.com"
@@ -152,6 +151,10 @@ else:
     EMAIL_BACKEND = "mailer.backend.DbBackend"
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
+    MAILER_EMAIL_BACKEND = 'django_o365mail.EmailBackend'
+    O365_MAIL_CLIENT_ID = os.getenv('O365_CLIENT_ID', "")
+    O365_MAIL_CLIENT_SECRET = os.getenv("O365_CLIENT_SECRET", "")
+    O365_MAIL_TENANT_ID = os.getenv("O365_TENANT_ID", "")
     EMAIL_HOST = os.getenv("EMAIL_HOST", "")
     EMAIL_HOST_USER = os.getenv("EMAIL_USER", "")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS", "")
