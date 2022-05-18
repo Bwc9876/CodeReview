@@ -157,6 +157,7 @@ else:
     O365_MAIL_TENANT_ID = os.getenv("O365_TENANT_ID", "")
     EMAIL_HOST = os.getenv("EMAIL_HOST", "")
     EMAIL_HOST_USER = os.getenv("EMAIL_USER", "")
+    O365_MAIL_MAILBOX_KWARGS = {'resource': EMAIL_HOST_USER}
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS", "")
     EMAIL_DOMAIN = os.getenv("EMAIL_DOMAIN", "")
     EMAIL_ADMIN_DOMAIN = os.getenv("EMAIL_ADMIN_DOMAIN", "")
