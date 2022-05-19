@@ -20,3 +20,4 @@ debug-emails/
 .coverage
 poetry.lock
 pyproject.toml
+o365_token.txt
