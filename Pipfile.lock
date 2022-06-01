@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "52a34845050675f9c590410285ceb6a74f452dbeaffbc052301bfcf3a3693ff7"
+            "sha256": "2be915e179fed249e6ba9cdeb57131a2b203a2f50b50fe498c3a28d829450029"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -58,11 +58,11 @@
         },
         "django": {
             "hashes": [
-                "sha256:07c8638e7a7f548dc0acaaa7825d84b7bd42b10e8d22268b3d572946f1e9b687",
-                "sha256:4e8177858524417563cc0430f29ea249946d831eacb0068a1455686587df40b5"
+                "sha256:502ae42b6ab1b612c933fb50d5ff850facf858a4c212f76946ecd8ea5b3bf2d9",
+                "sha256:f7431a5de7277966f3785557c3928433347d998c1e6459324501378a291e5aab"
             ],
             "index": "pypi",
-            "version": "==4.0.4"
+            "version": "==4.0.5"
         },
         "django-mailer": {
             "hashes": [
@@ -136,11 +136,11 @@
         },
         "o365": {
             "hashes": [
-                "sha256:308c14169e44675a26a94b208718e527d121761e0b20e896a065846a14a994ad",
-                "sha256:6a51588004b90fedbe21d753fd7b70a9bca2a0601c9e7e40349e79e621cc703b"
+                "sha256:725238a0362343bd84c426ee5d282a862a603f62de454d01c5f9dfaf9cdf98f9",
+                "sha256:fdcc38c5fa3ee11f2d1774058881b2e8333f7df6eb81962693ead856f1233ba0"
             ],
             "markers": "python_version >= '3.4'",
-            "version": "==2.0.18.1"
+            "version": "==2.0.19"
         },
         "oauthlib": {
             "hashes": [
@@ -403,11 +403,11 @@
         },
         "django": {
             "hashes": [
-                "sha256:07c8638e7a7f548dc0acaaa7825d84b7bd42b10e8d22268b3d572946f1e9b687",
-                "sha256:4e8177858524417563cc0430f29ea249946d831eacb0068a1455686587df40b5"
+                "sha256:502ae42b6ab1b612c933fb50d5ff850facf858a4c212f76946ecd8ea5b3bf2d9",
+                "sha256:f7431a5de7277966f3785557c3928433347d998c1e6459324501378a291e5aab"
             ],
             "index": "pypi",
-            "version": "==4.0.4"
+            "version": "==4.0.5"
         },
         "django-debug-toolbar": {
             "hashes": [
