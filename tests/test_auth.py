@@ -56,7 +56,7 @@ class LDAPAuthTest(SimpleBaseCase):
         new_user = User.objects.get(username="example\\admin")
         self.assertEqual(new_user.first_name, "Bob")
         self.assertEqual(new_user.last_name, "Bobberson")
-        self.assertEqual(new_user.email, "admin@examples.com")
+        self.assertEqual(new_user.email, "admin@example.com")
         self.assertEqual(new_user.session, User.Session.AM)
         self.assertTrue(new_user.is_superuser)
 
@@ -65,7 +65,7 @@ class LDAPAuthTest(SimpleBaseCase):
         new_user = User.objects.get(username="example\\user_am")
         self.assertEqual(new_user.first_name, "AMBob")
         self.assertEqual(new_user.last_name, "AMBobberson")
-        self.assertEqual(new_user.email, "user_am@examples.com")
+        self.assertEqual(new_user.email, "user_am@example.com")
         self.assertEqual(new_user.session, User.Session.AM)
         self.assertFalse(new_user.is_superuser)
 
@@ -74,7 +74,7 @@ class LDAPAuthTest(SimpleBaseCase):
         new_user = User.objects.get(username="example\\user_pm")
         self.assertEqual(new_user.first_name, "PMBob")
         self.assertEqual(new_user.last_name, "PMBobberson")
-        self.assertEqual(new_user.email, "user_pm@examples.com")
+        self.assertEqual(new_user.email, "user_pm@example.com")
         self.assertEqual(new_user.session, User.Session.PM)
         self.assertFalse(new_user.is_superuser)
 
