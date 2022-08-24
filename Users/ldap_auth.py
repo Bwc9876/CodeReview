@@ -80,7 +80,7 @@ class LDAPAuthentication(BaseBackend):
             :rtype: str
         """
 
-        return value if str(value) != "[]" else ""
+        return str(value) if str(value) != "[]" else ""
 
     @staticmethod
     def get_session_from_ldap(ldap_user: Entry) -> str:
