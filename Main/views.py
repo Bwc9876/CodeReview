@@ -197,14 +197,11 @@ class HomeView(LoginRequiredMixin, TemplateView):
             This function is run when the user makes a GET request.
             It redirects the user to the instructor homepage if they're an instructor.
         """
-
-        if self.request.user.email is None or self.request.user.email == "":
-            return redirect('user-setup', pk=self.request.user.id)
+        
+        if self.request.user.is_superuser:
+            return redirect('instructor-home')
         else:
-            if self.request.user.is_superuser:
-                return redirect('instructor-home')
-            else:
-                return super(HomeView, self).get(*args, **kwargs)
+            return super(HomeView, self).get(*args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict[str, object]:
         """

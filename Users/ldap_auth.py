@@ -145,7 +145,8 @@ class LDAPAuthentication(BaseBackend):
         new_user = create_method(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
                                  first_name=self.ldap_empty(ldap_user.givenName),
                                  last_name=self.ldap_empty(ldap_user.sn),
-                                 session=self.get_session_from_ldap(ldap_user))
+                                 session=self.get_session_from_ldap(ldap_user),
+                                 email=self.ldap_empty(ldap_user.mail))
         new_user.set_unusable_password()
         new_user.save()
         return new_user
