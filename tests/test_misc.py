@@ -1,10 +1,20 @@
-from django.conf import settings
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
-from Main.views import error_500_handler
 from Users.models import User
 from tests.testing_base import BaseCase
+from Main.views import error_500_handler
+
+
+class TestSetup(BaseCase):
+
+    test_users = BaseCase.USER_STUDENT_REVIEWER
+    test_review = False
+
+    def test_setup(self):
+        response = self.clients["student"].post(reverse('user-setup', kwargs={'pk': self.users["student"].id}), {'session': "PM"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(User.objects.get(pk=self.users["student"].id).session, User.Session.PM)
 
 
 class TestErrors(TestCase):

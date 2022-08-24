@@ -30,22 +30,17 @@ class LDAPMockAuthentication(LDAPAuthentication):
     users = {}
 
     @classmethod
-    def construct_dn(cls, username: str, ou: str = None) -> str:
+    def construct_dn(cls, username: str) -> str:
         """
             This function constructs a distinguished name for a username
 
             :param username: The username of the user
             :type username: str
-            :param ou: The optional Organizational Unit to include the user in
-            :type ou: str
             :returns: The distinguished name of the user
             :rtype: str
         """
 
-        if ou:
-            return f'cn={username},ou={ou},{settings.LDAP_BASE_CONTEXT}'
-        else:
-            return f'cn={username},{settings.LDAP_BASE_CONTEXT}'
+        return f'cn={username},{settings.LDAP_BASE_CONTEXT}'
 
     @classmethod
     def extract_ou(cls, username: str) -> Optional[str]:
@@ -80,7 +75,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
             :type ou: str
         """
 
-        distinguished_name = cls.construct_dn(username, ou=ou)
+        distinguished_name = cls.construct_dn(username)
         conn.strategy.add_entry(distinguished_name, {
             'objectGUID': str(uuid4()),
             'objectClass': 'user',
@@ -121,7 +116,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
 
         cls.setup_server()
         username = username.split('\\')[1]
-        conn = Connection(cls.server, cls.construct_dn(username, ou=cls.extract_ou(username)), password,
+        conn = Connection(cls.server, cls.construct_dn(username), password,
                           client_strategy=MOCK_SYNC)
         cls.create_fake_users(conn)
         return cls.bind_connection(conn)

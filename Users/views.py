@@ -13,6 +13,47 @@ from .forms import FinishUserForm
 from .models import User
 
 
+class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, UpdateView):
+    """
+        This view is run when the user wishes to edit their student id
+        :cvar template_name: The template to render
+        :cvar form_name: The name to display in the pageHeader block
+        :cvar form_class: The class to use when rendering the form
+        :cvar model: The model we're editing
+        :cvar success_message: The message that's displayed when the edit is a success
+        :cvar success_url: The url to redirect to after the form is saved
+    """
+
+    template_name = "form_base.html"
+    form_name = "Complete User Setup"
+    form_class = FinishUserForm
+    model = User
+    success_message = "User Setup Complete"
+    success_url = reverse_lazy('home')
+
+    def get_queryset(self) -> QuerySet:
+        """
+            This function defines what users a user can edit the student ids of
+            We only want a user to be able to edit their own ids
+            :returns: The users the user is allowed to edit
+            :rtype: QuerySet
+        """
+
+        return User.objects.filter(id=self.request.user.id)
+
+    def get_context_data(self, **kwargs) -> dict[str, object]:
+        """
+            This function defines additional data to pass to the template
+            It disables placeholders as they mess up input groups
+            :returns: context data to pass to the template
+            :rtype: dict
+        """
+
+        context = super(CompleteUserSetupView, self).get_context_data(**kwargs)
+        context['render_no_floating'] = True
+        context['non_field_help_text'] = "Please enter your session below"
+        return context
+
 class UserLoginView(FormAlertMixin, LoginView):
     """
         This view is used by the user to log in

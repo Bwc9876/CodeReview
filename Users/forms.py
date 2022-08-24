@@ -109,31 +109,4 @@ class FinishUserForm(ModelForm):
         """
 
         model = User
-        fields = ['email', 'receive_notifications']
-        help_texts = {
-            'email': "The email you'd like notifications to be sent to (should be a BCTC email)"
-        }
-        labels = {
-            'email': "Email"
-        }
-        widgets = {
-            'email': PartialInput()
-        }
-        field_classes = {
-            'email': PartialField
-        }
-
-    def __init__(self, *args, **kwargs):
-        """
-            This function is used to instantiate a new form
-        """
-
-        super(FinishUserForm, self).__init__(*args, **kwargs)
-        if self.instance.is_superuser:
-            self.fields['email'].is_admin = True
-            self.fields['email'].widget.suffixes = (f'@{settings.EMAIL_ADMIN_DOMAIN}',)
-        else:
-            self.fields['email'].widget.prefixes = (self.instance.first_name[:3].lower(),
-                                                    self.instance.last_name[:3].lower())
-            self.fields['email'].widget.suffixes = (f'@{settings.EMAIL_DOMAIN}',)
-            self.fields['email'].help_text = "Enter the last 3 digits of your student id"
+        fields = ['session', 'receive_notifications']

@@ -19,6 +19,7 @@ from django.views.generic import TemplateView, CreateView, UpdateView, DeleteVie
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import FormMixin, DeletionMixin
 
+from CodeReview import settings
 from Users.models import User
 from . import models, forms
 
@@ -51,7 +52,7 @@ def send_email(subject_template: str, text_template: str, template_name: str, re
                                           reviewer=str(review.reviewer))
         message = mail.EmailMultiAlternatives(subject=f'{review.student.session} | {subject}', body=text_content)
         message.attach_alternative(html_content, "text/html")
-        message.to = [user.email]
+        message.to = [settings.LDAP_ADMIN_EMAIL if user.is_superuser else user.email]
         message.send()
 
 

@@ -140,12 +140,15 @@ LOGOUT_REDIRECT_URL = "/users/logout-done"
 LDAP_URL = os.getenv('LDAP_URL', "localhost")
 LDAP_DOMAIN = os.getenv('LDAP_DOMAIN', None)
 LDAP_BASE_CONTEXT = os.getenv('LDAP_BASE_CONTEXT', None)
+LDAP_ADMIN_NAME = os.getenv('LDAP_ADMIN_NAME', "&&%%^^$$##@@")
+LDAP_ADMIN_EMAIL = os.getenv('LDAP_ADMIN_EMAIL', None)
 
 if DEBUG:
     # If we're debugging, we never actually send any emails, we just save what they would be as text files
     EMAIL_FILE_PATH = 'debug-emails'
     EMAIL_DOMAIN = "example.com"
     EMAIL_ADMIN_DOMAIN = "admin.example.com"
+    LDAP_ADMIN_EMAIL = "admin@example.com"
 else:
     # If we're not debugging, we use django-mailer to send emails
     EMAIL_BACKEND = "mailer.backend.DbBackend"

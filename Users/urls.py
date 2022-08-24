@@ -8,6 +8,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('user-setup/<uuid:pk>', views.CompleteUserSetupView.as_view(), name="user-setup"),
     path('login', views.UserLoginView.as_view(), name="login"),
     path('logout', auth_views.LogoutView.as_view(), name="logout"),
     path('logout-done', views.LogoutDoneView.as_view(), name="logout-done")
