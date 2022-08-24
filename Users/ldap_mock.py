@@ -103,7 +103,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
 
         for username in cls.users.keys():
             user = cls.users.get(username)
-            cls.create_fake_user(conn, username, user['password'], f"{username}@example.com", user['first'], user['last'], user['ou'])
+            cls.create_fake_user(conn, username, f"{username}@example.com", user['password'], user['first'], user['last'], user['ou'])
 
     @classmethod
     def get_connection(cls, username: str, password: str) -> Connection:
