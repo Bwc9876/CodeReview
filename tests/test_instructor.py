@@ -29,7 +29,6 @@ class HomeViewTest(BaseCase):
     test_review_reviewer = 'reviewer'
 
     def test_redirect(self) -> None:
-        self.post('super', reverse('user-setup', kwargs={'pk': self.users['super'].id}), {'email': "admin"})
         response = self.clients['super'].get(reverse('home'))
         self.assertRedirects(response, reverse('instructor-home'))
 
