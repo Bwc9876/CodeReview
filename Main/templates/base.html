@@ -55,7 +55,6 @@
             {% if user.is_authenticated %}
                 <div class="navbar-nav">
                     <span class="navbar-text fw-bolder">Welcome, {{ user }}.&nbsp;</span>
-                    <a class="nav-link" href="{% url "user-setup" user.id %}">Edit Info</a>
                     <a class="nav-link" href="{% url "logout" %}">Logout</a>
                 </div>
             {% endif %}

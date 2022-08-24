@@ -62,7 +62,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
         return user.get('ou')
 
     @classmethod
-    def create_fake_user(cls, conn: Connection, username: str, password: str, first: str, last: str, ou: str = None) -> None:
+    def create_fake_user(cls, conn: Connection, username: str, email: str, password: str, first: str, last: str, ou: str = None) -> None:
         """
             This function creates a fake user to use in testing
 
@@ -84,6 +84,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
         conn.strategy.add_entry(distinguished_name, {
             'objectGUID': str(uuid4()),
             'objectClass': 'user',
+            'mail': email,
             'distinguishedName': distinguished_name,
             'msDs-principalName': f"{settings.LDAP_DOMAIN}\\{username}",
             'userPassword': password,
@@ -102,7 +103,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
 
         for username in cls.users.keys():
             user = cls.users.get(username)
-            cls.create_fake_user(conn, username, user['password'], user['first'], user['last'], user['ou'])
+            cls.create_fake_user(conn, username, f"{username}@example.com", user['password'], user['first'], user['last'], user['ou'])
 
     @classmethod
     def get_connection(cls, username: str, password: str) -> Connection:
