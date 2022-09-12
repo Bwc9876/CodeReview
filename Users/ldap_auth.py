@@ -12,7 +12,7 @@ from django.db.models import Q
 from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM, Entry
 from ldap3.core.exceptions import LDAPSocketOpenError
 
-from .ldap_errors import LDAPConnectionError, LDAPInvalidCredentials, LDAPAuthException
+from .ldap_errors import LDAPConnectionError, LDAPInvalidCredentials, LDAPNotInContextException, LDAPAuthException
 from .models import User
 
 
@@ -180,7 +180,10 @@ class LDAPAuthentication(BaseBackend):
 
         reader = self.get_all_users(conn)
         results = reader.match("msDS-PrincipalName", username)
-        return results[0]
+        if len(results) == 0:
+            raise LDAPNotInContextException()
+        else:
+            return results[0]
 
     def authenticate(self, request, username: str = None, password: str = None) -> Optional[User]:
         """
@@ -202,6 +205,9 @@ class LDAPAuthentication(BaseBackend):
             else:
                 return self.create_from_ldap(ldap_user, guid)
         except LDAPInvalidCredentials:
+            return None
+        except LDAPNotInContextException:
+            messages.add_message(request, messages.ERROR, "This user is not allowed to login to CodeReview, please contact your administrator.")
             return None
         except LDAPConnectionError:
             if settings.DEBUG is False:
