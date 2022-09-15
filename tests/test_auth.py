@@ -18,7 +18,7 @@ class LogoutTest(SimpleBaseCase):
 
 
 @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
-                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="0.0.0.0", LDAP_ADMIN_NAME="example\\admin")
+                   LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example,dc=com", LDAP_URL="0.0.0.0", LDAP_ADMIN_NAME="example\\admin")
 class LDAPAuthTest(SimpleBaseCase):
     url = reverse('login')
 
@@ -48,6 +48,18 @@ class LDAPAuthTest(SimpleBaseCase):
                 'first': "",
                 'last': "",
                 'ou': "AM"
+            }
+        }
+        LDAPMockAuthentication.raw_users = {
+            'cn=bob,ou=EvilPeople,dc=example,dc=com': {
+                'objectGUID': str(uuid4()),
+                'objectClass': 'user',
+                'mail': 'b.evilguy@evilcorp.bad',
+                'distinguishedName': 'cn=bob,ou=EvilPeople,dc=example,dc=com',
+                'msDs-principalName': "example\\bob",
+                'userPassword': "imsoevil123",
+                'givenName': "Bobert",
+                'sn': 'EvilGuy'
             }
         }
 
@@ -101,6 +113,10 @@ class LDAPAuthTest(SimpleBaseCase):
     def test_invalid(self) -> None:
         response = self.client.post(self.url, {'username': "invalid_user", 'password': "invalid_password"})
         self.assertEqual(len(response.context.get('form').non_field_errors()), 1)
+
+    def test_not_in_context(self) -> None:
+        response = self.client.post(self.url, {'username': "bob", 'password': "imsoevil123"})
+        self.assertMessage(response, "This user is not allowed to login to CodeReview, please contact your administrator.")
 
     @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'])
     def test_cant_connect(self) -> None:
