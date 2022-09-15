@@ -43,20 +43,6 @@ class LDAPMockAuthentication(LDAPAuthentication):
         return f'cn={username},{settings.LDAP_BASE_CONTEXT}'
 
     @classmethod
-    def extract_ou(cls, username: str) -> Optional[str]:
-        """
-            This function gets the organizational unit a test user is in from their username
-
-            :param username: The username to get the ou for
-            :type username: str
-            :returns: The user's ou (if applicable)
-            :rtype: str
-        """
-
-        user = cls.users.get(username, {'ou': None})
-        return user.get('ou')
-
-    @classmethod
     def create_fake_user(cls, conn: Connection, username: str, email: str, password: str, first: str, last: str, ou: str = None) -> None:
         """
             This function creates a fake user to use in testing
@@ -82,6 +68,7 @@ class LDAPMockAuthentication(LDAPAuthentication):
             'mail': email,
             'distinguishedName': distinguished_name,
             'msDs-principalName': f"{settings.LDAP_DOMAIN}\\{username}",
+            'employeeNumber': ou,
             'userPassword': password,
             'givenName': first,
             'sn': last,

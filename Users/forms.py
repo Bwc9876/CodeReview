@@ -109,4 +109,4 @@ class FinishUserForm(ModelForm):
         """
 
         model = User
-        fields = ['session', 'receive_notifications']
+        fields = ['session']

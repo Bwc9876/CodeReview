@@ -29,7 +29,7 @@ class LDAPAuthTest(SimpleBaseCase):
                 'password': "admin_password123",
                 'first': "Bob",
                 'last': "Bobberson",
-                'ou': None
+                'ou': ""
             },
             'user_am': {
                 'password': "am_user_password123",
@@ -68,6 +68,13 @@ class LDAPAuthTest(SimpleBaseCase):
         self.assertEqual(new_user.email, "user_am@example.com")
         self.assertEqual(new_user.session, User.Session.AM)
         self.assertFalse(new_user.is_superuser)
+
+    def test_student_pm_login(self) -> None:
+        self.client.post(self.url, {'username': "user_pm", 'password': "pm_user_password123"})
+        new_user = User.objects.get(username="example\\user_pm")
+        self.assertEqual(new_user.first_name, "PMBob")
+        self.assertEqual(new_user.last_name, "PMBobberson")
+        self.assertEqual(new_user.session, User.Session.PM)
 
     def test_has_empty(self) -> None:
         self.client.post(self.url, {'username': "user_has_empty", 'password': "user_empty_password123"})

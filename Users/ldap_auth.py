@@ -82,19 +82,19 @@ class LDAPAuthentication(BaseBackend):
 
         return str(value) if str(value) != "[]" else ""
 
-    # @staticmethod
-    # def get_session_from_ldap(ldap_user: Entry) -> str:
-    #     """
-    #         This function takes an LDAP user and gets their session
-    #
-    #         :param ldap_user: The user to get the session of
-    #         :type ldap_user: Entry
-    #         :returns: A string ("AM" or "PM") that denotes the user's session
-    #         :rtype: str
-    #     """
-    #
-    #     session_raw = str(ldap_user['distinguishedName']).split(',')[1].split('=')[1]
-    #     return session_raw if session_raw == "AM" or session_raw == "PM" else "AM"
+    @staticmethod
+    def get_session_from_ldap(ldap_user: Entry) -> str:
+        """
+            This function takes an LDAP user and gets their session
+
+            :param ldap_user: The user to get the session of
+            :type ldap_user: Entry
+            :returns: A string ("AM" or "PM") that denotes the user's session
+            :rtype: str
+        """
+
+        session_raw = LDAPAuthentication.ldap_empty(ldap_user["employeeNumber"])
+        return session_raw if session_raw == "AM" or session_raw == "PM" else "AM"
 
     @staticmethod
     def check_user_is_admin(ldap_user: Entry) -> bool:
@@ -124,6 +124,7 @@ class LDAPAuthentication(BaseBackend):
         django_user.username = ldap_user["msDS-PrincipalName"]
         django_user.first_name = self.ldap_empty(ldap_user.givenName)
         django_user.last_name = self.ldap_empty(ldap_user.sn)
+        django_user.session = self.get_session_from_ldap(ldap_user)
         django_user.save()
         return django_user
 
@@ -144,7 +145,7 @@ class LDAPAuthentication(BaseBackend):
         new_user = create_method(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
                                  first_name=self.ldap_empty(ldap_user.givenName),
                                  last_name=self.ldap_empty(ldap_user.sn),
-                                 session=User.Session.AM,
+                                 session=self.get_session_from_ldap(ldap_user),
                                  email=self.ldap_empty(ldap_user.mail))
         new_user.set_unusable_password()
         new_user.save()
