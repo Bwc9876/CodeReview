@@ -51,7 +51,7 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
 
         context = super(CompleteUserSetupView, self).get_context_data(**kwargs)
         context['render_no_floating'] = True
-        context['non_field_help_text'] = "Please enter your session below"
+        context['non_field_help_text'] = "Edit your details below"
         return context
 
 class UserLoginView(FormAlertMixin, LoginView):
