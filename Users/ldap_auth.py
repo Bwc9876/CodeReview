@@ -197,11 +197,11 @@ class LDAPAuthentication(BaseBackend):
             :rtype: User
         """
 
-        ldap_admin_name = f'{settings.LDAP_DOMAIN}\\{settings.LDAP_ADMIN_NAME}'
+        ldap_admin_name = settings.LDAP_ADMIN_NAME
 
         try:
             conn = self.get_connection(f'{settings.LDAP_DOMAIN}\\{username}', password)
-            if username == settings.LDAP_ADMIN_NAME:
+            if f"{settings.LDAP_DOMAIN}\\{username}" == settings.LDAP_ADMIN_NAME:
                 try:
                     return User.objects.get(username=ldap_admin_name)
                 except User.DoesNotExist:
