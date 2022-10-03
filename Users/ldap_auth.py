@@ -201,7 +201,7 @@ class LDAPAuthentication(BaseBackend):
 
         try:
             conn = self.get_connection(f'{settings.LDAP_DOMAIN}\\{username}', password)
-            if conn.extend.standard.who_am_i() == ldap_admin_name:
+            if username == settings.LDAP_ADMIN_NAME:
                 try:
                     return User.objects.get(username=ldap_admin_name)
                 except User.DoesNotExist:
