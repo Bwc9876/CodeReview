@@ -3,7 +3,7 @@
 """
 
 from typing import Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from django.conf import settings
 from django.contrib import messages
@@ -197,8 +197,17 @@ class LDAPAuthentication(BaseBackend):
             :rtype: User
         """
 
+        ldap_admin_name = f'{settings.LDAP_DOMAIN}\\{settings.LDAP_ADMIN_NAME}'
+
         try:
             conn = self.get_connection(f'{settings.LDAP_DOMAIN}\\{username}', password)
+            if conn.extend.standard.who_am_i() == ldap_admin_name:
+                try:
+                    return User.objects.get(username=ldap_admin_name)
+                except User.DoesNotExist:
+                    new_user = User.objects.create_superuser(username=ldap_admin_name, email=settings.LDAP_ADMIN_EMAIL, password="abc")
+                    new_user.set_unusable_password()
+                    return new_user
             ldap_user = self.get_ldap_user(conn, f"{settings.LDAP_DOMAIN}\\{username}")
             guid = str(ldap_user["objectGUID"])
             if User.objects.filter(id=UUID(guid)).exists():
