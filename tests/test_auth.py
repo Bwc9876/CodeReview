@@ -66,8 +66,6 @@ class LDAPAuthTest(SimpleBaseCase):
     def test_admin_login(self) -> None:
         self.client.post(self.url, {'username': "admin", "password": "admin_password123"})
         new_user = User.objects.get(username="example\\admin")
-        self.assertEqual(new_user.first_name, "Bob")
-        self.assertEqual(new_user.last_name, "Bobberson")
         self.assertEqual(new_user.email, "admin@example.com")
         self.assertEqual(new_user.session, User.Session.AM)
         self.assertTrue(new_user.is_superuser)
