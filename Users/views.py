@@ -25,10 +25,10 @@ class CompleteUserSetupView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, U
     """
 
     template_name = "form_base.html"
-    form_name = "Complete User Setup"
+    form_name = "Edit User Settings"
     form_class = FinishUserForm
     model = User
-    success_message = "User Setup Complete"
+    success_message = "User Settings Saved"
     success_url = reverse_lazy('home')
 
     def get_queryset(self) -> QuerySet:
