@@ -145,6 +145,7 @@ LDAP_ADMIN_EMAIL = os.getenv('LDAP_ADMIN_EMAIL', None)
 
 if DEBUG:
     # If we're debugging, we never actually send any emails, we just save what they would be as text files
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = 'debug-emails'
     EMAIL_DOMAIN = "example.com"
     EMAIL_ADMIN_DOMAIN = "admin.example.com"
