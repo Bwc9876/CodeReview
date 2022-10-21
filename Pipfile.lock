@@ -74,11 +74,11 @@
         },
         "django-o365mail": {
             "hashes": [
-                "sha256:535c3f40199ff8870e0500dbc54c831cc3f5aa21c951a6f58969122d10dd456e",
-                "sha256:a3af3270bfac163756fb5a9611c67e2669579c5af3ca18790cbf0490220930cb"
+                "sha256:13ed62247b757c59e020da69b33a021f362f1cf860b54d55d7ebb5ef291358ad",
+                "sha256:dc8b18f7bc4f488674dd6ef0dedc19a479cd646133afb7643b6d914bb6bc6b8c"
             ],
             "index": "pypi",
-            "version": "==1.0.1"
+            "version": "==1.1.0"
         },
         "idna": {
             "hashes": [
@@ -216,7 +216,8 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:335ab46900b1465e714b4fda4963d87363264eb662aab5e65da039c25f1f5b22"
+                "sha256:335ab46900b1465e714b4fda4963d87363264eb662aab5e65da039c25f1f5b22",
+                "sha256:c4d88f472f54d615e9cd582a5004d1e5f624854a6a27a6211591c251f22a6914"
             ],
             "index": "pypi",
             "version": "==2022.5"
