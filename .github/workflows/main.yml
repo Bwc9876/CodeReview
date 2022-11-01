@@ -27,7 +27,7 @@ env:
 jobs:
   run_tests:
     name: Run Django Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     services:
       db:
         image: postgres:12.3-alpine
