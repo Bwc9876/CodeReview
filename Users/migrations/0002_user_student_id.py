@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('Users', '0001_squashed_0008_alter_user_session'),
+        ("Users", "0001_squashed_0008_alter_user_session"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='student_id',
+            model_name="user",
+            name="student_id",
             field=models.CharField(blank=True, max_length=12, null=True, unique=True),
         ),
     ]

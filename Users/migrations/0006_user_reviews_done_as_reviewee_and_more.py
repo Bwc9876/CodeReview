@@ -5,18 +5,18 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('Users', '0005_alter_user_receive_notifications'),
+        ("Users", "0005_alter_user_receive_notifications"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='reviews_done_as_reviewee',
+            model_name="user",
+            name="reviews_done_as_reviewee",
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='user',
-            name='reviews_done_as_reviewer',
+            model_name="user",
+            name="reviews_done_as_reviewer",
             field=models.IntegerField(default=0),
         ),
     ]

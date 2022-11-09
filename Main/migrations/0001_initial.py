@@ -11,26 +11,78 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('Instructor', '0001_initial'),
+        ("Instructor", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Review',
+            name="Review",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('schoology_id', models.CharField(help_text='The ID of the schoology assignment that this review pertains to', max_length=10, null=True)),
-                ('status', models.CharField(choices=[('O', 'Open'), ('A', 'Taken'), ('C', 'Completed')], default='O', max_length=1)),
-                ('additional_comments', models.TextField(blank=True, help_text='Any additional comments you have on the code', null=True)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('date_completed', models.DateTimeField(blank=True, null=True)),
-                ('reviewer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='reviewer', to=settings.AUTH_USER_MODEL)),
-                ('rubric', models.ForeignKey(help_text='The rubric the reviewer will use to grade your code', on_delete=django.db.models.deletion.CASCADE, related_name='source_rubric', to='Instructor.rubric')),
-                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='student', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "schoology_id",
+                    models.CharField(
+                        help_text="The ID of the schoology assignment that this review pertains to",
+                        max_length=10,
+                        null=True,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("O", "Open"), ("A", "Taken"), ("C", "Completed")],
+                        default="O",
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "additional_comments",
+                    models.TextField(
+                        blank=True,
+                        help_text="Any additional comments you have on the code",
+                        null=True,
+                    ),
+                ),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                ("date_completed", models.DateTimeField(blank=True, null=True)),
+                (
+                    "reviewer",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="reviewer",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "rubric",
+                    models.ForeignKey(
+                        help_text="The rubric the reviewer will use to grade your code",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="source_rubric",
+                        to="Instructor.rubric",
+                    ),
+                ),
+                (
+                    "student",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="student",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-date_completed', '-date_created'],
+                "ordering": ["-date_completed", "-date_created"],
             },
         ),
     ]

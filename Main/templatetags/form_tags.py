@@ -9,7 +9,7 @@ from django.forms.fields import CheckboxInput
 register = template.Library()
 
 
-@register.filter(name='is_checkbox')
+@register.filter(name="is_checkbox")
 def is_checkbox(field: BoundField):
     """
     This function is used to check if a given field is a checkbox
@@ -24,23 +24,20 @@ def is_checkbox(field: BoundField):
 
 @register.filter()
 def setup_checkbox(field: BoundField):
-    return field.as_widget(attrs={
-        'role': "switch",
-        'class': "form-check-input"
-    })
+    return field.as_widget(attrs={"role": "switch", "class": "form-check-input"})
 
 
 @register.filter(name="setup_field")
 def setup_field(field: BoundField, with_placeholder=True) -> BoundField:
     """
-        This filter sets up a field with proper css classes
+    This filter sets up a field with proper css classes
 
-        :param field: The field to set up
-        :type field: BoundField
-        :param with_placeholder: Whether to have a placeholder in the input element
-        :type with_placeholder: bool
-        :returns: The field as html with the added classes
-        :rtype: str
+    :param field: The field to set up
+    :type field: BoundField
+    :param with_placeholder: Whether to have a placeholder in the input element
+    :type with_placeholder: bool
+    :returns: The field as html with the added classes
+    :rtype: str
     """
 
     validation_class = ""
@@ -49,12 +46,12 @@ def setup_field(field: BoundField, with_placeholder=True) -> BoundField:
         validation_class = "is-invalid"
 
     attrs = {
-        'class': f"form-control {validation_class}",
-        'aria-describedby': f"{field.name}-feedback"
+        "class": f"form-control {validation_class}",
+        "aria-describedby": f"{field.name}-feedback",
     }
 
     if with_placeholder:
-        attrs['placeholder'] = field.label
+        attrs["placeholder"] = field.label
 
     new_field = field.as_widget(attrs=attrs)
 
