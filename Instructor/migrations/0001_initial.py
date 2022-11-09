@@ -8,54 +8,91 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Rubric',
+            name="Rubric",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(help_text='The name the students will use to pick a rubric when requesting a review', max_length=20)),
-                ('max_score', models.FloatField()),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The name the students will use to pick a rubric when requesting a review",
+                        max_length=20,
+                    ),
+                ),
+                ("max_score", models.FloatField()),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='RubricCell',
+            name="RubricCell",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('description', models.TextField()),
-                ('score', models.FloatField()),
-                ('index', models.SmallIntegerField()),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("description", models.TextField()),
+                ("score", models.FloatField()),
+                ("index", models.SmallIntegerField()),
             ],
             options={
-                'ordering': ['index'],
+                "ordering": ["index"],
             },
         ),
         migrations.CreateModel(
-            name='RubricRow',
+            name="RubricRow",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=20)),
-                ('description', models.TextField()),
-                ('max_score', models.FloatField()),
-                ('index', models.SmallIntegerField()),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=20)),
+                ("description", models.TextField()),
+                ("max_score", models.FloatField()),
+                ("index", models.SmallIntegerField()),
             ],
             options={
-                'ordering': ['index'],
+                "ordering": ["index"],
             },
         ),
         migrations.CreateModel(
-            name='ScoredRow',
+            name="ScoredRow",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('score', models.FloatField()),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("score", models.FloatField()),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

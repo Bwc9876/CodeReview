@@ -9,37 +9,45 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('Main', '0001_initial'),
-        ('Instructor', '0001_initial'),
+        ("Main", "0001_initial"),
+        ("Instructor", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='scoredrow',
-            name='parent_review',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Main.review'),
+            model_name="scoredrow",
+            name="parent_review",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="Main.review"
+            ),
         ),
         migrations.AddField(
-            model_name='scoredrow',
-            name='source_row',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Instructor.rubricrow'),
+            model_name="scoredrow",
+            name="source_row",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="Instructor.rubricrow"
+            ),
         ),
         migrations.AddField(
-            model_name='rubricrow',
-            name='parent_rubric',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Instructor.rubric'),
+            model_name="rubricrow",
+            name="parent_rubric",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="Instructor.rubric"
+            ),
         ),
         migrations.AddField(
-            model_name='rubriccell',
-            name='parent_row',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Instructor.rubricrow'),
+            model_name="rubriccell",
+            name="parent_row",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="Instructor.rubricrow"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='rubricrow',
-            unique_together={('parent_rubric', 'index')},
+            name="rubricrow",
+            unique_together={("parent_rubric", "index")},
         ),
         migrations.AlterUniqueTogether(
-            name='rubriccell',
-            unique_together={('parent_row', 'index')},
+            name="rubriccell",
+            unique_together={("parent_row", "index")},
         ),
     ]

@@ -24,44 +24,50 @@ class BaseCase(TestCase):
 
     # Defaults
 
-    USER_SINGLE_STUDENT = {
-        'test-user': (False, False)
-    }
+    USER_SINGLE_STUDENT = {"test-user": (False, False)}
 
     USER_AM_PM = {
-        'reviewer-am': (True, False),
-        'student-am': (False, False),
-        'reviewer-pm': (True, True),
-        'student-pm': (False, True)
+        "reviewer-am": (True, False),
+        "student-am": (False, False),
+        "reviewer-pm": (True, True),
+        "student-pm": (False, True),
     }
 
-    USER_STUDENT_REVIEWER = {
-        'reviewer': (True, False),
-        'student': (False, False)
-    }
+    USER_STUDENT_REVIEWER = {"reviewer": (True, False), "student": (False, False)}
 
     # Setup
 
     @staticmethod
     def get_test_rubric_json() -> str:
-        with open("tests/test_rubric.json", 'r') as file:
+        with open("tests/test_rubric.json", "r") as file:
             test_json = file.read()
         return test_json
 
     def make_test_rubric(self) -> None:
-        self.clients['super'].post(reverse("rubric-create"), {'name': "Test Rubric",
-                                                              'rubric': self.get_test_rubric_json()})
+        self.clients["super"].post(
+            reverse("rubric-create"),
+            {"name": "Test Rubric", "rubric": self.get_test_rubric_json()},
+        )
         self.rubric = Rubric.objects.get(name="Test Rubric")
 
     def make_arb_review(self, student, reviewer, status, schoology_id):
-        return Review.objects.create(student=self.users[student], schoology_id=schoology_id,
-                                     reviewer=self.users[reviewer], status=status, rubric=self.rubric)
+        return Review.objects.create(
+            student=self.users[student],
+            schoology_id=schoology_id,
+            reviewer=self.users[reviewer],
+            status=status,
+            rubric=self.rubric,
+        )
 
     def make_test_review(self) -> None:
-        self.review = Review.objects.create(rubric=self.rubric, schoology_id="12.34.56",
-                                            student=self.users[self.test_review_student],
-                                            reviewer=None if self.test_review_reviewer is None else self.users[
-                                                self.test_review_reviewer])
+        self.review = Review.objects.create(
+            rubric=self.rubric,
+            schoology_id="12.34.56",
+            student=self.users[self.test_review_student],
+            reviewer=None
+            if self.test_review_reviewer is None
+            else self.users[self.test_review_reviewer],
+        )
 
     def make_arb_user(self, name, password, make_client=True):
         self.users[name] = User.objects.create_user(name, password=password)
@@ -72,12 +78,17 @@ class BaseCase(TestCase):
     def _create_user_matrix(self):
         self.users = {}
         for name, attrs in self.test_users.items():
-            self.users[name] = User.objects.create_user(name, email=f"{name}@example.com", password=f"test-password",
-                                                        is_reviewer=attrs[0],
-                                                        session=User.Session.PM if attrs[1] else User.Session.AM)
+            self.users[name] = User.objects.create_user(
+                name,
+                email=f"{name}@example.com",
+                password=f"test-password",
+                is_reviewer=attrs[0],
+                session=User.Session.PM if attrs[1] else User.Session.AM,
+            )
         if self.test_admin:
-            self.users['super'] = User.objects.create_superuser('admin', password="test-password",
-                                                                email="admin@example.com")
+            self.users["super"] = User.objects.create_superuser(
+                "admin", password="test-password", email="admin@example.com"
+            )
 
     def _create_clients(self):
         clients = {}
@@ -90,12 +101,21 @@ class BaseCase(TestCase):
 
     def __new__(cls, *args, **kwargs):
         if "super" in cls.test_users.keys():
-            raise BadTestError("Super is created automatically, don't include it in test_users")
+            raise BadTestError(
+                "Super is created automatically, don't include it in test_users"
+            )
         elif cls.test_review is True and cls.test_rubric is False:
             raise BadTestError("Can't make a test review without the test rubric")
-        elif cls.test_review is True and cls.test_review_student not in cls.test_users.keys():
+        elif (
+            cls.test_review is True
+            and cls.test_review_student not in cls.test_users.keys()
+        ):
             raise BadTestError("Test review student not found in test_users")
-        elif cls.test_review is True and cls.test_review_reviewer is not None and cls.test_review_reviewer not in cls.test_users.keys():
+        elif (
+            cls.test_review is True
+            and cls.test_review_reviewer is not None
+            and cls.test_review_reviewer not in cls.test_users.keys()
+        ):
             raise BadTestError("Test review reviewer not found in test_users")
         else:
             return super(BaseCase, cls).__new__(cls)
@@ -111,7 +131,9 @@ class BaseCase(TestCase):
     # Assertions
 
     def assertMessage(self, response, message_text):
-        self.assertIn(message_text, [m.message for m in get_messages(response.wsgi_request)])
+        self.assertIn(
+            message_text, [m.message for m in get_messages(response.wsgi_request)]
+        )
 
     def assertUserExists(self, username):
         self.assertTrue(User.objects.filter(username=username).exists())
@@ -134,7 +156,7 @@ class BaseCase(TestCase):
         return self.clients[user].post(path, data)
 
     def post_review(self, user, action, review_id, data=None):
-        return self.post(user, reverse(action, kwargs={'pk': review_id}), data)
+        return self.post(user, reverse(action, kwargs={"pk": review_id}), data)
 
     def post_test_review(self, user, action, data=None):
         return self.post_review(user, action, self.review.id, data)

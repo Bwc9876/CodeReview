@@ -12,16 +12,21 @@ from django.db.models import Q
 from ldap3 import Connection, Server, ALL, ObjectDef, Reader, NTLM, Entry
 from ldap3.core.exceptions import LDAPSocketOpenError
 
-from .ldap_errors import LDAPConnectionError, LDAPInvalidCredentials, LDAPNotInContextException, LDAPAuthException
+from .ldap_errors import (
+    LDAPConnectionError,
+    LDAPInvalidCredentials,
+    LDAPNotInContextException,
+    LDAPAuthException,
+)
 from .models import User
 
 
 class LDAPAuthentication(BaseBackend):
     """
-        This authentication backend will log in the user to ldap and then create a User in the database
-        with the same info.
+    This authentication backend will log in the user to ldap and then create a User in the database
+    with the same info.
 
-        :cvar server: The server we're connecting to with LDAP (Must be an ActiveDirectory Server)
+    :cvar server: The server we're connecting to with LDAP (Must be an ActiveDirectory Server)
     """
 
     server = None
@@ -29,7 +34,7 @@ class LDAPAuthentication(BaseBackend):
     @classmethod
     def setup_server(cls) -> None:
         """
-            This function gets the server to authenticate with
+        This function gets the server to authenticate with
         """
 
         if cls.server is None:
@@ -38,12 +43,12 @@ class LDAPAuthentication(BaseBackend):
     @staticmethod
     def bind_connection(conn: Connection) -> Connection:
         """
-            This function is used to bind a connection
+        This function is used to bind a connection
 
-            :param conn: The Connection to bind
-            :type conn: Connection
-            :returns: The bound connection
-            :rtype: Connection
+        :param conn: The Connection to bind
+        :type conn: Connection
+        :returns: The bound connection
+        :rtype: Connection
         """
 
         try:
@@ -58,26 +63,28 @@ class LDAPAuthentication(BaseBackend):
     @classmethod
     def get_connection(cls, username: str, password: str) -> Connection:
         """
-            This function is used to get a Connection object to the server with the given credentials
+        This function is used to get a Connection object to the server with the given credentials
 
-            :param username: The username to log in with (domain\\username)
-            :type username: str
-            :param password: The password to log in with
-            :type username: str
+        :param username: The username to log in with (domain\\username)
+        :type username: str
+        :param password: The password to log in with
+        :type username: str
         """
 
         cls.setup_server()
-        conn = Connection(cls.server, user=username, password=password, authentication=NTLM)
+        conn = Connection(
+            cls.server, user=username, password=password, authentication=NTLM
+        )
         return cls.bind_connection(conn)
 
     @staticmethod
     def ldap_empty(value) -> str:
         """
-            This function will return an empty string if the given Entry's attribute is empty
+        This function will return an empty string if the given Entry's attribute is empty
 
-            :param value: The value to check
-            :returns: The attribute as either an empty string or the attribute
-            :rtype: str
+        :param value: The value to check
+        :returns: The attribute as either an empty string or the attribute
+        :rtype: str
         """
 
         return str(value) if str(value) != "[]" else ""
@@ -85,12 +92,12 @@ class LDAPAuthentication(BaseBackend):
     @staticmethod
     def get_session_from_ldap(ldap_user: Entry) -> str:
         """
-            This function takes an LDAP user and gets their session
+        This function takes an LDAP user and gets their session
 
-            :param ldap_user: The user to get the session of
-            :type ldap_user: Entry
-            :returns: A string ("AM" or "PM") that denotes the user's session
-            :rtype: str
+        :param ldap_user: The user to get the session of
+        :type ldap_user: Entry
+        :returns: A string ("AM" or "PM") that denotes the user's session
+        :rtype: str
         """
 
         session_raw = LDAPAuthentication.ldap_empty(ldap_user["employeeNumber"])
@@ -99,26 +106,26 @@ class LDAPAuthentication(BaseBackend):
     @staticmethod
     def check_user_is_admin(ldap_user: Entry) -> bool:
         """
-            This function is used to check if a given ldap user is an administrator
+        This function is used to check if a given ldap user is an administrator
 
-            :param ldap_user: The user to check
-            :type ldap_user: Entry
-            :returns: A boolean indicating if the user is an administrator
-            :rtype: bool
+        :param ldap_user: The user to check
+        :type ldap_user: Entry
+        :returns: A boolean indicating if the user is an administrator
+        :rtype: bool
         """
 
-        return ldap_user['msDs-PrincipalName'] == settings.LDAP_ADMIN_NAME
+        return ldap_user["msDs-PrincipalName"] == settings.LDAP_ADMIN_NAME
 
     def update_from_ldap(self, ldap_user: Entry, django_user: User) -> User:
         """
-            This function takes an LDAP user and a django user and syncs their data
+        This function takes an LDAP user and a django user and syncs their data
 
-            :param ldap_user: The ldap user to sync from
-            :type ldap_user: Entry
-            :param django_user: The django user to sync to
-            :type django_user: User
-            :returns: The updated django user
-            :rtype: User
+        :param ldap_user: The ldap user to sync from
+        :type ldap_user: Entry
+        :param django_user: The django user to sync to
+        :type django_user: User
+        :returns: The updated django user
+        :rtype: User
         """
 
         django_user.username = ldap_user["msDS-PrincipalName"]
@@ -130,23 +137,29 @@ class LDAPAuthentication(BaseBackend):
 
     def create_from_ldap(self, ldap_user: Entry, guid: str) -> User:
         """
-            This function creates a django user from an LDAP user
+        This function creates a django user from an LDAP user
 
-            :param ldap_user: The user to read from
-            :type ldap_user: Entry
-            :param guid: The objectGUID of the user
-            :type guid: str
-            :returns: The new django user
-            :rtype: User
+        :param ldap_user: The user to read from
+        :type ldap_user: Entry
+        :param guid: The objectGUID of the user
+        :type guid: str
+        :returns: The new django user
+        :rtype: User
         """
 
-        create_method = User.objects.create_superuser if self.check_user_is_admin(
-            ldap_user) else User.objects.create_user
-        new_user = create_method(id=UUID(guid), username=ldap_user["msDS-PrincipalName"],
-                                 first_name=self.ldap_empty(ldap_user.givenName),
-                                 last_name=self.ldap_empty(ldap_user.sn),
-                                 session=self.get_session_from_ldap(ldap_user),
-                                 email=self.ldap_empty(ldap_user.mail))
+        create_method = (
+            User.objects.create_superuser
+            if self.check_user_is_admin(ldap_user)
+            else User.objects.create_user
+        )
+        new_user = create_method(
+            id=UUID(guid),
+            username=ldap_user["msDS-PrincipalName"],
+            first_name=self.ldap_empty(ldap_user.givenName),
+            last_name=self.ldap_empty(ldap_user.sn),
+            session=self.get_session_from_ldap(ldap_user),
+            email=self.ldap_empty(ldap_user.mail),
+        )
         new_user.set_unusable_password()
         new_user.save()
         return new_user
@@ -154,29 +167,29 @@ class LDAPAuthentication(BaseBackend):
     @staticmethod
     def get_all_users(conn: Connection) -> Reader:
         """
-            This function is used to get all users in the ActiveDirectory database
+        This function is used to get all users in the ActiveDirectory database
 
-            :param conn: The Connection to use for the query
-            :type conn: Connection
-            :returns: A Reader object that contains all users in the database
-            :rtype: Reader
+        :param conn: The Connection to use for the query
+        :type conn: Connection
+        :returns: A Reader object that contains all users in the database
+        :rtype: Reader
         """
 
-        user_obj = ObjectDef('user', conn)
+        user_obj = ObjectDef("user", conn)
         reader = Reader(conn, user_obj, settings.LDAP_BASE_CONTEXT)
         reader.search()
         return reader
 
     def get_ldap_user(self, conn: Connection, username: str) -> Optional[Entry]:
         """
-            This function gets an LDAP user from the LDAP server
+        This function gets an LDAP user from the LDAP server
 
-            :param conn: The connection for the server
-            :type conn: Connection
-            :param username: The username (MsDs-principalName) to check for
-            :type username: str
-            :returns: The user that matches the username, if any
-            :rtype: User
+        :param conn: The connection for the server
+        :type conn: Connection
+        :param username: The username (MsDs-principalName) to check for
+        :type username: str
+        :returns: The user that matches the username, if any
+        :rtype: User
         """
 
         reader = self.get_all_users(conn)
@@ -186,26 +199,32 @@ class LDAPAuthentication(BaseBackend):
         else:
             return results[0]
 
-    def authenticate(self, request, username: str = None, password: str = None) -> Optional[User]:
+    def authenticate(
+        self, request, username: str = None, password: str = None
+    ) -> Optional[User]:
         """
-            This is the function that django uses to authenticate a user
+        This is the function that django uses to authenticate a user
 
-            :param request: The request that we're trying to authenticate
-            :param username: The username we're authenticating with
-            :param password: The password we're authenticating with
-            :returns: the user we wish to authenticate with the request, if any
-            :rtype: User
+        :param request: The request that we're trying to authenticate
+        :param username: The username we're authenticating with
+        :param password: The password we're authenticating with
+        :returns: the user we wish to authenticate with the request, if any
+        :rtype: User
         """
 
         ldap_admin_name = settings.LDAP_ADMIN_NAME
 
         try:
-            conn = self.get_connection(f'{settings.LDAP_DOMAIN}\\{username}', password)
+            conn = self.get_connection(f"{settings.LDAP_DOMAIN}\\{username}", password)
             if f"{settings.LDAP_DOMAIN}\\{username}" == settings.LDAP_ADMIN_NAME:
                 try:
                     return User.objects.get(username=ldap_admin_name)
                 except User.DoesNotExist:
-                    new_user = User.objects.create_superuser(username=ldap_admin_name, email=settings.LDAP_ADMIN_EMAIL, password="abc")
+                    new_user = User.objects.create_superuser(
+                        username=ldap_admin_name,
+                        email=settings.LDAP_ADMIN_EMAIL,
+                        password="abc",
+                    )
                     new_user.set_unusable_password()
                     return new_user
             ldap_user = self.get_ldap_user(conn, f"{settings.LDAP_DOMAIN}\\{username}")
@@ -217,22 +236,29 @@ class LDAPAuthentication(BaseBackend):
         except LDAPInvalidCredentials:
             return None
         except LDAPNotInContextException:
-            messages.add_message(request, messages.ERROR, "This user is not allowed to login to CodeReview, please contact your administrator.")
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "This user is not allowed to login to CodeReview, please contact your administrator.",
+            )
             return None
         except LDAPConnectionError:
             if settings.DEBUG is False:
-                messages.add_message(request, messages.ERROR,
-                                     "There was an error contacting the auth server, please try again later.")
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "There was an error contacting the auth server, please try again later.",
+                )
             return None
 
     def get_user(self, user_id: str) -> Optional[User]:
         """
-            This function gets a user given their id
+        This function gets a user given their id
 
-            :param user_id: The id of the user
-            :type user_id: str
-            :returns: The User that has the id, if any
-            :rtype: User
+        :param user_id: The id of the user
+        :type user_id: str
+        :returns: The User that has the id, if any
+        :rtype: User
         """
 
         try:
@@ -242,12 +268,12 @@ class LDAPAuthentication(BaseBackend):
 
     def delete_old_users(self, username: str, password: str) -> None:
         """
-            This function is used to delete any users that are no longer in the ActiveDirectory database.
+        This function is used to delete any users that are no longer in the ActiveDirectory database.
 
-            :param username: The username to use to log in via LDAP
-            :type username: str
-            :param password: The password to use to log in via LDAP
-            :type password: str
+        :param username: The username to use to log in via LDAP
+        :type username: str
+        :param password: The password to use to log in via LDAP
+        :type password: str
         """
 
         try:
@@ -255,7 +281,8 @@ class LDAPAuthentication(BaseBackend):
             ldap_user = self.get_ldap_user(conn, username)
             if self.check_user_is_admin(ldap_user):
                 to_check = User.objects.filter(is_superuser=False).filter(
-                    Q(password__startswith='!') | Q(password__isnull=True))
+                    Q(password__startswith="!") | Q(password__isnull=True)
+                )
                 ldap_users = self.get_all_users(conn)
                 for user in to_check:
                     if len(ldap_users.match("msDs-principalName", user.username)) == 0:
@@ -263,6 +290,10 @@ class LDAPAuthentication(BaseBackend):
             else:
                 raise LDAPAuthException("You lack permissions to perform this action.")
         except LDAPInvalidCredentials:
-            raise LDAPAuthException("The password you provided was incorrect, please check it and try again.")
+            raise LDAPAuthException(
+                "The password you provided was incorrect, please check it and try again."
+            )
         except LDAPConnectionError:
-            raise LDAPAuthException("Can't connect to ActiveDirectory, please try again later.")
+            raise LDAPAuthException(
+                "Can't connect to ActiveDirectory, please try again later."
+            )
