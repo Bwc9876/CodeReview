@@ -36,11 +36,11 @@ from . import models, forms
 
 
 def send_email(
-        subject_template: str,
-        text_template: str,
-        template_name: str,
-        review: models.Review,
-        query_set: QuerySet,
+    subject_template: str,
+    text_template: str,
+    template_name: str,
+    review: models.Review,
+    query_set: QuerySet,
 ):
     """
     This function sends an email to a group of users
@@ -451,10 +451,10 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
         """
 
         if (
-                models.Review.objects.filter(
-                    reviewer=request.user, status=models.Review.Status.ASSIGNED
-                ).count()
-                >= 2
+            models.Review.objects.filter(
+                reviewer=request.user, status=models.Review.Status.ASSIGNED
+            ).count()
+            >= 2
         ):
             messages.add_message(
                 request, messages.ERROR, "You can only have 2 claimed reviews at once"
