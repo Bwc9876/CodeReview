@@ -26,7 +26,9 @@ class RubricMethodsTest(BaseCase):
     test_review = False
 
     def test_rubric_str(self):
-        self.assertEqual("Test Rubric", str(Rubric.objects.get(name="Test Rubric")))
+        self.assertEqual(
+            "Test Rubric (12 points)", str(Rubric.objects.get(name="Test Rubric"))
+        )
 
 
 class ValUUIDTest(TestCase):

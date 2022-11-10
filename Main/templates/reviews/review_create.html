@@ -1,0 +1,49 @@
+{% extends "form_base.html" %}
+
+{% block resources %}
+    {% load static %}
+    {{ block.super }}
+    <script src="{% static "js/review_create.js" %}" defer></script>
+{% endblock %}
+
+{% block mainContent %}
+    {% load rubric_tags %}
+    <div class="modal fade" id="rubricPreviewModal" aria-labelledby="rubricPreviewModalLabel" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rubricPreviewModalLabel">Rubric Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% for rubric in rubrics %}
+                        <table id="rubric-{{ rubric.id }}" class="table table-bordered rubric d-none rubric-preview">
+                            <tr>
+                                <th>Criteria</th>
+                                <th colspan="{{ rubric|colspan|add:1 }}">Score</th>
+                            </tr>
+                            {% for row in rubric|rows %}
+                                <tr>
+                                    <th>{{ row.name }} <br> {{ row.description }}</th>
+                                    {% for cell in row|cells %}
+                                        <td class="cell">{{ cell.score }}<br/> {{ cell.description }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock %}
+
+{% block beforeSubmit %}
+    <button disabled type="button" id="rubricPreviewButton" data-bs-toggle="modal" data-bs-target="#rubricPreviewModal"
+            class="btn btn-outline-secondary w-100">Preview Rubric
+    </button>
+{% endblock %}

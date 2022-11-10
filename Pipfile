@@ -29,3 +29,4 @@ django-debug-toolbar = "*"
 coverage = "==6.5.0"
 psycopg2 = "*"
 genbadge = { extras = ["coverage"], version = "*" }
+black = "*"

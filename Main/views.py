@@ -27,6 +27,7 @@ from django.views.generic.base import ContextMixin
 from django.views.generic.edit import FormMixin, DeletionMixin
 
 from CodeReview import settings
+from Instructor.models import Rubric
 from Users.models import User
 from . import models, forms
 
@@ -35,11 +36,11 @@ from . import models, forms
 
 
 def send_email(
-    subject_template: str,
-    text_template: str,
-    template_name: str,
-    review: models.Review,
-    query_set: QuerySet,
+        subject_template: str,
+        text_template: str,
+        template_name: str,
+        review: models.Review,
+        query_set: QuerySet,
 ):
     """
     This function sends an email to a group of users
@@ -275,7 +276,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
     :cvar success_message: The message to display when the creation is successful
     """
 
-    template_name = "form_base.html"
+    template_name = "reviews/review_create.html"
     success_url = reverse_lazy("home")
     model = models.Review
     form_class = forms.ReviewForm
@@ -289,6 +290,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
 
         context = super(ReviewCreateView, self).get_context_data(**kwargs)
         context["render_no_floating"] = True
+        context["rubrics"] = Rubric.objects.all()
         return context
 
     def get_form_kwargs(self) -> dict[str, object]:
@@ -449,10 +451,10 @@ class ReviewClaimView(LoginRequiredMixin, IsReviewerMixin, View):
         """
 
         if (
-            models.Review.objects.filter(
-                reviewer=request.user, status=models.Review.Status.ASSIGNED
-            ).count()
-            >= 2
+                models.Review.objects.filter(
+                    reviewer=request.user, status=models.Review.Status.ASSIGNED
+                ).count()
+                >= 2
         ):
             messages.add_message(
                 request, messages.ERROR, "You can only have 2 claimed reviews at once"
