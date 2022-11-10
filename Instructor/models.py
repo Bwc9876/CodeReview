@@ -125,4 +125,4 @@ class Rubric(BaseModel):
         :rtype: str
         """
 
-        return self.name
+        return f"{self.name} ({self.max_score:.0f} points)"

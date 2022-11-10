@@ -82,6 +82,9 @@
                         {% endif %}
                     </div>
                 {% endfor %}
+                {% block beforeSubmit %}
+                    {# This block is used to put elements directly before the submit button #}
+                {% endblock %}
                 <button class="btn mt-4 w-100 btn-outline-primary submit-button" type="submit">
                     <span class="loading spinner-border spinner-border-sm d-none" role="status"
                           aria-hidden="true"></span>

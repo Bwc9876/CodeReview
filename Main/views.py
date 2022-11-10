@@ -27,6 +27,7 @@ from django.views.generic.base import ContextMixin
 from django.views.generic.edit import FormMixin, DeletionMixin
 
 from CodeReview import settings
+from Instructor.models import Rubric
 from Users.models import User
 from . import models, forms
 
@@ -275,7 +276,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
     :cvar success_message: The message to display when the creation is successful
     """
 
-    template_name = "form_base.html"
+    template_name = "reviews/review_edit.html"
     success_url = reverse_lazy("home")
     model = models.Review
     form_class = forms.ReviewForm
@@ -289,6 +290,7 @@ class ReviewCreateView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, Create
 
         context = super(ReviewCreateView, self).get_context_data(**kwargs)
         context["render_no_floating"] = True
+        context["rubrics"] = Rubric.objects.all()
         return context
 
     def get_form_kwargs(self) -> dict[str, object]:
@@ -335,7 +337,13 @@ class ReviewEditView(LoginRequiredMixin, FormNameMixin, FormAlertMixin, UpdateVi
     :cvar success_message: The message to display when the edit is successful
     """
 
-    template_name = "form_base.html"
+    def get_context_data(self, **kwargs) -> dict[str, object]:
+        context = super().get_context_data(**kwargs)
+        context["render_no_floating"] = True
+        context["rubrics"] = Rubric.objects.all()
+        return context
+
+    template_name = "reviews/review_edit.html"
     success_url = reverse_lazy("home")
     model = models.Review
     form_class = forms.ReviewForm
