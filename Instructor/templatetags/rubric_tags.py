@@ -5,7 +5,7 @@
 from django import template
 from django.db.models import QuerySet
 
-from Instructor.models import Rubric, RubricRow, RubricCell
+from Instructor.models import Rubric, RubricRow, RubricCell, ScoredRow
 from Main.models import Review
 
 register = template.Library()
@@ -55,6 +55,30 @@ def get_colspan(rubric: Rubric) -> int:
             for row in RubricRow.objects.filter(parent_rubric=rubric)
         ]
     )
+
+
+@register.filter(name="get_scores")
+def get_scores_as_json(review: Review, rubric: Rubric) -> str:
+    """
+    This function gets the scores for a `Review` as a JSON string
+
+    :param review: The review to get the scores for
+    :type review: Review
+    :param rubric: The rubric to get the scores for
+    :type rubric: Rubric
+    :return: A JSON string representing the scores
+    :rtype: str
+    """
+
+    scores = []
+    for row in RubricRow.objects.filter(parent_rubric=rubric):
+        try:
+            scores.append(
+                ScoredRow.objects.get(parent_review=review, source_row=row).score
+            )
+        except ScoredRow.DoesNotExist:
+            scores.append(-1)
+    return f"[{','.join([str(score) for score in scores])}]"
 
 
 @register.filter(name="is_score")

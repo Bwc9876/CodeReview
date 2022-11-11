@@ -15,6 +15,10 @@ from Instructor.models import RubricRow, ScoredRow
 from . import models
 
 
+class IsDraftWidget(TextInput):
+    input_type = "hidden"
+
+
 class GradeReviewWidget(TextInput):
     """
     This widget displays a table the user can click to grade a review
@@ -27,6 +31,7 @@ class GradeReviewWidget(TextInput):
     template_name = "widgets/rubric_grade.html"
     input_type = "hidden"
     rubric = None
+    review = None
 
     class Media:
         """
@@ -49,6 +54,7 @@ class GradeReviewWidget(TextInput):
 
         context = super().get_context(name, value, attrs)
         context["widget"]["rubric"] = self.rubric
+        context["widget"]["review"] = self.review
         return context
 
 
@@ -120,10 +126,13 @@ class ReviewForm(ModelForm):
         :returns: The new review
         :rtype: models.Review
         """
-
         new_review: models.Review = super(ReviewForm, self).save(commit=False)
-        if self.user is not None:
-            new_review.student = self.user
+        if self.instance:
+            if self.instance.rubric.id != new_review.rubric.id:
+                self.instance.scoredrow_set.all().delete()
+        else:
+            if self.user is not None:
+                new_review.student = self.user
         if commit:
             new_review.save()
         return new_review
@@ -139,13 +148,12 @@ class GradeReviewForm(ModelForm):
     :ivar _json_validator: The validator used to ensure JSON is formatted correctly
     """
 
+    is_draft = CharField(widget=IsDraftWidget, required=True, initial="false")
     scores = CharField(
         max_length=200,
         widget=GradeReviewWidget(),
         help_text="Please fill out each row in the rubric.",
     )
-
-    _validation_schema = {"type": "array", "items": {"type": "number", "minimum": 0}}
 
     def __init__(self, *args, **kwargs):
         """
@@ -157,9 +165,11 @@ class GradeReviewForm(ModelForm):
 
         instance: models.Review = kwargs.get("instance", None)
         super().__init__(*args, **kwargs)
+        self._validation_schema = {"type": "array", "items": {"type": "number"}}
         if instance:
             self.rubric = instance.rubric
             self.fields["scores"].widget.rubric = self.rubric
+            self.fields["scores"].widget.review = instance
         else:
             raise ValueError("An instance must be provided to GradeReviewForm!")
         target_item_length = self.rubric.rubricrow_set.count()
@@ -196,11 +206,16 @@ class GradeReviewForm(ModelForm):
         for i in range(len(scores_array)):
             score = float(scores_array[i])
             row = RubricRow.objects.get(parent_rubric=new_review.rubric, index=i)
-            scored_row = ScoredRow.objects.create(
-                source_row=row, parent_review=new_review, score=score
+            scored_row = ScoredRow.objects.get_or_create(
+                source_row=row, parent_review=new_review, defaults={"score": score}
             )
-            scored_row.save()
-        new_review.status = models.Review.Status.CLOSED
+            scored_row[0].score = score
+            scored_row[0].save()
+        new_review.status = (
+            models.Review.Status.CLOSED
+            if self.cleaned_data.get("is_draft") == "false"
+            else models.Review.Status.ASSIGNED
+        )
         if commit:
             new_review.save()
         return new_review
@@ -226,13 +241,20 @@ class GradeReviewForm(ModelForm):
                 [self.add_error("scores", f"{error.message}") for error in errors]
                 if len(errors) == 0:
                     for index, row in enumerate(self.rubric.rubricrow_set.all()):
+                        if parsed[index] < 0 and not cleaned_data.get("is_draft"):
+                            self.add_error(
+                                "scores",
+                                f"Row {index + 1} is -1.",
+                            )
                         if (
-                            row.rubriccell_set.filter(score=parsed[index]).exists()
+                            parsed[index] != -1
+                            and row.rubriccell_set.filter(score=parsed[index]).exists()
                             is False
                         ):
                             self.add_error(
                                 "scores",
                                 f"Invalid score: {parsed[index]} for row {index + 1}",
                             )
+
             except JSONDecodeError:
                 self.add_error("scores", "Invalid JSON")
