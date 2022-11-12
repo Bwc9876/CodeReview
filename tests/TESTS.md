@@ -653,7 +653,6 @@ Expected result: the review's score stays as 12/12
 Test to make sure when a row is deleted, reviews will have those scores removed.
 Expected result: the score goes down to 10/10
 
-
 ## [test_rubric.py](test_rubric.py)
 
 Test the rubric functionality
