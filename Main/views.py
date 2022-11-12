@@ -599,6 +599,9 @@ class ReviewGradeView(
         :param form: The form that is valid
         """
 
+        if form.cleaned_data.get("is_draft", "false") == "true":
+            return super().form_valid(form)
+
         self.object.date_completed = datetime.now()
         self.object.save()
         response = super().form_valid(form)

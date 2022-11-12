@@ -1,5 +1,6 @@
 from json import JSONDecoder, JSONEncoder
 
+from django.core import mail
 from django.urls import reverse
 
 from Instructor.models import ScoredRow, Rubric
@@ -451,6 +452,20 @@ class ReviewGradeTest(BaseReviewAction):
         self.assertEqual(self.review.scoredrow_set.all().count(), 2)
         self.assertEqual(self.review.scoredrow_set.all()[0].score, 5)
         self.assertEqual(self.review.scoredrow_set.all()[1].score, -1)
+
+    def test_draft_no_email(self) -> None:
+        self.post_test_review(
+            "reviewer",
+            "review-grade",
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_grade(self) -> None:
         self.assertScoresEqual("[5,2]", "7.0/12.0")

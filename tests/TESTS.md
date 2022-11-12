@@ -591,6 +591,11 @@ Expected result: The scored rows are cleared when the rubric is changed
 Test to make sure if a student *doesn't* change the rubric of an ongoing review with a draft, the draft is preserved.
 Expected result: The scored rows are preserved when the rubric is changed
 
+#### test_draft_no_email
+
+Test to make sure that if a reviewer saves a draft of a review, no email is sent.
+Expected result: No email is sent
+
 #### test_grade
 
 Test to make sure a reviewer can grade reviews.
