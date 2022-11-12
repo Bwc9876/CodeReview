@@ -45,12 +45,12 @@ jobs:
         options: --mount type=tmpfs,destination=/var/lib/postgresql/data --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - run: mkdir .venv
 
       - name: Cache Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-dependencies
         with:
           path: ./.venv
@@ -80,7 +80,7 @@ jobs:
 
       - name: Verify Changed files
         if: github.ref == 'refs/heads/master'
-        uses: tj-actions/verify-changed-files@v6
+        uses: tj-actions/verify-changed-files@v12
         id: changed_files
         with:
           files: coverage.svg
