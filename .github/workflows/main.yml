@@ -26,6 +26,7 @@ env:
   EMAIL_ADMIN_DOMAIN: admin.actions.com
   LDAP_DOMAIN: ACTIONSLDAP
   LDAP_BASE_CONTEXT: dc=actions,dc=com
+  LDAP_ADMIN_USER: ACTIONSLDAP\admin
 
 
 jobs:
@@ -45,11 +46,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2.2.2
-        with:
-          python-version: 3.10.0
 
       - run: mkdir .venv
 

@@ -374,7 +374,11 @@ class ReviewGradeTest(BaseReviewAction):
         self.post_test_review(
             "reviewer",
             "review-grade",
-            {"scores": "[5,2]", "additional_comments": "test comment", "is_draft": "true"},
+            {
+                "scores": "[5,2]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
         )
         self.refresh_test_review()
         self.assertEqual(self.review.status, Review.Status.ASSIGNED)
@@ -388,7 +392,11 @@ class ReviewGradeTest(BaseReviewAction):
         self.post_test_review(
             "reviewer",
             "review-grade",
-            {"scores": "[5,-1]", "additional_comments": "test comment", "is_draft": "true"},
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
         )
         self.refresh_test_review()
         self.assertEqual(self.review.status, Review.Status.ASSIGNED)
@@ -402,7 +410,11 @@ class ReviewGradeTest(BaseReviewAction):
         self.post_test_review(
             "reviewer",
             "review-grade",
-            {"scores": "[5,-1]", "additional_comments": "test comment", "is_draft": "true"},
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
         )
         self.refresh_test_review()
         self.assertEqual(self.review.status, Review.Status.ASSIGNED)
@@ -421,7 +433,11 @@ class ReviewGradeTest(BaseReviewAction):
         self.post_test_review(
             "reviewer",
             "review-grade",
-            {"scores": "[5,-1]", "additional_comments": "test comment", "is_draft": "true"},
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
         )
         self.refresh_test_review()
         self.assertEqual(self.review.status, Review.Status.ASSIGNED)
