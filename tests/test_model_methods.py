@@ -56,7 +56,7 @@ class ReviewMethodTest(BaseCase):
     def setUp(self) -> None:
         super(ReviewMethodTest, self).setUp()
         self.set_test_review_status(Review.Status.ASSIGNED)
-        self.post_test_review("reviewer", "review-grade", {"scores": "[5,2]"})
+        self.post_test_review("reviewer", "review-grade", {"scores": "[5,2]", "is_draft": "false"})
         self.review = Review.objects.get(id=self.review.id)
         self.set_user_full_name("student", "Test", "Student")
 

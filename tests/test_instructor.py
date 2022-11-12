@@ -45,7 +45,7 @@ class HomeViewTest(BaseCase):
 
     def test_completed(self) -> None:
         self.set_test_review_status(Review.Status.ASSIGNED)
-        self.post_test_review("reviewer", "review-grade", {"scores": "[10,2]"})
+        self.post_test_review("reviewer", "review-grade", {"scores": "[10,2]", "is_draft": "false"})
         response = self.get("super", reverse("instructor-home"))
         self.assertIn(self.review, response.context.get("am_completed", []))
 
@@ -55,7 +55,7 @@ class HomeViewTest(BaseCase):
                 "student", "reviewer", Review.Status.ASSIGNED, f"12.34.0{x}"
             )
             self.post_review(
-                "reviewer", "review-grade", new_review.id, {"scores": "[10,2]"}
+                "reviewer", "review-grade", new_review.id, {"scores": "[10,2]", "is_draft": "false"}
             )
         response = self.get("super", reverse("instructor-home"))
         self.assertIn("review/completed/?session=AM", str(response.content))
@@ -63,7 +63,7 @@ class HomeViewTest(BaseCase):
     def test_completed_pm(self) -> None:
         self.set_user_session("student", User.Session.PM)
         self.set_test_review_status(Review.Status.ASSIGNED)
-        self.post_test_review("reviewer", "review-grade", {"scores": "[10,2]"})
+        self.post_test_review("reviewer", "review-grade", {"scores": "[10,2]", "is_draft": "false"})
         response = self.get("super", reverse("instructor-home"))
         self.assertIn(self.review, response.context.get("pm_completed", []))
 

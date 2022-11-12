@@ -143,7 +143,7 @@ class CompleteListTest(BaseCase):
         super(CompleteListTest, self).setUp()
         self.set_test_review_status(Review.Status.ASSIGNED)
         self.post_test_review(
-            "reviewer-affiliated", "review-grade", {"scores": "[10,2]"}
+            "reviewer-affiliated", "review-grade", {"scores": "[10,2]", "is_draft": "false"}
         )
 
     def assertInContext(self, user, params=""):
@@ -174,7 +174,7 @@ class CompleteListTest(BaseCase):
                 "reviewer-affiliated",
                 "review-grade",
                 new_review.id,
-                {"scores": "[10,2]"},
+                {"scores": "[10,2]", "is_draft": "false"},
             )
         response = self.get("student-affiliated", reverse("review-complete"))
         self.assertTrue(response.context["page_obj"].has_other_pages())
@@ -357,7 +357,7 @@ class ReviewGradeTest(BaseReviewAction):
         self.post_test_review(
             "reviewer",
             "review-grade",
-            {"scores": source_str, "additional_comments": ""},
+            {"scores": source_str, "additional_comments": "", "is_draft": "false"},
         )
         self.refresh_test_review()
         self.assertEqual(self.review.score_fraction(), target_str)
@@ -420,7 +420,7 @@ class UpdateReviewScoreOnRubricEditTest(BaseCase):
     def setUp(self) -> None:
         super(UpdateReviewScoreOnRubricEditTest, self).setUp()
         self.set_test_review_status(Review.Status.ASSIGNED)
-        self.post_test_review("reviewer", "review-grade", {"scores": "[10,2]"})
+        self.post_test_review("reviewer", "review-grade", {"scores": "[10,2]", "is_draft": "false"})
 
     def test_new_rows(self) -> None:
         new_obj = JSONDecoder().decode(self.get_test_rubric_json())
@@ -469,7 +469,7 @@ class LeaderBoardTest(BaseCase):
         super(LeaderBoardTest, self).setUp()
         self.set_test_review_status(Review.Status.ASSIGNED)
         self.post_test_review(
-            self.test_review_reviewer, "review-grade", {"scores": "[10, 2]"}
+            self.test_review_reviewer, "review-grade", {"scores": "[10, 2]", "is_draft": False}
         )
 
     def test_order_correct(self) -> None:

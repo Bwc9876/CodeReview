@@ -98,21 +98,21 @@ class ReviewForm(ModelForm):
         """
 
         if (
-            self.user is not None
-            and models.Review.objects.filter(student=self.user)
-            .filter(
-                Q(status=models.Review.Status.OPEN)
-                | Q(status=models.Review.Status.ASSIGNED)
-            )
-            .count()
-            >= 2
+                self.user is not None
+                and models.Review.objects.filter(student=self.user)
+                .filter(
+            Q(status=models.Review.Status.OPEN)
+            | Q(status=models.Review.Status.ASSIGNED)
+        )
+                .count()
+                >= 2
         ):
             raise ValidationError("You can only have 2 requested reviews at once.")
 
         super(ReviewForm, self).clean()
         schoology_id = self.cleaned_data.get("schoology_id", None)
         if (schoology_id is not None) and not fullmatch(
-            r"\d{2}\.\d{2}\.\d{2}", schoology_id
+                r"\d{2}\.\d{2}\.\d{2}", schoology_id
         ):
             self.add_error("schoology_id", self.SCHOOLOGY_ID_ERROR_MESSAGE)
 
@@ -127,12 +127,11 @@ class ReviewForm(ModelForm):
         :rtype: models.Review
         """
         new_review: models.Review = super(ReviewForm, self).save(commit=False)
-        if self.instance:
+        if self.instance is not None:
             if self.instance.rubric.id != new_review.rubric.id:
                 self.instance.scoredrow_set.all().delete()
-        else:
-            if self.user is not None:
-                new_review.student = self.user
+        if self.user is not None:
+            new_review.student = self.user
         if commit:
             new_review.save()
         return new_review
@@ -247,9 +246,9 @@ class GradeReviewForm(ModelForm):
                                 f"Row {index + 1} is -1.",
                             )
                         if (
-                            parsed[index] != -1
-                            and row.rubriccell_set.filter(score=parsed[index]).exists()
-                            is False
+                                parsed[index] != -1
+                                and row.rubriccell_set.filter(score=parsed[index]).exists()
+                                is False
                         ):
                             self.add_error(
                                 "scores",

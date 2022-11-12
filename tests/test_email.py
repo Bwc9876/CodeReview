@@ -48,7 +48,7 @@ class TestEmail(BaseCase):
         self.post_test_review(
             "reviewer-affiliated",
             "review-grade",
-            {"scores": "[10,2]", "additional_comments": ""},
+            {"scores": "[10,2]", "additional_comments": "", "is_draft": True},
         )
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], self.users["super"].email)
