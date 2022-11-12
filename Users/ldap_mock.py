@@ -1,7 +1,6 @@
 """
     This file provides a fake ldap server to test with
 """
-from typing import Optional
 from uuid import uuid4
 
 from django.conf import settings

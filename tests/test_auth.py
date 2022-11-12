@@ -155,68 +155,84 @@ class LDAPAuthTest(SimpleBaseCase):
         LDAPMockAuthentication.users = []
 
 
-# @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_mock.LDAPMockAuthentication'], LDAP_DOMAIN="example",
-#                    LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example", LDAP_URL="0.0.0.0")
-# class UserCleanupTest(SimpleBaseCase):
-#     url = reverse('user-cleanup')
-#
-#     def setUp(self) -> None:
-#         LDAPMockAuthentication.users = {
-#             'admin': {
-#                 'password': "admin_password123",
-#                 'first': "First",
-#                 'last': "Last",
-#                 'ou': None
-#             },
-#             'student': {
-#                 'password': "student_password123",
-#                 'first': "SFirst",
-#                 'last': "SLast",
-#                 'ou': "AM"
-#             }
-#         }
-#         self.client.post(reverse('login'), {'username': 'admin', 'password': "admin_password123"})
-#         self.client.post(reverse('login'), {'username': 'student', 'password': "student_password123"})
-#         self.old_user = User.objects.create_user(username='example\\old_user')
-#         self.old_user.set_unusable_password()
-#         self.old_user.save()
-#         self.student = User.objects.get(username="example\\student")
-#         self.admin = User.objects.get(username="example\\admin")
-#         self.client.force_login(self.admin)
-#
-#     def test_cleanup_users(self):
-#         self.client.post(self.url, {'userPassword': "admin_password123"})
-#         self.assertFalse(User.objects.filter(username="example\\old_user").exists())
-#         self.assertTrue(User.objects.filter(username="example\\student").exists())
-#
-#     def test_no_password(self):
-#         response = self.client.post(self.url, {'userPassword': ""})
-#         self.assertTrue(User.objects.filter(username="example\\old_user").exists())
-#         self.assertTrue(User.objects.filter(username="example\\student").exists())
-#         self.assertMessage(response, "Please provide a password")
-#
-#     def test_password_wrong(self):
-#         response = self.client.post(self.url, {'userPassword': "wrong password"})
-#         self.assertTrue(User.objects.filter(username="example\\old_user").exists())
-#         self.assertTrue(User.objects.filter(username="example\\student").exists())
-#         self.assertMessage(response, "The password you provided was incorrect, please check it and try again.")
-#
-#     def test_insufficient_perms(self):
-#         self.student.is_superuser = True
-#         self.student.save()
-#         self.client.force_login(self.student)
-#         response = self.client.post(self.url, {'userPassword': "student_password123"})
-#         self.assertTrue(User.objects.filter(username="example\\old_user").exists())
-#         self.assertTrue(User.objects.filter(username="example\\student").exists())
-#         self.assertMessage(response, "You lack permissions to perform this action.")
+@override_settings(
+    AUTHENTICATION_BACKENDS=["Users.ldap_mock.LDAPMockAuthentication"],
+    LDAP_DOMAIN="example",
+    LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example",
+    LDAP_ADMIN_NAME="example\\admin",
+    LDAP_URL="0.0.0.0",
+)
+class UserCleanupTest(SimpleBaseCase):
+    url = reverse("user-cleanup")
 
-# @override_settings(AUTHENTICATION_BACKENDS=['Users.ldap_auth.LDAPAuthentication'])
-# def test_cant_connect(self) -> None:
-#     self.client.force_login(self.admin)
-#     response = self.client.post(self.url, {'userPassword': "admin_password123"})
-#     self.assertTrue(User.objects.filter(username="example\\old_user").exists())
-#     self.assertTrue(User.objects.filter(username="example\\student").exists())
-#     self.assertMessage(response, "Can't connect to ActiveDirectory, please try again later.")
-#
-# def tearDown(self) -> None:
-#     LDAPMockAuthentication.users = []
+    def setUp(self) -> None:
+        LDAPMockAuthentication.users = {
+            "admin": {
+                "password": "admin_password123",
+                "first": "First",
+                "last": "Last",
+                "ou": "AM",
+            },
+            "student": {
+                "password": "student_password123",
+                "first": "SFirst",
+                "last": "SLast",
+                "ou": "AM",
+            },
+        }
+        self.client.post(
+            reverse("login"), {"username": "admin", "password": "admin_password123"}
+        )
+        self.client.post(
+            reverse("login"), {"username": "student", "password": "student_password123"}
+        )
+        self.old_user = User.objects.create_user(username="example\\old_user")
+        self.old_user.set_unusable_password()
+        self.old_user.save()
+        self.student = User.objects.get(username="example\\student")
+        self.admin = User.objects.get(username="example\\admin")
+        self.client.force_login(self.admin)
+
+    def test_cleanup_users(self):
+        self.client.post(self.url, {"userPassword": "admin_password123"})
+        self.assertFalse(User.objects.filter(username="example\\old_user").exists())
+        self.assertTrue(User.objects.filter(username="example\\student").exists())
+
+    def test_no_password(self):
+        response = self.client.post(self.url, {"userPassword": ""})
+        self.assertTrue(User.objects.filter(username="example\\old_user").exists())
+        self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(response, "Please provide a password")
+
+    def test_password_wrong(self):
+        response = self.client.post(self.url, {"userPassword": "wrong password"})
+        self.assertTrue(User.objects.filter(username="example\\old_user").exists())
+        self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(
+            response,
+            "The password you provided was incorrect, please check it and try again.",
+        )
+
+    def test_insufficient_perms(self):
+        self.student.is_superuser = True
+        self.student.save()
+        self.client.force_login(self.student)
+        response = self.client.post(self.url, {"userPassword": "student_password123"})
+        self.assertTrue(User.objects.filter(username="example\\old_user").exists())
+        self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(response, "You lack permissions to perform this action.")
+
+
+@override_settings(AUTHENTICATION_BACKENDS=["Users.ldap_auth.LDAPAuthentication"])
+def test_cant_connect(self) -> None:
+    self.client.force_login(self.admin)
+    response = self.client.post(self.url, {"userPassword": "admin_password123"})
+    self.assertTrue(User.objects.filter(username="example\\old_user").exists())
+    self.assertTrue(User.objects.filter(username="example\\student").exists())
+    self.assertMessage(
+        response, "Can't connect to ActiveDirectory, please try again later."
+    )
+
+
+def tearDown(self) -> None:
+    LDAPMockAuthentication.users = []

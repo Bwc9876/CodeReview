@@ -1,9 +1,31 @@
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
+from Main.views import error_500_handler
 from Users.models import User
 from tests.testing_base import BaseCase
-from Main.views import error_500_handler
+
+
+class UserSetupTest(BaseCase):
+    test_users = BaseCase.USER_SINGLE_STUDENT
+    test_review = False
+
+    def test_get_user_setup(self):
+        self.get(
+            "test-user",
+            reverse("user-setup", kwargs={"pk": self.users.get("test-user").id}),
+        )
+
+    def test_user_setup(self):
+        self.post(
+            "test-user",
+            reverse("user-setup", kwargs={"pk": self.users.get("test-user").id}),
+            {"receive_notifications": "false"},
+        )
+        self.assertEqual(
+            User.objects.get(pk=self.users.get("test-user").id).receive_notifications,
+            False,
+        )
 
 
 class TestErrors(TestCase):
