@@ -571,12 +571,12 @@ class ReviewGradeView(
     :cvar form_class: The class of the form to render
     """
 
-    template_name = "form_base.html"
+    template_name = "reviews/review_grade.html"
     success_url = reverse_lazy("home")
     model = models.Review
     form_class = forms.GradeReviewForm
     form_name = "Grade Review"
-    success_message = "Review Graded"
+    success_message = "Review Saved"
 
     def get_queryset(self) -> QuerySet:
         """
@@ -598,6 +598,9 @@ class ReviewGradeView(
 
         :param form: The form that is valid
         """
+
+        if form.cleaned_data.get("is_draft", "false") == "true":
+            return super().form_valid(form)
 
         self.object.date_completed = datetime.now()
         self.object.save()

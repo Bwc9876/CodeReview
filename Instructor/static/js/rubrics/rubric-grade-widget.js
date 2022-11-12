@@ -4,6 +4,22 @@
  * This file is used when grading a rubric.
  */
 
+function loadFromScoresArray(scores) {
+    /**
+     * This function loads the scores array into the table.
+     */
+
+    if (scores.length === 0) return;
+
+    for (let i = 0; i < scores.length; i++) {
+        const score = scores[i];
+        if (score === -1) continue;
+        const selector = `.criteria#grade-row-${i} .score-select[value="${score % 1 === 0 ? score.toFixed(1) : score}"]`;
+        const cell = $(selector);
+        cell.prop("checked", true);
+    }
+}
+
 function update_cell_colors() {
     /**
      * This function updates cells that are selected with the CSS class of 'selected'.
@@ -19,9 +35,11 @@ function get_scores() {
      * This function gets the scores from the table.
      */
 
-    let scores = [];
-    $(".rubric-grading .criteria input:checked").each(function (index, object) {
-        scores.push(parseFloat($(object).val()));
+    const scores = [];
+    $(".rubric-grading tr").each(function (index, object) {
+        if (index === 0) return; // Skip the header row
+        const score = $(object).find("input:checked").val();
+        scores.push(score === undefined ? -1 : parseInt(score));
     });
     return scores;
 }
@@ -90,11 +108,11 @@ $(document).ready(function () {
 
     $(".score-select").click(score_button_callback);
     $(".cell").click(score_cell_callback);
+    loadFromScoresArray(JSON.parse($(".rubric_grade_input").val()));
     $(".score-select:checked").each((index, object) => {
         /**
          * This function clicks buttons that are checked so that way colors and totals are updated.
          */
-
         $(object).click();
     });
 });

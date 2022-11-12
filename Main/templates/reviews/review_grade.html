@@ -1,0 +1,20 @@
+{% extends "form_base.html" %}
+
+{% block resources %}
+    {{ block.super }}
+    <script defer>
+        $(document).ready(() => {
+            const isDraftField = $("#id_is_draft");
+            const draftButton = $("#saveDraftButton");
+            draftButton.click(() => {
+                isDraftField.val(true);
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block beforeSubmit %}
+    <button type="submit" id="saveDraftButton" class="btn btn-outline-secondary w-100">
+        Save As Draft
+    </button>
+{% endblock %}

@@ -312,7 +312,7 @@ Test to make sure the 404 page is shown when an invalid error type is given.
 
 ### UserMethodsTest
 
-Test the methods on the the `User` model.
+Test the methods on the `User` model.
 
 #### test_user_session_str
 
@@ -571,6 +571,31 @@ Expected result: the review is abandon
 
 Test a reviewer's ability to grade reviews
 
+#### test_draft
+
+Test to make sure a reviewer can save a draft of a review.
+Expected result: the review is saved as a draft and the scores/additional comments are preserved
+
+#### test_draft_empties
+
+Test to make sure a reviewer can save a draft of a review with empty scores/additional comments.
+Expected result: the review is saved as a draft and the scores/additional comments are preserved
+
+#### test_draft_then_rubric_change
+
+Test to make sure that if a student changes the rubric of an ongoing review with a draft, the draft is discarded.
+Expected result: The scored rows are cleared when the rubric is changed
+
+#### test_draft_then_rubric_no_change
+
+Test to make sure if a student *doesn't* change the rubric of an ongoing review with a draft, the draft is preserved.
+Expected result: The scored rows are preserved when the rubric is changed
+
+#### test_draft_no_email
+
+Test to make sure that if a reviewer saves a draft of a review, no email is sent.
+Expected result: No email is sent
+
 #### test_grade
 
 Test to make sure a reviewer can grade reviews.
@@ -632,7 +657,6 @@ Expected result: the review's score stays as 12/12
 
 Test to make sure when a row is deleted, reviews will have those scores removed.
 Expected result: the score goes down to 10/10
-
 
 ## [test_rubric.py](test_rubric.py)
 

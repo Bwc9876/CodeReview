@@ -1,8 +1,9 @@
 from json import JSONDecoder, JSONEncoder
 
+from django.core import mail
 from django.urls import reverse
 
-from Instructor.models import ScoredRow
+from Instructor.models import ScoredRow, Rubric
 from Main.forms import GradeReviewForm, ReviewForm
 from Main.models import Review
 from Users.models import User
@@ -143,7 +144,9 @@ class CompleteListTest(BaseCase):
         super(CompleteListTest, self).setUp()
         self.set_test_review_status(Review.Status.ASSIGNED)
         self.post_test_review(
-            "reviewer-affiliated", "review-grade", {"scores": "[10,2]"}
+            "reviewer-affiliated",
+            "review-grade",
+            {"scores": "[10,2]", "is_draft": "false"},
         )
 
     def assertInContext(self, user, params=""):
@@ -174,7 +177,7 @@ class CompleteListTest(BaseCase):
                 "reviewer-affiliated",
                 "review-grade",
                 new_review.id,
-                {"scores": "[10,2]"},
+                {"scores": "[10,2]", "is_draft": "false"},
             )
         response = self.get("student-affiliated", reverse("review-complete"))
         self.assertTrue(response.context["page_obj"].has_other_pages())
@@ -357,7 +360,7 @@ class ReviewGradeTest(BaseReviewAction):
         self.post_test_review(
             "reviewer",
             "review-grade",
-            {"scores": source_str, "additional_comments": ""},
+            {"scores": source_str, "additional_comments": "", "is_draft": "false"},
         )
         self.refresh_test_review()
         self.assertEqual(self.review.score_fraction(), target_str)
@@ -367,6 +370,102 @@ class ReviewGradeTest(BaseReviewAction):
             {"scores": src_str, "additional_comments": ""}, instance=self.review
         )
         self.assertFalse(form.is_valid())
+
+    def test_draft(self) -> None:
+        self.post_test_review(
+            "reviewer",
+            "review-grade",
+            {
+                "scores": "[5,2]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        self.assertEqual(self.review.score_fraction(), None)
+        self.assertEqual(self.review.additional_comments, "test comment")
+        self.assertEqual(self.review.scoredrow_set.all().count(), 2)
+        self.assertEqual(self.review.scoredrow_set.all()[0].score, 5)
+        self.assertEqual(self.review.scoredrow_set.all()[1].score, 2)
+
+    def test_draft_empties(self) -> None:
+        self.post_test_review(
+            "reviewer",
+            "review-grade",
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        self.assertEqual(self.review.score_fraction(), None)
+        self.assertEqual(self.review.additional_comments, "test comment")
+        self.assertEqual(self.review.scoredrow_set.all().count(), 2)
+        self.assertEqual(self.review.scoredrow_set.all()[0].score, 5)
+        self.assertEqual(self.review.scoredrow_set.all()[1].score, -1)
+
+    def test_draft_and_rubric_change(self) -> None:
+        self.post_test_review(
+            "reviewer",
+            "review-grade",
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        new_rubric = Rubric.objects.create(name="Test Rubric 2", max_score=10)
+        new_rubric.save()
+        self.post_test_review(
+            "student",
+            "review-edit",
+            {"schoology_id": "12.34.78", "rubric": new_rubric.id},
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        self.assertEqual(self.review.scoredrow_set.all().count(), 0)
+
+    def test_draft_and_rubric_no_change(self) -> None:
+        self.post_test_review(
+            "reviewer",
+            "review-grade",
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        self.post_test_review(
+            "student",
+            "review-edit",
+            {"schoology_id": "12.34.78", "rubric": self.rubric.id},
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        self.assertEqual(self.review.scoredrow_set.all().count(), 2)
+        self.assertEqual(self.review.scoredrow_set.all()[0].score, 5)
+        self.assertEqual(self.review.scoredrow_set.all()[1].score, -1)
+
+    def test_draft_no_email(self) -> None:
+        self.post_test_review(
+            "reviewer",
+            "review-grade",
+            {
+                "scores": "[5,-1]",
+                "additional_comments": "test comment",
+                "is_draft": "true",
+            },
+        )
+        self.refresh_test_review()
+        self.assertEqual(self.review.status, Review.Status.ASSIGNED)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_grade(self) -> None:
         self.assertScoresEqual("[5,2]", "7.0/12.0")
@@ -420,7 +519,9 @@ class UpdateReviewScoreOnRubricEditTest(BaseCase):
     def setUp(self) -> None:
         super(UpdateReviewScoreOnRubricEditTest, self).setUp()
         self.set_test_review_status(Review.Status.ASSIGNED)
-        self.post_test_review("reviewer", "review-grade", {"scores": "[10,2]"})
+        self.post_test_review(
+            "reviewer", "review-grade", {"scores": "[10,2]", "is_draft": "false"}
+        )
 
     def test_new_rows(self) -> None:
         new_obj = JSONDecoder().decode(self.get_test_rubric_json())
@@ -469,7 +570,9 @@ class LeaderBoardTest(BaseCase):
         super(LeaderBoardTest, self).setUp()
         self.set_test_review_status(Review.Status.ASSIGNED)
         self.post_test_review(
-            self.test_review_reviewer, "review-grade", {"scores": "[10, 2]"}
+            self.test_review_reviewer,
+            "review-grade",
+            {"scores": "[10, 2]", "is_draft": False},
         )
 
     def test_order_correct(self) -> None:

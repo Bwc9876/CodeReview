@@ -1,22 +1,24 @@
 <h5 id="grade_report">Grade: 0/{{ widget.rubric.max_score }}</h5>
-<input class="rubric_grade_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
-       value="" {% include "widgets/attrs.html" %}/>
 {% load rubric_tags %}
-<table class="table table-bordered rubric-grading mb-0">
-    <tr>
-        <th>Criteria</th>
-        <th colspan="{{ widget.rubric|colspan|add:1 }}">Score</th>
-    </tr>
-    {% for row in widget.rubric|rows %}
-        <tr id="grade-row-{{ row.index }}" class="criteria">
-            <th>{{ row.name }} <br> {{ row.description }} <br> Max: <span
-                    class="max-score-val">{{ row.max_score }}</span></th>
-            {% for cell in row|cells %}
-                <td class="cell text-center"><span class="score-val">{{ cell.score }}</span> <br>
-                    <label>{{ cell.description }} <br>
-                        <input class="score-select" value="{{ cell.score }}" name="{{ row.name }}_score"
-                               type="radio"/></label></td>
-            {% endfor %}
+<input class="rubric_grade_input" type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
+       value="{{ widget.review|get_scores:widget.rubric }}" {% include "widgets/attrs.html" %}/>
+<div class="overflow-auto">
+    <table class="table table-bordered rubric-grading mb-0 w-100">
+        <tr>
+            <th>Criteria</th>
+            <th colspan="{{ widget.rubric|colspan|add:1 }}">Score</th>
         </tr>
-    {% endfor %}
-</table>
+        {% for row in widget.rubric|rows %}
+            <tr id="grade-row-{{ row.index }}" class="criteria">
+                <th>{{ row.name }} <br> {{ row.description }} <br> Max: <span
+                        class="max-score-val">{{ row.max_score }}</span></th>
+                {% for cell in row|cells %}
+                    <td class="cell text-center"><span class="score-val">{{ cell.score }}</span> <br>
+                        <label>{{ cell.description }} <br>
+                            <input class="score-select" value="{{ cell.score }}" name="{{ row.name }}_score"
+                                   type="radio"/></label></td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
