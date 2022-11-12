@@ -22,6 +22,10 @@ on:
 env:
   STAGE: GH_TEST
   PIPENV_VENV_IN_PROJECT: enabled
+  EMAIL_DOMAIN: actions.com
+  EMAIL_ADMIN_DOMAIN: admin.actions.com
+  LDAP_DOMAIN: ACTIONSLDAP
+  LDAP_BASE_CONTEXT: dc=actions,dc=com
 
 
 jobs:

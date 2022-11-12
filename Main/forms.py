@@ -127,8 +127,8 @@ class ReviewForm(ModelForm):
         :rtype: models.Review
         """
         new_review: models.Review = super(ReviewForm, self).save(commit=False)
-        if self.instance is not None:
-            if self.instance.rubric.id != new_review.rubric.id:
+        if self.instance:
+            if self.initial.get("rubric", None) != new_review.rubric.id:
                 self.instance.scoredrow_set.all().delete()
         if self.user is not None:
             new_review.student = self.user
