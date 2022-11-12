@@ -810,11 +810,6 @@ error_404_handler = Error404.as_view()
 error_403_handler = Error403.as_view()
 
 
-# noinspection PyUnusedLocal
-def csrf_failure_view(request, reason=""):
-    return Error403.as_view()(request)
-
-
 def error_500_handler(request) -> HttpResponse:
     """
     This function is run in the event of a 500 error

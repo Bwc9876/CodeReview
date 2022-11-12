@@ -222,16 +222,18 @@ class UserCleanupTest(SimpleBaseCase):
         self.assertTrue(User.objects.filter(username="example\\student").exists())
         self.assertMessage(response, "You lack permissions to perform this action.")
 
-
-@override_settings(AUTHENTICATION_BACKENDS=["Users.ldap_auth.LDAPAuthentication"])
-def test_cant_connect(self) -> None:
-    self.client.force_login(self.admin)
-    response = self.client.post(self.url, {"userPassword": "admin_password123"})
-    self.assertTrue(User.objects.filter(username="example\\old_user").exists())
-    self.assertTrue(User.objects.filter(username="example\\student").exists())
-    self.assertMessage(
-        response, "Can't connect to ActiveDirectory, please try again later."
+    @override_settings(
+        LDAP_URL="localhost",
+        AUTHENTICATION_BACKENDS=["Users.ldap_auth.LDAPAuthentication"],
     )
+    def test_cant_connect(self) -> None:
+        self.client.force_login(self.admin)
+        response = self.client.post(self.url, {"userPassword": "admin_password123"})
+        self.assertTrue(User.objects.filter(username="example\\old_user").exists())
+        self.assertTrue(User.objects.filter(username="example\\student").exists())
+        self.assertMessage(
+            response, "Can't connect to ActiveDirectory, please try again later."
+        )
 
 
 def tearDown(self) -> None:

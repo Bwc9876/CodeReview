@@ -572,7 +572,7 @@ class LeaderBoardTest(BaseCase):
         self.post_test_review(
             self.test_review_reviewer,
             "review-grade",
-            {"scores": "[10, 2]", "is_draft": False},
+            {"scores": "[10, 2]", "is_draft": "false"},
         )
 
     def test_order_correct(self) -> None:
