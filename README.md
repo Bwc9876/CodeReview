@@ -1,6 +1,7 @@
 [![CodeQL](https://github.com/Bwc9876/CodeReview/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Bwc9876/CodeReview/actions/workflows/codeql-analysis.yml)
 [![Tests](https://github.com/Bwc9876/CodeReview/actions/workflows/main.yml/badge.svg)](https://github.com/Bwc9876/CodeReview/actions/workflows/main.yml)
 [![Test coverage](https://raw.githubusercontent.com/Bwc9876/CodeReview/master/coverage.svg)](https://github.com/Bwc9876/CodeReview/actions/workflows/main.yml)
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 # CodeReview
 
