@@ -312,7 +312,7 @@ Test to make sure the 404 page is shown when an invalid error type is given.
 
 ### UserMethodsTest
 
-Test the methods on the the `User` model.
+Test the methods on the `User` model.
 
 #### test_user_session_str
 
@@ -570,6 +570,26 @@ Expected result: the review is abandon
 ### ReviewGradeTest
 
 Test a reviewer's ability to grade reviews
+
+#### test_draft
+
+Test to make sure a reviewer can save a draft of a review.
+Expected result: the review is saved as a draft and the scores/additional comments are preserved
+
+#### test_draft_empties
+
+Test to make sure a reviewer can save a draft of a review with empty scores/additional comments.
+Expected result: the review is saved as a draft and the scores/additional comments are preserved
+
+#### test_draft_then_rubric_change
+
+Test to make sure that if a student changes the rubric of an ongoing review with a draft, the draft is discarded.
+Expected result: The scored rows are cleared when the rubric is changed
+
+#### test_draft_then_rubric_no_change
+
+Test to make sure if a student *doesn't* change the rubric of an ongoing review with a draft, the draft is preserved.
+Expected result: The scored rows are preserved when the rubric is changed
 
 #### test_grade
 
