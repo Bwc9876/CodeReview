@@ -23,7 +23,7 @@ class LogoutTest(SimpleBaseCase):
     LDAP_BASE_CONTEXT="ou=ITP Users,dc=itp,dc=example,dc=com",
     LDAP_URL="0.0.0.0",
     LDAP_ADMIN_NAME="example\\admin",
-    LDAP_ADMIN_EMAIL="admin@example.com"
+    LDAP_ADMIN_EMAIL="admin@example.com",
 )
 class LDAPAuthTest(SimpleBaseCase):
     url = reverse("login")
