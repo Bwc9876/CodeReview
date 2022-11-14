@@ -23,5 +23,4 @@ pyproject.toml
 o365_token.txt
 startserver.ps1
 .startserver.ps1.un~
-..gitignore.un
-startserver.ps1~
+..gitignore.uN
