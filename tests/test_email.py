@@ -1,11 +1,13 @@
 from django.core import mail
 from django.urls import reverse
+from django.test import override_settings
 
 from Main.models import Review
 from Users.models import User
 from tests.testing_base import BaseCase
 
 
+@override_settings(LDAP_ADMIN_EMAIL="admin@example.com")
 class TestEmail(BaseCase):
     test_review = False
     test_review_student = "student-affiliated"
