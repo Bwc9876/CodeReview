@@ -817,9 +817,11 @@ def error_500_handler(request) -> HttpResponse:
 
     return Error500.as_view()(request)
 
+
 # noinspection PyUnusedLocal
 def csrf_failure_view(request, reason=""):
     return Error403.as_view()(request)
+
 
 # Leaderboard
 
