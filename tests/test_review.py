@@ -386,8 +386,8 @@ class ReviewGradeTest(BaseReviewAction):
         self.assertEqual(self.review.score_fraction(), None)
         self.assertEqual(self.review.additional_comments, "test comment")
         self.assertEqual(self.review.scoredrow_set.all().count(), 2)
-        self.assertEqual(self.review.scoredrow_set.all()[0].score, 5)
-        self.assertEqual(self.review.scoredrow_set.all()[1].score, 2)
+        self.assertEqual(self.review.scoredrow_set.get(source_row__index=0).score, 5)
+        self.assertEqual(self.review.scoredrow_set.get(source_row__index=1).score, 2)
 
     def test_draft_empties(self) -> None:
         self.post_test_review(
