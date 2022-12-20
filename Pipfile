@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-asgiref = "==3.5.2"
+asgiref = "==3.6.0"
 attrs = "==22.1.0"
 django-mailer = "==2.2"
 importlib-resources = "==5.10.1"
