@@ -26,7 +26,7 @@ django-o365mail = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
-coverage = "==7.0.2"
+coverage = "==7.0.3"
 psycopg2 = "*"
 genbadge = { extras = ["coverage"], version = "*" }
 black = "*"
