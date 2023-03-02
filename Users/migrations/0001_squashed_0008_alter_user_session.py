@@ -8,7 +8,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     replaces = [
         ("Users", "0001_initial"),
         ("Users", "0002_user_reviewer"),
