@@ -45,23 +45,13 @@
                             </a>
                         </li>
                         <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-                            <a class="page-link" href="
-
-
-
-                                    {% if page_obj.has_previous %}{% url "review-complete" %}?page={{ page_obj.previous_page_number }}&session=
-                                        {{ target_session }}{% else %}#{% endif %}">
+                            <a class="page-link" href="{% if page_obj.has_previous %}{% url "review-complete" %}?page={{ page_obj.previous_page_number }}&session={{ target_session }}{% else %}#{% endif %}">
                                 <span aria-hidden="true">&#8249;</span>
                             </a>
                         </li>
                         <li class="page-item disabled"><a class="page-link" href="#">Page {{ page_obj.number }}</a></li>
                         <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                            <a class="page-link" href="
-
-
-
-                                    {% if page_obj.has_next %}{% url "review-complete" %}?page={{ page_obj.next_page_number }}&session=
-                                        {{ target_session }}{% else %}#{% endif %}">
+                            <a class="page-link" href="{% if page_obj.has_next %}{% url "review-complete" %}?page={{ page_obj.next_page_number }}&session={{ target_session }}{% else %}#{% endif %}">
                                 <span aria-hidden="true">&#8250;</span>
                             </a>
                         </li>
