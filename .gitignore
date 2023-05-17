@@ -21,3 +21,5 @@ debug-emails/
 poetry.lock
 pyproject.toml
 o365_token.txt
+.gitignore~
+*.un~
