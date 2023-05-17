@@ -25,4 +25,4 @@ class FinishUserForm(ModelForm):
         """
 
         model = User
-        fields = ["receive_notifications"]
+        fields = ["receive_notifications", "gay_mode"]

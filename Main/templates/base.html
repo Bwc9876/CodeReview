@@ -11,6 +11,22 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="color-scheme" content="light dark">
     <title>CodeReview</title>
+    {% if user.is_authenticated and user.gay_mode %}
+    <style>
+        :root {
+            animation: rainbow 3s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+    </style>
+    {% endif %}
     {# The meta tags for favicons can take up a lot of space, so we include them from another file to make this file easier to navigate #}
     {% include "favicon-data.html" %}
     {% load static %}

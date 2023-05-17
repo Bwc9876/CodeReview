@@ -33,6 +33,9 @@ class User(AbstractUser):
     receive_notifications = models.BooleanField(
         default=True, help_text="Would you like to receive email notifications?"
     )
+    gay_mode = models.BooleanField(
+        default=False, help_text="Would you like to enable gay mode?"
+    )
     reviews_done_as_reviewee = models.IntegerField(default=0)
     reviews_done_as_reviewer = models.IntegerField(default=0)
 
