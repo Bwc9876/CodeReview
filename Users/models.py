@@ -33,6 +33,9 @@ class User(AbstractUser):
     receive_notifications = models.BooleanField(
         default=True, help_text="Would you like to receive email notifications?"
     )
+    rainbow_mode = models.BooleanField(
+        default=False, help_text="Enables a rainbow hue throughout the website."
+    )
     reviews_done_as_reviewee = models.IntegerField(default=0)
     reviews_done_as_reviewer = models.IntegerField(default=0)
 
