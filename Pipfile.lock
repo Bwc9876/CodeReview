@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "86b916d3e56f95257ffe21a0ca9dde4138a9712219699ee16e6f2900c3e63119"
+            "sha256": "a97255d98940e83c651d3ff1e9725358e1f7d2ad3de792a73b544b2b652bc546"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -20,6 +20,7 @@
                 "sha256:9e0ce3aa93a819ba5b45120216b23878cf6e8525eb3848653452b4192b92afed"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.7'",
             "version": "==3.7.2"
         },
         "attrs": {
@@ -133,15 +134,17 @@
                 "sha256:860ae6a138a238fc4f22c99b52f3ead982bb4b1aad8c0122bcd8c8a3a02e409d"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.8'",
             "version": "==4.2.4"
         },
         "django-mailer": {
             "hashes": [
-                "sha256:74a6c536ffdc01cccb345a3ae3dfb0aa8562eaf2a8a01bf90113bf62f55534e7",
-                "sha256:8daf34c55d4dd336d85684738fed6f2757e429ecfe12846920628d2c3b2fa608"
+                "sha256:6ea0cbec09f57eb91376780a5f20ab7a834b942435a575e92e8e021f7838d78f",
+                "sha256:c7ef5ad63d5484246908bd1ce583c22837c66c1a7b593c9b816f4ead2421c995"
             ],
             "index": "pypi",
-            "version": "==2.2"
+            "markers": "python_version >= '3.8'",
+            "version": "==2.3.2"
         },
         "django-o365mail": {
             "hashes": [
@@ -457,6 +460,7 @@
                 "sha256:d446183e84b8349fa3061f0fe7f06ca94ba65b426946ffebe6e3e8295332420c"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.5'",
             "version": "==0.4.4"
         },
         "stringcase": {
